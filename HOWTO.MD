@@ -9,7 +9,7 @@ To address this issue, decompfrontier contains a simple python-based packet defi
 In order to add a new definition, you first need to clone the packet-generator repository (https://github.com/decompfrontier/packet-generator).
 
 There are generally two types of information that you want to generate:
-* Network definitions, this are the request/responses uses by the game to talk with the server
+* Network definitions, this are the request/responses used by the game to talk with the server
 * MST definitions, this are the definition of the game data, such as units or items
 
 You must have Python 3.10 or greater installed on your system.

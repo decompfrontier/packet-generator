@@ -2,6 +2,11 @@ from gen import *
 from schema import *
 
 def make_generator_type_from_enum(clz: Enum) -> GeneratorData:
+    """Creates a generator data class (rapresentation of a JSON in the generator) from a Python enumerator.
+
+    :param clz: Python enumerator to generate
+    :return: Synthetized generator data
+    """
     g = GeneratorData()
     g.name = clz.__name__
     g.class_type = ClassType.Enumerator
@@ -17,6 +22,11 @@ def make_generator_type_from_enum(clz: Enum) -> GeneratorData:
     return g
 
 def make_generator_type_from_schema(clz: type) -> GeneratorData:
+    """Creates the generator data class (rapresentation of a JSON in the generator) from a Python type specification.
+
+    :param clz: Python class to generate
+    :return: Synthetized generator data
+    """
     if issubclass(clz, Enum):
         return make_generator_type_from_enum(clz)
     
@@ -60,10 +70,18 @@ def make_generator_type_from_schema(clz: type) -> GeneratorData:
     return g
 
 def output_file(py_file: str, out_file: str, lang: str, types: list[type]):
+    """Generates the output file from packet specifications.
+
+    :param pyfile: Python file name
+    :param out_file: Output file path
+    :param lang: Generator type
+    :param types: List of types to be serialized from the python file
+    """
     gen = GeneratorFactory.get(lang)
 
     buffer = gen.get_start_mark(datetime.now(), py_file)
 
+    # generate all types!
     for x in types:
         q = make_generator_type_from_schema(x)
         buffer = "".join((buffer, gen.step(q) ))
@@ -74,6 +92,8 @@ def output_file(py_file: str, out_file: str, lang: str, types: list[type]):
         fp.write(buffer.encode("utf-8"))
 
 def generate_data_for_gtest_glaze():
+    """Test generator for C++ Google test glaze runtime."""
+
     from net.signalkey import SignalKey
     from net.challenge_arena import ChallengeArenaUserInfo
     from net.daily_login import DailyLoginRewardsUserInfo
@@ -93,4 +113,5 @@ def generate_data_for_gtest_glaze():
     output_file("gacha.py", "test/glazecpp/generated/gacha.hpp", "c++", [ GachaMst ])
     output_file("town.py", "test/glazecpp/generated/town.hpp", "c++", [ TownFacilityLvMst ])
 
+# TODO: Replace this with actual logic!
 generate_data_for_gtest_glaze()
