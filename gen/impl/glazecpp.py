@@ -16,11 +16,22 @@ class GlazeGenerator(Generator):
             field to ensure the correctness of the serialization/deserializion, while preserving
             the original C++ data types for ease of use.
 
+            The code generation is separated into two different steps of generation:
+            
+            The first one is to generate the class that basic class that holds the types of the JSON
+            object (for example: the content of a Signal key), such basic class is called the "Data" class
+            in the C++ generation. (For example: SignalKeyData contains the basic content of the Signal key)
+
+            The second step is to generate the actual definition of the JSON object, which uses the Data
+            class as either it's basic member for array types or as a simple typedef. This was done to
+            allow the support of arrays.
+
             The code generation works by doring the following:
 
-            1. Generate the normal C++ data class, this includes the fields.
-            2. Generate the Glaze metadata
-            3. 
+            1. Generate the Data class, this includes the fields
+            2. Generate the Glaze metadata for the data class
+            3. Generate the main class, this is the holder of the array data
+            4. Generate the Glaze metadata for the main class
     """
 
     TYPE_MAPPING: dict[type, str] = {
