@@ -128,3 +128,38 @@ Custom keys:
 | empty_on_default | True/False | int | False | Leave the field empty (no value at all) when the field does not have a value (the value 0 is considered like that) |
 | quoted | True/False | int, long, float | False | If it's true then the number will be rapresented as a quoted string |
 | write_as_string | True/False | custom types | False | If it's true the custom type will be serialized as a string and not as a JSON object |
+
+## Writing documentation
+
+In order to also document what the fields actually do, the packet generator supports documentation in reStructuredText format.
+
+For a class and enums, create a new field called `__doc__` and simply write your documentation as a string, for example:
+```
+@json(array = False)
+class GmeAction:
+    __doc__ = "Main packet of interaction between client and server." 
+```
+
+For class fields, create a new key called `__doc__` and place your documentation there, for example:
+```
+    body = { "" : GmeBody, "omit_on_default": True, __doc__: "Body of the message." }
+```
+
+### Documenting enumerator fields
+
+As enumerators doesn't have a key-value to append the documentation string to, the documentation is done by creating a new
+dictionary called `__doc_f__` which maps the *value* of the enumerator with it's documentation, for example:
+```
+class GmeErrorFlags(Flag):
+    __doc__ = "Flags of the errors happend in the game."
+    
+    __doc_f__ = {
+        0: "No error oncurred.",
+        1: "The server oncurred an error.",
+        2: "The custom command should be handled."
+    }
+
+    NoError = 0
+    IsInError = 1
+    ShouldHandleCommands = 2
+```

@@ -43,32 +43,34 @@ class UserItemDictionaryInfo:
 
 @keyjson("IKqx1Cn9", single = True)
 class UserInfo:
-    user_id = { "h7eY3sAK": str }
-    handle_name = { "B5JQyV8j": str }
-    account_id = { "LZ2PfNm4": str }
-    password = { "4WSu1irc": str }
-    friend_id = { "98WfKiyA": str }
-    contact_id = { "90LWtVUN": str }
-    tutorial_status = { "9sQM2XcN": int }
-    tutorial_end_flag = { "sv6BEI8X": int }
+    __doc__ = "Main object that holds all the player information."
+
+    user_id = { "h7eY3sAK": str, __doc__: "ID of the user for this session." }
+    handle_name = { "B5JQyV8j": str, __doc__: "Username shown in-game." }
+    account_id = { "LZ2PfNm4": str, __doc__: "Account ID used in account transfering." }
+    password = { "4WSu1irc": str, __doc__: "Password used for account transfering." }
+    friend_id = { "98WfKiyA": str, __doc__: "Player ID that is used for the friend system." }
+    contact_id = { "90LWtVUN": str, __doc__: "ID of the player used in the ticketing system for player support." }
+    tutorial_status = { "9sQM2XcN": int, __doc__: "Get the current tutorial script to execute." }
+    tutorial_end_flag = { "sv6BEI8X": strbool, __doc__: "Checks if the player has finished the tutorial or not."  }
     user_scenario_info = { "N4XVE1uA": str } # TODO: this is UserScenarioInfoList we just dont have this yet
     user_special_scenario_info = { "9yVsu21R": str } # TODO: this is UserSpecialScenarioInfoList we just dont have this yet
-    model_change_count = { "nrg19RGe": int }
+    model_change_count = { "nrg19RGe": int, __doc__: "How many times has the user transferred to a new device. May be used to avoid getting first time playing rewards twice." }
     code_expire_date = { "iyJH5k6p": int }
     friend_invitation_flag = { "y2v7Sd01": int }
-    early_bird_end = { "iN7cYU9i": int }
-    debug_mode = { "5MPcr0sp": strbool }
+    early_bird_end = { "iN7cYU9i": long, __doc__: "Time in seconds until the Gem banner sale ends." }
+    debug_mode = { "5MPcr0sp": strbool, __doc__: "Enables several debug features (like skipping summoning animation) on the account." }
     encrypt_iv = { "8kN1tgYU": str }
     encrypted_friend_id = { "PA0QwZs1": str }
     first_desc = { "7oV00FeR": str }
     dlc_url = { "23t3D28i": str, "omit_on_default": True }
     feature_gate = { "a37D29iJ": str }
     unk = { "32k0ahkD": str } # v["32k0ahkD"] = "773c9af44721a014c7ed"; // TODO: discover what's this
-    service_request_endpoint_param = { "ABh7acL2": str, "omit_on_default": True }
+    service_request_endpoint_param = { "ABh7acL2": str, "omit_on_default": True, __doc__: "Extra parameters that are passed to the DLS API server in the request object EXTRA_PARAMS." }
     # GUMI LIVE API V1/V2
-    gumi_live_userid = { "iN7buP2h": str }
-    gumi_live_token = { "iN7buP1i": str }
-    facebook_id = { "K29dp2Q": long }
+    gumi_live_userid = { "iN7buP2h": str, __doc__: "Gumi live API User ID. (used for example in IAP)" }
+    gumi_live_token = { "iN7buP1i": str, __doc__: "User token of the Gumi live API." }
+    facebook_id = { "K29dp2Q": long, __doc__: "Facebook ID of the associated account." }
     associated_user_id = { "uJP4aeg9": str }
 
 @keyjson(key_group = "dX7S2Lc1")
