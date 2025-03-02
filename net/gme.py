@@ -41,12 +41,14 @@ class GmeBody:
 @keyjson(key_group = "b5PH6mZa", array = False)
 class GmeError:
     flag = { "3e9aGpus": GmeErrorFlags, __doc__: "Error flags." }
-    cmd = { "iPD12YCr": GmeErrorCommand, __doc__: "Action to execute after pressing OK. (Only enabled if the flag ShouldHandleCommands is set)" }
+    cmd = { "iPD12YCr": GmeErrorCommand, __doc__: "Action to execute after pressing OK. (Only enabled if the flag `ShouldHandleCommands` is set)" }
     message = { "ZC0msu2L": str, __doc__: "Message to show on the error." }
     url = { "zcJeTx18": str, __doc__: "URL to open in the browser after OK is pressed. (like for update the game)" }
 
 @json(array = False)
 class GmeAction:
+    __doc__ = "Main packet of interaction between client and server."
+    
     header = { "" : GmeHeader, __doc__: "Header of the message." }
     body = { "" : GmeBody, "omit_on_default": True, __doc__: "Body of the message." }
     error = { "": GmeError, "omit_on_default": True, __doc__: "Error object in case of an error." }
