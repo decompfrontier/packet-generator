@@ -19,12 +19,14 @@ class GlazeGenerator(Generator):
             The code generation is separated into two different steps of generation:
             
             The first one is to generate the class that basic class that holds the types of the JSON
-            object (for example: the content of a Signal key), such basic class is called the "Data" class
+            object (for example: the object that contains the SignalKey fields of an array), such basic class is called the "Data" class
             in the C++ generation. (For example: SignalKeyData contains the basic content of the Signal key)
 
             The second step is to generate the actual definition of the JSON object, which uses the Data
-            class as either it's basic member for array types or as a simple typedef. This was done to
-            allow the support of arrays.
+            class as either it's basic member for array types.
+
+            For a class that is not an array, point 3 and 4 does not apply as the class can simply be
+            generated as-is.
 
             The code generation works by doring the following:
 
@@ -120,14 +122,14 @@ class GlazeGenerator(Generator):
             # Ex: glz::bools_as_numbers<&T::myField>
             glazemt = "glz::bools_as_numbers<&T::{}>".format(f.name)
         elif f.type_id == strbool:
-            # Ex: glz::quoted_num<glz::bools_as_numbers<&T::myField>>
-            glazemt = "glz::quoted_num<glz::bools_as_numbers<&T::{}>>".format(f.name)
+            # Ex: glz::strbool<&T::myField>
+            glazemt = "glzhlp::strbool<&T::{}>".format(f.name)
         elif f.type_id == datetimeunix:
-            # Ex: glz::custom<[](auto& out, uint64_t in){ out.myField = glzhlp::read_datetimeunix(in); }, [](auto& in) -> auto& { return glzhlp::write_datetimeunix(in.myField); }>
-            glazemt = "glz::custom<[](auto& out, uint64_t in){{ out.{} = glzhlp::read_datetimeunix(in); }}, [](auto& in) -> auto& {{ return glzhlp::write_datetimeunix(in.{}); }}>".format(f.name, f.name)
+            # Ex: glzhlp::datetimeunix<&T::myField>
+            glazemt = "glzhlp::datetimeunix<&T::{}>".format(f.name, f.name)
         elif f.type_id == datetime:
-            # Ex: glz::custom<[](auto& out, uint64_t in){ out.myField = glzhlp::read_datetime(in); }, [](auto& in) -> auto& { return glzhlp::write_datetime(in.myField); }>
-            glazemt = "glz::custom<[](auto& out, uint64_t in){{ out.{} = glzhlp::read_datetime(in); }}, [](auto& in) -> auto& {{ return glzhlp::write_datetime(in.{}); }}>".format(f.name, f.name)        
+            # Ex: glzhlp::datetime<&T::myField>
+            glazemt = "glzhlp::datetime<&T::{}>".format(f.name, f.name)        
         else:
             # Ex: &T::myField
             glazemt = "&T::{}".format(f.name)
@@ -250,9 +252,6 @@ struct glz::meta<{}>
 
         In case the function is not an array, simply define an alias of the Data element (the single field container)
         as the basic type.
-        
-        Output code if the class is not an array:
-            struct SignalKey : public SignalKeyData {};
 
         Output code if the class is an array:
             struct SignalKey {
@@ -314,8 +313,6 @@ struct {} : public {} {{
               clz.name,
               clz.name,
               clz.name)
-        #else:
-        #    return "struct {} : public {} {{}};".format(clz.name, def_name)
 
         return ""
     
@@ -347,8 +344,6 @@ struct {} : public {} {{
 
         if clz.class_type == ClassType.Enumerator:
             return ""
-        
-        #have_key = len(clz.key) > 0
 
         if clz.array_step == ArrayStep.Single:
             buf = '''template <>
@@ -359,27 +354,18 @@ struct glz::meta<{}>
     static constexpr auto write_x = [](T& s) -> T::ARRAY_TYPE& {{ s._internal_data = T::ARRAY_TYPE{{s}}; return s._internal_data; }};
     static constexpr auto value = '''.format(clz.name, clz.name)
     
-            #if not have_key:
             buf = "".join(( buf, "glz::custom<read_x, write_x>"))
-            #else:
-            #    buf = "".join(( buf, "object(\"{}\", glz::custom<read_x, write_x>)".format(clz.key)))
 
             return "".join(( buf, ''';
 };''' ))
 
-        #elif clz.array_step == ArrayStep.Array and have_key:
-        #    return '''template <>
-#struct glz::meta<{}>
-#{{
-#    static constexpr auto value = object("{}", &T::data);
-#}};'''.format(clz.name, clz.key)
-        
-#        elif clz.array_step == ArrayStep.NoArray and have_key:
-#            return '''template <>
-#struct glz::meta<{}>
-#{{
-#    static constexpr auto value = object("{}", [](auto& self) {{ return {}(self); }});
-#}};'''.format(clz.name, clz.key, def_name)
+        elif clz.array_step == ArrayStep.Array:
+            return '''template <>
+struct glz::meta<{}>
+{{
+    using T = {};
+    static constexpr auto value = object("{}", &T::data);
+}};'''.format(clz.name, clz.name, clz.key)
 
         return ""
 

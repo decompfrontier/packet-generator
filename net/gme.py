@@ -2,9 +2,9 @@ from enum import Enum, Flag
 from schema import *
 
 class GmeErrorFlags(Flag):
-    __doc__ = "Flags of the errors happend in the game."
+    doc = "Flags of the errors happend in the game."
     
-    __doc_f__ = {
+    doc_f = {
         0: "No error oncurred.",
         1: "The server oncurred an error.",
         2: "The custom command should be handled."
@@ -15,9 +15,9 @@ class GmeErrorFlags(Flag):
     ShouldHandleCommands = 2
 
 class GmeErrorCommand(Enum):
-    __doc__ = "Type of command to do after the user presses OK."
+    doc = "Type of command to do after the user presses OK."
 
-    __doc_f__ = {}
+    doc_f = {}
 
     Retry = 2
     Continue = 3
@@ -40,15 +40,15 @@ class GmeBody:
 
 @keyjson(key_group = "b5PH6mZa", array = False)
 class GmeError:
-    flag = { "3e9aGpus": GmeErrorFlags, __doc__: "Error flags." }
-    cmd = { "iPD12YCr": GmeErrorCommand, __doc__: "Action to execute after pressing OK. (Only enabled if the flag `ShouldHandleCommands` is set)" }
-    message = { "ZC0msu2L": str, __doc__: "Message to show on the error." }
-    url = { "zcJeTx18": str, __doc__: "URL to open in the browser after OK is pressed. (like for update the game)" }
+    flag = { "3e9aGpus": GmeErrorFlags, "doc": "Error flags." }
+    cmd = { "iPD12YCr": GmeErrorCommand, "doc": "Action to execute after pressing OK. (Only enabled if the flag `ShouldHandleCommands` is set)" }
+    message = { "ZC0msu2L": str, "doc": "Message to show on the error." }
+    url = { "zcJeTx18": str, "doc": "URL to open in the browser after OK is pressed. (like for update the game)" }
 
 @json(array = False)
 class GmeAction:
-    __doc__ = "Main packet of interaction between client and server."
+    doc = "Main packet of interaction between client and server."
     
-    header = { "" : GmeHeader, __doc__: "Header of the message." }
-    body = { "" : GmeBody, "omit_on_default": True, __doc__: "Body of the message." }
-    error = { "": GmeError, "omit_on_default": True, __doc__: "Error object in case of an error." }
+    header = { "" : GmeHeader, "doc": "Header of the message." }
+    body = { "" : GmeBody, "omit_on_default": True, "doc": "Body of the message." }
+    error = { "": GmeError, "omit_on_default": True, "doc": "Error object in case of an error." }

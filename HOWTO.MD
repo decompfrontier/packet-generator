@@ -133,27 +133,27 @@ Custom keys:
 
 In order to also document what the fields actually do, the packet generator supports documentation in reStructuredText format.
 
-For a class and enums, create a new field called `__doc__` and simply write your documentation as a string, for example:
+For a class and enums, create a new field called `doc` and simply write your documentation as a string, for example:
 ```
 @json(array = False)
 class GmeAction:
-    __doc__ = "Main packet of interaction between client and server." 
+    doc = "Main packet of interaction between client and server." 
 ```
 
-For class fields, create a new key called `__doc__` and place your documentation there, for example:
+For class fields, create a new key called `doc` and place your documentation there, for example:
 ```
-    body = { "" : GmeBody, "omit_on_default": True, __doc__: "Body of the message." }
+    body = { "" : GmeBody, "omit_on_default": True, "doc": "Body of the message." }
 ```
 
 ### Documenting enumerator fields
 
 As enumerators doesn't have a key-value to append the documentation string to, the documentation is done by creating a new
-dictionary called `__doc_f__` which maps the *value* of the enumerator with it's documentation, for example:
+dictionary called `doc_f` which maps the *value* of the enumerator with it's documentation, for example:
 ```
 class GmeErrorFlags(Flag):
-    __doc__ = "Flags of the errors happend in the game."
+    doc = "Flags of the errors happend in the game."
     
-    __doc_f__ = {
+    doc_f = {
         0: "No error oncurred.",
         1: "The server oncurred an error.",
         2: "The custom command should be handled."

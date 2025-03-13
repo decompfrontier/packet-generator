@@ -122,6 +122,9 @@ class GeneratorField:
     force_as_string: bool = False
     """Should the field be quoted as a String no matter it's type."""
 
+    doc: str = ""
+    """Explains what this field does."""
+
 @dataclass
 class GeneratorData:
     """This object represents an object to be converted to JSON.
@@ -149,6 +152,9 @@ class GeneratorData:
 
     class_type: ClassType = ClassType.Struct
     """Determines the type of the object."""
+
+    doc: str = ""
+    """Exaplains what this object does."""
 
 class Generator(ABC):
     """This interface exposes the generic methods for implementing a source generator for BF data."""

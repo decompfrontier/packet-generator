@@ -11,12 +11,26 @@ def make_generator_type_from_enum(clz: Enum) -> GeneratorData:
     g.name = clz.__name__
     g.class_type = ClassType.Enumerator
 
+    if hasattr(g, "doc"):
+        g.doc = getattr(g, "doc")
+    
+    doc_f = {}
+    if hasattr(g, "doc_f"):
+        doc_f = getattr(g, "doc_f")
+
     for name in clz._member_names_:
+        if name == "doc" or name == "doc_f":
+            continue
+
         val = getattr(clz, name)
-        
+
         f = GeneratorField()
         f.name = name
         f.type_id = val
+
+        if val in doc_f:
+            f.doc = doc_f[val]
+
         g.fields.append(f)
     
     return g
@@ -45,12 +59,18 @@ def make_generator_type_from_schema(clz: type) -> GeneratorData:
             continue
         
         f_attr = getattr(q, f)
-        if not type(f_attr) == dict:
+
+        if f == "doc":
+            g.doc = getattr(q, f)
+            continue
+        elif not type(f_attr) == dict:
                     raise Exception("Invalid field {}".format(f))
         
         f_gen = GeneratorField()
         f_gen.name = f
-        
+
+        # this has to be done this way beause I can't know the key, maybe the format should be changed
+        #  to have key: value ?        
         for k, v in f_attr.items():
             match k:
                 case "omit_on_default":
@@ -61,6 +81,8 @@ def make_generator_type_from_schema(clz: type) -> GeneratorData:
                     f_gen.quoted = True
                 case "write_as_string":
                     f_gen.force_as_string = True
+                case "doc":
+                    f_gen.doc = v
                 case _:
                     f_gen.key = k
                     f_gen.type_id = v
@@ -98,8 +120,8 @@ def generate_data_for_gtest_glaze():
     from net.challenge_arena import ChallengeArenaUserInfo
     from net.daily_login import DailyLoginRewardsUserInfo
     from net.logincampaign import UserLoginCampaignInfo
-    from net.gme import GmeErrorID, GmeErrorOperation, GmeBody, GmeError, GmeHeader, GmeAction
-    from mst.gatcha import GachaMst
+    from net.gme import GmeErrorFlags, GmeErrorCommand, GmeBody, GmeError, GmeHeader, GmeAction
+    from mst.gatcha import GachaMst, GachaCategory
     from mst.npc import NpcMst
     from mst.logincampaign import LoginCampaignMst
     from mst.town import TownFacilityLvMst
@@ -108,9 +130,9 @@ def generate_data_for_gtest_glaze():
     output_file("challenge_arena.py", "test/glazecpp/generated/challenge_arena.hpp", "c++", [ ChallengeArenaUserInfo ])
     output_file("daily_login.py", "test/glazecpp/generated/daily_login.hpp", "c++", [ DailyLoginRewardsUserInfo ])
     output_file("logincampaign.py", "test/glazecpp/generated/logincampaign.hpp", "c++", [ UserLoginCampaignInfo, LoginCampaignMst ])
-    output_file("gme.py", "test/glazecpp/generated/gme.hpp", "c++", [ GmeErrorID, GmeErrorOperation, GmeBody, GmeError, GmeHeader, GmeAction ])
+    output_file("gme.py", "test/glazecpp/generated/gme.hpp", "c++", [ GmeErrorFlags, GmeErrorCommand, GmeBody, GmeError, GmeHeader, GmeAction ])
     output_file("npc.py", "test/glazecpp/generated/npc.hpp", "c++", [ NpcMst ])
-    output_file("gacha.py", "test/glazecpp/generated/gacha.hpp", "c++", [ GachaMst ])
+    output_file("gacha.py", "test/glazecpp/generated/gacha.hpp", "c++", [ GachaMst, GachaCategory ])
     output_file("town.py", "test/glazecpp/generated/town.hpp", "c++", [ TownFacilityLvMst ])
 
 # TODO: Replace this with actual logic!
