@@ -9,9 +9,9 @@ TEST(packetgen, signalkey)
     SignalKey q;
     q.key = "GFHJEIGHJEIFGJHASIEG";
 
-    std::string buffer = "";
+    std::string buffer;
 
-    auto ec = glz::write_json(q, buffer);
+    const auto& ec = glz::write_json(q, buffer);
 
     ASSERT_EQ(ec.ec, glz::error_code::none);
     ASSERT_EQ(buffer, "[{\"Kn51uR4Y\":\"GFHJEIGHJEIFGJHASIEG\"}]");
@@ -24,8 +24,8 @@ TEST(packetgen, challengearena)
     d.rainbow_coins = 9;
     d.unkstr2 = "AEAEAEAE";
 
-    std::string buffer = "";
-    auto ec = glz::write_json(d, buffer);
+    std::string buffer;
+    const auto& ec = glz::write_json(d, buffer);
 
     ASSERT_EQ(ec.ec, glz::error_code::none);
     ASSERT_EQ(buffer, "[{\"xZeGgDQe\":54,\"KAZmxkgy\":9,\"h7eY3sAK\":\"\",\"Nou5bCmm\":0,\"AKP8t3xK\":0,\"e34YV1Ey\":0,\"4lH05mQr\":0,\"BcIqcWDM\":0,\"fBGCdi8I\":0,\"zf5Ae850\":0,\"outas79f\":\"AEAEAEAE\"}]");
@@ -42,8 +42,8 @@ TEST(packetgen, dailylogin)
     d.user_current_count = 9;
     d.user_spin_limit_count = 11;
 
-    std::string buffer = "";
-    auto ec = glz::write_json(d, buffer);
+    std::string buffer;
+    const auto& ec = glz::write_json(d, buffer);
 
     ASSERT_EQ(ec.ec, glz::error_code::none);
     ASSERT_EQ(buffer, "{\"ad6i23pO\":4,\"XIvaD6Jp\":1,\"ZC0msu2L\":\" day(s) more to guaranteed Gem!\",\"outas79f\":4,\"u8iD6ka7\":2,\"35JXN4Ay\":9,\"5xStG99s\":11}");

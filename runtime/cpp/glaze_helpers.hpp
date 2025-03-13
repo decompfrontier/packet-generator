@@ -4,32 +4,68 @@
 #include <date.h>
 
 #include <string>
-#include <array>
-#include <deque>
-#include <optional>
 #include <chrono>
 
 namespace glzhlp
 {
 	using chronotime = std::chrono::system_clock::time_point;
 
-	constexpr const auto read_datetime = [](const std::string& s) -> chronotime {
-		std::stringstream in(s);
-		chronotime t;
-		in >> date::parse("%Y-%m-%d %H:%M:%S", t);
-		return t;
-	};
+	template <auto T>
+	constexpr auto strbool = glz::custom<
+		// out -> structure that holds the data
+		// p -> C++ output data
+		// in -> string input to read
+		[](auto& out, const auto& in)
+		{
+			// read
+			decltype(auto)& p = glz::get_member(out, T);
+			p = in == "1";
+		},
 
-	constexpr const auto write_datetime = [](chronotime& c) -> std::string {
-		return date::format("%Y-%m-%d %H:%M:%S", c);
-	};
+		// in -> structure that holds the data
+		// p -> C++ input to read
+		// return -> string output
+		[](const auto& in) -> auto
+		{
+			// write
+			decltype(auto) p = glz::get_member(in, T);
+			return p ? "1" : "0";
+		}
+	>;
 
-	constexpr const auto read_datetimeunix = [](uint64_t s) -> chronotime {
-		const auto& h = date::sys_seconds{ std::chrono::seconds(s) };
-		return chronotime(h);
-	};
+	template <auto T>
+	constexpr auto datetime = glz::custom<
+		[](auto& out, const auto& in)
+		{
+			// read
+			decltype(auto)& p = glz::get_member(out, T);
+			std::stringstream inss(in);
+			chronotime t;
+			inss >> date::parse("%F %T", t);
+			p = t;
+		},
+		[](const auto& in) -> auto
+		{
+			// write
+			decltype(auto) p = glz::get_member(in, T);
+			return date::format("%F %T", floor<std::chrono::seconds>(p));
+		}
+	>;
 
-	constexpr const auto write_datetimeunix = [](chronotime& c) -> uint64_t {
-		return c.time_since_epoch().count();
-	};
+	template <auto T>
+	constexpr auto datetimeunix = glz::custom<
+		[](auto& out, const auto& in)
+		{
+			// read
+			decltype(auto)& p = glz::get_member(out, T);
+			const auto& h = date::sys_seconds{ std::chrono::seconds(in) };
+			p = chronotime(h);
+		},
+		[](const auto& in) -> auto
+		{
+			// write
+			decltype(auto) p = glz::get_member(in, T);
+			return std::chrono::duration_cast<std::chrono::seconds>(p.time_since_epoch()).count();
+		}
+	>;
 }
