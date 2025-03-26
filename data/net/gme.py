@@ -1,10 +1,12 @@
 from enum import Enum, Flag
 from schema import *
 
+"""This module contains the basic game request/response."""
+
 class GmeErrorFlags(Flag):
-    doc = "Flags of the errors happend in the game."
+    """Flags of the error happend in the game."""
     
-    doc_f = {
+    __doc_fields__ = {
         0: "No error oncurred.",
         1: "The server oncurred an error.",
         2: "The custom command should be handled."
@@ -15,9 +17,9 @@ class GmeErrorFlags(Flag):
     ShouldHandleCommands = 2
 
 class GmeErrorCommand(Enum):
-    doc = "Type of command to do after the user presses OK."
+    "Type of command to do after the user presses OK."
 
-    doc_f = {}
+    __doc_fields__ = {}
 
     Retry = 2
     Continue = 3
@@ -31,15 +33,21 @@ class GmeErrorCommand(Enum):
 
 @keyjson(key_group = "F4q6i9xe", array = False)
 class GmeHeader:
-    id = { "Hhgi79M1": str }
-    client_id = { "aV6cLn3v": str }
+    """Header of a game request/response."""
+    
+    id = { "Hhgi79M1": str, "doc": "ID of the request" }
+    client_id = { "aV6cLn3v": str, "doc": "ID of the client that invoked the request" }
 
 @keyjson(key_group = "a3vSYuq2", array = False)
 class GmeBody:
-    body = { "Kn51uR4Y": str }
+    """Content of the game request/response."""
+
+    body = { "Kn51uR4Y": str, "doc": "Encrypted JSON content." }
 
 @keyjson(key_group = "b5PH6mZa", array = False)
 class GmeError:
+    """Object that stores any possible error with the request or response."""
+
     flag = { "3e9aGpus": GmeErrorFlags, "doc": "Error flags." }
     cmd = { "iPD12YCr": GmeErrorCommand, "doc": "Action to execute after pressing OK. (Only enabled if the flag `ShouldHandleCommands` is set)" }
     message = { "ZC0msu2L": str, "doc": "Message to show on the error." }
@@ -47,7 +55,7 @@ class GmeError:
 
 @json(array = False)
 class GmeAction:
-    doc = "Main packet of interaction between client and server."
+    "Main packet of interaction between client and server."
     
     header = { "" : GmeHeader, "doc": "Header of the message." }
     body = { "" : GmeBody, "omit_on_default": True, "doc": "Body of the message." }

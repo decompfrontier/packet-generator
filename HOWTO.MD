@@ -114,6 +114,7 @@ Available data types to map to the JSON are:
 | datetimeunix | native unix datetime (time_t) | long (date format: unix timestamp) |
 | list[str] | list of strings | array of strings (example: [ "a", "b" ]) |
 | list[int] | list of integers | array of integers (example: [ 0, 1 ]) |
+| stro[Object] | an object formatted as string | string that contains a JSON object (example: "{ \"a\": "\"b\" }") |
 
 ### Custom attributes in fields
 In certain situations, a field definition might not be enough, as the brave frontier
@@ -126,40 +127,40 @@ Custom keys:
 | -------- | --------------- | -------------------------- | ------------------------------ | ----------- |
 | omit_on_default | True/False | int, str | False | When this is set to true, in case the field does not have a value (the value considered is 0 on int while on string it's an empty one), the field is omitted entirely from the JSON generation |
 | empty_on_default | True/False | int | False | Leave the field empty (no value at all) when the field does not have a value (the value 0 is considered like that) |
-| quoted | True/False | int, long, float | False | If it's true then the number will be rapresented as a quoted string |
+| quote | True/False | int, long, float | False | If it's true then the number will be rapresented as a quoted string |
 | write_as_string | True/False | custom types | False | If it's true the custom type will be serialized as a string and not as a JSON object |
 
 ## Writing documentation
 
 In order to also document what the fields actually do, the packet generator supports documentation in reStructuredText format.
 
-For a class and enums, create a new field called `doc` and simply write your documentation as a string, for example:
+For a class and enums, simply write your documentation as you would for any python class, for example:
 ```
 @json(array = False)
 class GmeAction:
-    doc = "Main packet of interaction between client and server." 
+    "Main packet of interaction between client and server." 
 ```
 
 For class fields, create a new key called `doc` and place your documentation there, for example:
 ```
-    body = { "" : GmeBody, "omit_on_default": True, "doc": "Body of the message." }
+    body = { "" : GmeBody, "omit_on_default": True, "__doc__": "Body of the message." }
 ```
 
 ### Documenting enumerator fields
 
 As enumerators doesn't have a key-value to append the documentation string to, the documentation is done by creating a new
-dictionary called `doc_f` which maps the *value* of the enumerator with it's documentation, for example:
+dictionary called `__doc_fields__` which maps the *value* of the enumerator with it's documentation, for example:
 ```
 class GmeErrorFlags(Flag):
-    doc = "Flags of the errors happend in the game."
+    "Flags of the errors happend in the game."
     
-    doc_f = {
+    __doc_fields__ = {
         0: "No error oncurred.",
         1: "The server oncurred an error.",
-        2: "The custom command should be handled."
+        4: "The custom command should be handled."
     }
 
     NoError = 0
     IsInError = 1
-    ShouldHandleCommands = 2
+    ShouldHandleCommands = 4
 ```

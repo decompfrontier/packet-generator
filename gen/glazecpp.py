@@ -1,8 +1,6 @@
-from schema import *
 from datetime import datetime
 from schema import *
-from gen.data import *
-
+from .generator import Generator
 
 class GlazeGenerator(Generator):
     """This class implementes a Glaze C++ JSON compatible reader/writer.

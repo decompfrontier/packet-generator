@@ -43,7 +43,7 @@ class UserItemDictionaryInfo:
 
 @keyjson("IKqx1Cn9", single = True)
 class UserInfo:
-    doc = "Main object that holds all the player information."
+    "Main object that holds all the player information."
 
     user_id = { "h7eY3sAK": str, "doc": "ID of the user for this session." }
     handle_name = { "B5JQyV8j": str, "doc": "Username shown in-game." }

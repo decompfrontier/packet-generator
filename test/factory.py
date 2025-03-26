@@ -1,14 +1,14 @@
 
-from gen.data import Generator
-from .glazecpp import GlazeGenerator
+from .tester import Tester
+from .glazecpp import GlazeCppTester
 
-class GeneratorFactory:
-    """Factory pattern for generators."""
+class TesterFactory:
+    """Factory pattern for testers."""
     @staticmethod
-    def get(name: str) -> Generator:
+    def get(name: str) -> Tester:
         """Gets the generator based from the specified mapping."""
         GENERATOR_MAPPING :dict[str, type] = {
-            "c++":          GlazeGenerator
+            "c++":          GlazeCppTester
         }        
         if not name in GENERATOR_MAPPING:
             raise Exception("Invalid generator: {}".format(name))
