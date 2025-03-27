@@ -36,3 +36,10 @@ class Generator(ABC):
         :return: String conversion of the class
         """
         pass
+
+    @abstractmethod
+    def get_extension(self) -> str:
+        """
+        Gets the preferred extension of this generator.
+        """
+        pass

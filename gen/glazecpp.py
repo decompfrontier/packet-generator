@@ -382,3 +382,5 @@ struct glz::meta<{}>
             self._get_class_superarray_metadata(clz, def_name)
         )
 
+    def get_extension(self) -> str:
+        return ".hpp"

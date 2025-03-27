@@ -1,5 +1,5 @@
 from datetime import datetime
-from gen import GeneratorFactory
+from gen import Generator
 from schema import *
 
 class SchemaParser:
@@ -77,15 +77,13 @@ class SchemaParser:
             #  to have key: value ?        
             for k, v in f_attr.items():
                 match k:
-                    case "omit_on_default":
-                        f_gen.default_action = DefaultType.Omit
-                    case "empty_on_default":
-                        f_gen.default_action = DefaultType.Empty
-                    case "quoted":
+                    case "default":
+                        f_gen.default_action = v
+                    case "quote":
                         f_gen.quoted = True
-                    case "write_as_string":
+                    case "string":
                         f_gen.force_as_string = True
-                    case "__doc__":
+                    case "doc":
                         f_gen.__doc__ = v
                     case _:
                         f_gen.key = k
@@ -97,15 +95,14 @@ class SchemaParser:
 
 class SchemaWriter:
     @staticmethod
-    def write(py_file: str, out_file: str, lang: str, types: list[type]):
+    def write(py_file: str, out_file: str, types: list[type], gen: Generator):
         """Generates the output file from packet specifications.
 
         :param pyfile: Python file name
         :param out_file: Output file path
-        :param lang: Generator type
         :param types: List of types to be serialized from the python file
+        :param gen: Generator type
         """
-        gen = GeneratorFactory.get(lang)
 
         buffer = gen.get_start_mark(datetime.now(), py_file)
 

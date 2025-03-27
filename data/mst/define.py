@@ -71,5 +71,5 @@ class DefineMst:
     max_multi_p = { "6id2v7eN": int }
     dbb_crystal_values = { "jFdW1ipx": str } # this is NOT just a string
     dbb_fixed_settings_value = { "7o6lcc66": str }  # this is NOT just a string
-    action_point_recover_fixed = { "hAiXsSPF": int, "omit_on_default": True }
-    action_point_threshold = { "eRQvzLeF": int, "omit_on_default": True }
+    action_point_recover_fixed = { "hAiXsSPF": int, "default": DefaultType.Omit }
+    action_point_threshold = { "eRQvzLeF": int, "default": DefaultType.Omit }

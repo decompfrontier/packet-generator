@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson("z5U7utsm")
+@keyjson(key_group = "z5U7utsm")
 class ExtraPassiveSkillMst:
     id = { "cP83zNsv": int }
     skill_name = { "0nxpBDz2": str }

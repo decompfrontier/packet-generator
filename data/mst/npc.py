@@ -23,7 +23,7 @@ class NpcUnitInfo:
     deff = { "P_DEF": int }
     hel = { "P_HEL": int }
     skill_id = { "P_SKILL_LV": int }
-    skill_lv = { "P_SKILL_ID": int, "empty_on_default": True }
+    skill_lv = { "P_SKILL_ID": int }
     equip_item_id = { "P_EQP_ITEM_ID": int }
 
 @keyjson(key_group = "hV5vWu6C")
@@ -32,6 +32,6 @@ class NpcMst:
     id = { "7zyHb5h9": int }
     handle_name = { "B5JQyV8j": str }
     arena_rank_id = { "JmFn3g9t": int }
-    team = { "g94bDiaS": NpcTeamInfo, "write_as_string": True }
-    parties = { "oPsmRC18": NpcPartyInfo, "write_as_string": True }
-    units = { "bS9s4GCp": NpcUnitInfo, "write_as_string": True }
+    team = { "g94bDiaS": NpcTeamInfo, "string": True }
+    parties = { "oPsmRC18": NpcPartyInfo, "string": True }
+    units = { "bS9s4GCp": NpcUnitInfo, "string": True }

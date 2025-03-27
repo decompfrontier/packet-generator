@@ -109,12 +109,11 @@ Available data types to map to the JSON are:
 | long | 64-bit unsigned int | number |
 | float | 32-bit floating point | float |
 | strbool | boolean | string with value "1" or "0" |
-| intbool | boolean | integer with value 1 or 0
+| intbool | boolean | integer with value 1 or 0 |
 | datetime | native datetime | string (data format: "2017-10-24 08:00:00") |
 | datetimeunix | native unix datetime (time_t) | long (date format: unix timestamp) |
 | list[str] | list of strings | array of strings (example: [ "a", "b" ]) |
 | list[int] | list of integers | array of integers (example: [ 0, 1 ]) |
-| stro[Object] | an object formatted as string | string that contains a JSON object (example: "{ \"a\": "\"b\" }") |
 
 ### Custom attributes in fields
 In certain situations, a field definition might not be enough, as the brave frontier
@@ -125,10 +124,9 @@ Custom keys:
 
 | key name | Possible values | Types which it can applies | Default value if not specified | Description |
 | -------- | --------------- | -------------------------- | ------------------------------ | ----------- |
-| omit_on_default | True/False | int, str | False | When this is set to true, in case the field does not have a value (the value considered is 0 on int while on string it's an empty one), the field is omitted entirely from the JSON generation |
-| empty_on_default | True/False | int | False | Leave the field empty (no value at all) when the field does not have a value (the value 0 is considered like that) |
+| default | DefaultType.Omit | int, str | False | When the field does not have a value (the value considered is 0 on int while on string it's an empty one), if the value is Omit, the key/value is omitted entirely from the JSON generation. |
 | quote | True/False | int, long, float | False | If it's true then the number will be rapresented as a quoted string |
-| write_as_string | True/False | custom types | False | If it's true the custom type will be serialized as a string and not as a JSON object |
+| string | True/False | custom types | False | If it's true the custom type will be serialized as a string and not as a JSON object |
 
 ## Writing documentation
 
@@ -143,7 +141,7 @@ class GmeAction:
 
 For class fields, create a new key called `doc` and place your documentation there, for example:
 ```
-    body = { "" : GmeBody, "omit_on_default": True, "__doc__": "Body of the message." }
+    body = { "" : GmeBody, "doc": "Body of the message." }
 ```
 
 ### Documenting enumerator fields

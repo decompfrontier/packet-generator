@@ -48,7 +48,7 @@ class VideoAdsSlotGameStandInfo:
 
 @keyjson(key_group = "mebW7mKD", single = True)
 class VideoAdsSlotGameInfo:
-    game_info = { "C38FmiUn": SlotGameInfo, "write_to_string": True }
-    reel_info = { "iW62Scdg": SlotGameReelInfo, "write_to_string": True }
-    picture_info = { "rY6j0Jvs": SlotGamePictureInfo, "write_to_string": True }
-    game_stand_info = { "tclBMiv2": VideoAdsSlotGameStandInfo, "write_to_string": True }
+    game_info = { "C38FmiUn": SlotGameInfo, "string": True }
+    reel_info = { "iW62Scdg": SlotGameReelInfo, "string": True }
+    picture_info = { "rY6j0Jvs": SlotGamePictureInfo, "string": True }
+    game_stand_info = { "tclBMiv2": VideoAdsSlotGameStandInfo, "string": True }

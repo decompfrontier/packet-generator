@@ -44,8 +44,8 @@ class GachaMst:
     comment_msg = { "gVSj32QH": str }
     gatcha_group_id = { "TCnm1F4v": int }
     description = { "qp37xTDh": str }
-    gatcha_detail_id = { "8Z9CYQDq": str, "omit_on_default": True }
-    contents_banner_img = { "sA9dDAqB": str, "omit_on_default": True }
+    gatcha_detail_id = { "8Z9CYQDq": str, "default": DefaultType.Omit }
+    contents_banner_img = { "sA9dDAqB": str, "default": DefaultType.Omit }
 
 @keyjson(key_group = "da3qD39b")
 @configurable(filename = "gacha.json")

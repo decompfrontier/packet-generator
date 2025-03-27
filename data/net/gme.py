@@ -58,5 +58,5 @@ class GmeAction:
     "Main packet of interaction between client and server."
     
     header = { "" : GmeHeader, "doc": "Header of the message." }
-    body = { "" : GmeBody, "omit_on_default": True, "doc": "Body of the message." }
-    error = { "": GmeError, "omit_on_default": True, "doc": "Error object in case of an error." }
+    body = { "" : GmeBody, "default": DefaultType.Omit, "doc": "Body of the message." }
+    error = { "": GmeError, "default": DefaultType.Omit, "doc": "Error object in case of an error." }

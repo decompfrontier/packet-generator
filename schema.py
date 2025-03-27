@@ -18,6 +18,7 @@ def json(cls = None, /, *, array = True, single = False):
     def _process_json(cls, array):
         cls.is_array = array
         cls.is_single = single
+        cls.__pkprocess__ = True
         
         return cls
     

@@ -41,7 +41,7 @@ class UserGiftInfo:
 class UserItemDictionaryInfo:
     pass
 
-@keyjson("IKqx1Cn9", single = True)
+@keyjson(key_group = "IKqx1Cn9", single = True)
 class UserInfo:
     "Main object that holds all the player information."
 
@@ -63,10 +63,10 @@ class UserInfo:
     encrypt_iv = { "8kN1tgYU": str }
     encrypted_friend_id = { "PA0QwZs1": str }
     first_desc = { "7oV00FeR": str }
-    dlc_url = { "23t3D28i": str, "omit_on_default": True }
+    dlc_url = { "23t3D28i": str, "default": DefaultType.Omit }
     feature_gate = { "a37D29iJ": str }
     unk = { "32k0ahkD": str } # v["32k0ahkD"] = "773c9af44721a014c7ed"; // TODO: discover what's this
-    service_request_endpoint_param = { "ABh7acL2": str, "omit_on_default": True, "doc": "Extra parameters that are passed to the DLS API server in the request object EXTRA_PARAMS." }
+    service_request_endpoint_param = { "ABh7acL2": str, "default": DefaultType.Omit, "doc": "Extra parameters that are passed to the DLS API server in the request object EXTRA_PARAMS." }
     # GUMI LIVE API V1/V2
     gumi_live_userid = { "iN7buP2h": str, "doc": "Gumi live API User ID. (used for example in IAP)" }
     gumi_live_token = { "iN7buP1i": str, "doc": "User token of the Gumi live API." }

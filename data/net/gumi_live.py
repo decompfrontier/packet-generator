@@ -35,8 +35,8 @@ class GameDls:
     version = { "mstv": int, "doc": "Game version" }
     gumilive_ip = { "gumilive": str, "doc": "Gumi live API login server address" }
     bg_image = { "bgimage": str, "doc": "Dynamic background image to show during login" }
-    force = { "force": bool, "omit_on_default": True, "doc": "Block the client login attempt and force it to close" }
-    msg = { "force_msg": str, "omit_on_default": True, "doc": "Message to show when the login attempt was blocked (only valid when force is true)"}
+    force = { "force": bool, "default": DefaultType.Omit, "doc": "Block the client login attempt and force it to close" }
+    msg = { "force_msg": str, "default": DefaultType.Omit, "doc": "Message to show when the login attempt was blocked (only valid when force is true)"}
 
 @json(array = False)
 class SREE:
