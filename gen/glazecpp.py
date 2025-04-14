@@ -64,15 +64,27 @@ class GlazeGenerator(Generator):
     def get_end_mark(self) -> str:
         return ""
     
-    def _get_genfield_typestring(self, t: GeneratorField) -> str:
+    def _get_genfield_typestring(self, t: GeneratorField, parent: GeneratorData) -> str:
         """Generates the C++ type of the field.
 
         :param t: Generator field to get the C++ type from
+        :param parent: Parent generator field
         :return: C++ type in string
         """
+        if parent.class_type == ClassType.EnumeratorString:
+            return "std::string"
+        
         strtype = ""
         if t.type_id in GlazeGenerator.TYPE_MAPPING:
             strtype = GlazeGenerator.TYPE_MAPPING[t.type_id]
+        elif hasattr(t.type_id, "__origin__"):
+            orig = t.type_id.__origin__
+            if orig == list:
+                argtype = t.type_id.__args__[0]
+                argstr = self._get_genfield_typestring(GeneratorField(type_id = argtype), parent)
+                strtype = "std::vector<{}>".format(argstr)
+            else:
+                raise ValueError("Unsupported args type: {}".format(orig))
         else:
             strtype = t.type_id.__name__
         
@@ -81,20 +93,31 @@ class GlazeGenerator(Generator):
         
         return strtype
 
-    def _get_genfield_declaration(self, clz: GeneratorField) -> str:
+    def _get_genfield_declaration(self, clz: GeneratorField, parent: GeneratorData) -> str:
         """Generates the field declaration.
 
         Example: std::string key{};
 
         :param clz: Field to generate
+        :param parent: Parent field
         :return: String that contains the declaration
         """
 
-        if issubclass(type(clz.type_id), Enum):
-            # Example: MY_ENUM_FIELD_1 = 4,
-            return "{} = {},".format(clz.name, clz.type_id.value)
+        if parent.class_type == ClassType.Enumerator:
+            if issubclass(type(clz.type_id), Enum):
+                # Example: MY_ENUM_FIELD_1 = 4,
+                return "{} = {},".format(clz.name, clz.type_id.value)
+            elif issubclass(type(clz.type_id), Flag):
+                return "{} = 1 << {},".format(clz.name, clz.type_id.value)
+            else:
+                raise Exception("Something wrong?")
+        elif parent.class_type == ClassType.EnumeratorString:
+            if issubclass(type(clz.type_id), Enum):
+                return "constexpr const auto {} = \"{}\";".format(clz.name, clz.type_id.value)
+            else:
+                raise Exception("Something wrong?")
         
-        string_type = self._get_genfield_typestring(clz)
+        string_type = self._get_genfield_typestring(clz, parent)
         # Example: uint32_t  my_field{};
         return "{}\t{}{{}};".format(string_type, clz.name)
 
@@ -127,7 +150,7 @@ class GlazeGenerator(Generator):
             glazemt = "glzhlp::datetimeunix<&T::{}>".format(f.name, f.name)
         elif f.type_id == datetime:
             # Ex: glzhlp::datetime<&T::myField>
-            glazemt = "glzhlp::datetime<&T::{}>".format(f.name, f.name)        
+            glazemt = "glzhlp::datetime<&T::{}>".format(f.name, f.name)
         else:
             # Ex: &T::myField
             glazemt = "&T::{}".format(f.name)
@@ -162,6 +185,8 @@ class GlazeGenerator(Generator):
                 return "struct"
             case ClassType.Enumerator:
                 return "enum class"
+            case ClassType.EnumeratorString:
+                return "namespace"
             case _:
                 raise Exception("Unsupported class type: {}".format(str(type)))
 
@@ -179,7 +204,7 @@ class GlazeGenerator(Generator):
 
         for field in clz.fields:
             # Example:      uint32_t field;
-            buf = "".join((buf, "\t", self._get_genfield_declaration(field), "\n"))
+            buf = "".join((buf, "\t", self._get_genfield_declaration(field, clz), "\n"))
         
         # };
         return "".join((buf, "};"))
@@ -215,8 +240,8 @@ class GlazeGenerator(Generator):
         :return: C++ metadata string
         """
 
-        if clz.class_type == ClassType.Enumerator:
-            return "" # use default for enumerators.
+        if clz.class_type != ClassType.Struct:
+            return "" # do not make any metadata for structures
 
         """ Example:
             template <>
@@ -279,7 +304,7 @@ struct glz::meta<{}>
             :return: Output C++ type
         """
         
-        if clz.class_type == ClassType.Enumerator:
+        if clz.class_type != ClassType.Struct:
             return ""
 
         if clz.array_step == ArrayStep.Array:
@@ -340,7 +365,7 @@ struct {} : public {} {{
             :return: Output C++ type
         """
 
-        if clz.class_type == ClassType.Enumerator:
+        if clz.class_type != ClassType.Struct:
             return ""
 
         if clz.array_step == ArrayStep.Single:
@@ -381,6 +406,7 @@ struct glz::meta<{}>
             self._get_class_array_container(clz, def_name),
             self._get_class_superarray_metadata(clz, def_name)
         )
+
 
     def get_extension(self) -> str:
         return ".hpp"

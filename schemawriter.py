@@ -31,6 +31,9 @@ class SchemaParser:
             f.name = name
             f.type_id = val
 
+            if type(val.value) == str: ## this is a string enum
+                g.class_type = ClassType.EnumeratorString
+
             if val in __doc_fields__:
                 f.__doc__ = __doc_fields__[val]
 
@@ -45,7 +48,7 @@ class SchemaParser:
         :param clz: Python class to generate
         :return: Synthetized generator data
         """
-        if issubclass(clz, Enum):
+        if issubclass(clz, Enum) or issubclass(clz, Flag):
             return SchemaParser._parse_enum(clz)
         
         g = GeneratorData()
@@ -88,6 +91,9 @@ class SchemaParser:
                     case _:
                         f_gen.key = k
                         f_gen.type_id = v
+
+                        if v == None:
+                            raise Exception("Rferenced type is broken")
 
             g.fields.append(f_gen)
         
