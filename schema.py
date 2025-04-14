@@ -1,6 +1,20 @@
 """This module provides the schema structure"""
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, Flag
+
+def processable(cls = None, /):
+    """This decodator informs the generator that this file would be generated."""
+    def _process_pcl(cls):
+        cls.__pkprocess__ = True
+        return cls
+
+    def wrap(cls):
+        return _process_pcl(cls)
+    
+    if cls is None:
+        return wrap
+    
+    return wrap(cls)
 
 def json(cls = None, /, *, array = True, single = False):
     """This decorator rapresents a JSON fields or class.
@@ -54,25 +68,6 @@ def keyjson(cls: object = None, /, *, key_group: str, array = True, single = Fal
         return _wrap
     
     return _wrap(cls)
-
-def configurable(cls: object = None, /, *, filename: str):
-    """This decorator represents a class that should contain stubs for loading it from a JSON file.
-    
-    For example: the Gatcha configuration that should be loaded from the server configuration.
-    
-    :param cls: Base object to serialize
-    :param filename: Name of the configuration file to use for reading"""
-    def _process_cfg(cls: object, filename: str) -> object:
-        cls.configure_name = filename
-        return cls
-    
-    def wrap(cls: object):
-        return _process_cfg(cls, filename)
-    
-    if cls is None:
-        return wrap
-    
-    return wrap(cls)
 
 # custom types, only useful for names
 
@@ -179,8 +174,12 @@ class ClassType(Enum):
 
     Enumerator = 2
     """The type is an enumerator, this is a meta-type that does not exist in a JSON
-     but can be used on generators to provide better value type checking.
+     but can be used by generators to provide better value type checking.
     """
+
+    EnumeratorString = 3
+    """The type is an enumerator with a string, this is also a meta-type that does not exist
+     int a JSON but can be used by generators to provide better value checking."""
 
 @dataclass
 class GeneratorField:

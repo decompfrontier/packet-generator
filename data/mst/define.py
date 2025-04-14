@@ -1,7 +1,6 @@
 from schema import *
 
 @keyjson(key_group = "VkoZ5t3K", single = True)
-@configurable(filename = "define.json")
 class DefineMst:
     max_zel = { "DXm2W8vY": long }
     max_karma = { "jSxdlwqd": long }

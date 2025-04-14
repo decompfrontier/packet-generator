@@ -86,12 +86,6 @@ While this is what the previous JSON would look like if the array property was s
 
 This is very usefull for definitions that encapsulate more fields, like unit or items are usually an array JSON.
 
-### Extra decorators
-If you want your data to be available as an external configuration on your server, you have to add the annotation:
-```
-@configurable(file_name: str)
-```
-
 ## Writing a field
 
 All fields for the parser are defined as a python dictionary

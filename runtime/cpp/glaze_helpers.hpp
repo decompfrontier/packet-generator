@@ -4,6 +4,7 @@
 #include <date.h>
 
 #include <string>
+#include <vector>
 #include <chrono>
 
 namespace glzhlp

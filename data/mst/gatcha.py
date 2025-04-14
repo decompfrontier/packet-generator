@@ -2,7 +2,6 @@ from schema import *
 from datetime import datetime
 
 @keyjson(key_group = "Pf97SzVw")
-@configurable(filename = "gacha.json")
 class GachaEffectMst:
     id = { "u0vkt9yH": int }
     gatcha_id = { "7Ffmi96v": int }
@@ -13,7 +12,6 @@ class GachaEffectMst:
     effect = { "YTx3c1jQ": str }
     
 @keyjson(key_group = "IBs49NiH")
-@configurable(filename = "gacha.json")
 class GachaCategory:
     id = { "vx9uyQVQ": int }
     img = { "In7lGGLn": str }
@@ -23,7 +21,6 @@ class GachaCategory:
     end_date = { "SzV0Nps7": datetimeunix }
 
 @keyjson(key_group = "5Y4GJeo3")
-@configurable(filename = "gacha.json")
 class GachaMst:
     id = { "7Ffmi96v": int }
     name = { "4N27mkt1": str }
@@ -48,7 +45,6 @@ class GachaMst:
     contents_banner_img = { "sA9dDAqB": str, "default": DefaultType.Omit }
 
 @keyjson(key_group = "da3qD39b")
-@configurable(filename = "gacha.json")
 class ResummonGachaMst:
     pass
 

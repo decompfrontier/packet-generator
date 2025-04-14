@@ -5,6 +5,7 @@ from schema import *
 
 # API V3 (DLS API): api-sl.bfww.gumi.sg
 
+@processable
 class StatusEnum(Enum):
     """Result of the login status"""
 

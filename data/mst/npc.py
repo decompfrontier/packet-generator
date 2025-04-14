@@ -27,7 +27,6 @@ class NpcUnitInfo:
     equip_item_id = { "P_EQP_ITEM_ID": int }
 
 @keyjson(key_group = "hV5vWu6C")
-@configurable(filename = "npc.json")
 class NpcMst:
     id = { "7zyHb5h9": int }
     handle_name = { "B5JQyV8j": str }

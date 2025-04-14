@@ -3,6 +3,7 @@ from schema import *
 
 """This module contains the basic game request/response."""
 
+@processable
 class GmeErrorFlags(Flag):
     """Flags of the error happend in the game."""
     
@@ -16,6 +17,7 @@ class GmeErrorFlags(Flag):
     IsInError = 1
     ShouldHandleCommands = 2
 
+@processable
 class GmeErrorCommand(Enum):
     "Type of command to do after the user presses OK."
 

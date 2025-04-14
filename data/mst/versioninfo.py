@@ -1,7 +1,6 @@
 from schema import *
 
 @keyjson(key_group = "KeC10fuL")
-@configurable(filename = "mstinfo.json")
 class VersionInfo:
     id = { "moWQ30GH": int }
     description = { "e3QNsuZ8": str }
