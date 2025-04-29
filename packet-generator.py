@@ -54,6 +54,8 @@ def main():
             if "__pycache__" in root2 or root2 == "":
                 continue
 
+            dirroot = root.replace("./data/", "").replace("/", "_")
+
             files_to_import = []
 
             for file in files:
@@ -85,7 +87,7 @@ def main():
                 if idx != -1:
                     outname = pyfile_fix[idx+1:]
 
-                outname = "".join((argz.outputdir, "/", outname, gen.get_extension()))
+                outname = "".join((argz.outputdir, "/", dirroot, "_", outname, gen.get_extension()))
                 
                 print(f"Writing module: {pyfile}")
                 SchemaWriter.write(pyfile, outname, add_types, gen)
