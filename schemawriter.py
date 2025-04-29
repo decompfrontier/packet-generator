@@ -110,7 +110,7 @@ class SchemaWriter:
         :param gen: Generator type
         """
 
-        buffer = gen.get_start_mark(datetime.now(), py_file)
+        buffer = gen.get_start_mark(py_file)
 
         # generate all types!
         for x in types:
