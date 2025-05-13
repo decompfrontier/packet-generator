@@ -64,10 +64,12 @@ def main():
 
                 filename = file[:-3]
                 pyfile = f"{root}/{file}"
+                checkfile = f"{dirroot}/{filename}"
+
                 if schema == "*":
                     if not filename in argz.exclude:
                         files_to_import.append(pyfile)
-                elif filename == schema:
+                elif checkfile == schema:
                     files_to_import.append(pyfile)
             
             for pyfile in files_to_import:
@@ -76,11 +78,13 @@ def main():
                 add_types = []
 
                 for name, obj in inspect.getmembers(mod, inspect.isclass):
-                    if hasattr(obj, "__pkprocess__"):
+                    if hasattr(obj, "__pkprocess__") and obj.__module__ == pyfile_fix:
                         add_types.append(obj)
 
                 if len(add_types) < 1:
                     continue
+
+                add_types.sort(key=lambda m: m.__pkprocess__)
 
                 idx = pyfile_fix.rfind(".")
                 outname = pyfile_fix

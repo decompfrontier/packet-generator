@@ -1,11 +1,12 @@
 """This module provides the schema structure"""
 from dataclasses import dataclass, field
 from enum import Enum, Flag
+import inspect
 
 def processable(cls = None, /):
     """This decodator informs the generator that this file would be generated."""
     def _process_pcl(cls):
-        cls.__pkprocess__ = True
+        cls.__pkprocess__ = inspect.currentframe().f_back.f_back.f_back.f_lineno
         return cls
 
     def wrap(cls):
@@ -32,8 +33,7 @@ def json(cls = None, /, *, array = True, single = False):
     def _process_json(cls, array):
         cls.is_array = array
         cls.is_single = single
-        cls.__pkprocess__ = True
-        
+        cls.__pkprocess__ = inspect.currentframe().f_back.f_back.f_lineno
         return cls
     
     def wrap(cls):
