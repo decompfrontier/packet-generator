@@ -70,8 +70,8 @@ class GlazeGenerator(Generator):
         :param parent: Parent generator field
         :return: C++ type in string
         """
-        if parent.class_type == ClassType.EnumeratorString:
-            return "std::string"
+        #if parent.class_type == ClassType.EnumeratorString:
+        #    return "std::string"
         
         strtype = ""
         if t.type_id in GlazeGenerator.TYPE_MAPPING:
@@ -197,8 +197,16 @@ class GlazeGenerator(Generator):
         :return: Generated C++ class type
         """
 
-        # Example: class MyData {\n
-        buf = """{} {} {{
+        if clz.class_type == ClassType.EnumeratorString:
+            # because C++ does not have enum string, the idea
+            # is that we generate a namespace and a using type
+            buf = """using {} = std::string;
+
+namespace v_{} {{
+""".format(def_name, def_name)
+        else:
+            # Example: class MyData {\n
+            buf = """{} {} {{
 """.format(self._get_classtype_name(clz.class_type), def_name)
 
         for field in clz.fields:
