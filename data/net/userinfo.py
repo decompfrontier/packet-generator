@@ -1,6 +1,7 @@
 from .gumi_live import GumiLiveInfo
 from schema import *
 
+'''
 @keyjson(key_group = "Bnc4LpM8", array = False)
 class UserAchievementInfo:
     pass
@@ -40,6 +41,7 @@ class UserGiftInfo:
 @keyjson(key_group = "bd5Rj6pN")
 class UserItemDictionaryInfo:
     pass
+'''
 
 @keyjson(key_group = "IKqx1Cn9", single = True)
 class UserInfo:
@@ -81,6 +83,7 @@ class UserPartyDeckInfo:
     member_type = { "gr48vsdJ": int }
     disp_order = { "XuJL4pc5": int }
 
+'''
 @keyjson(key_group = "4W6EhXLS", array = False)
 class UserPurchaseInfo:
     pass
@@ -136,6 +139,7 @@ class UserUnitDictionary:
 @keyjson(key_group = "9wjrh74P")
 class UserWarehouseInfo:
     pass
+'''
 
 @json(array = False)
 class UserTeamInfo:
@@ -231,7 +235,7 @@ class UserUnitInfo:
 ## --- request
 
 @keyjson(key_group = "IKqx1Cn9", array = False)
-class UserInfo(GumiLiveInfo):
+class UserInfoReq(GumiLiveInfo):
     user_id = { "h7eY3sAK": str }
     contact_id = { "90LWtVUN": str }
     model_change_count = { "nrg19RGe": int }

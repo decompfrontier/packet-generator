@@ -1,8 +1,7 @@
 from schema import *
 
 @keyjson(key_group = "4NG79sX1")
-# TODO: is this configurable?
-class DungeonKeyMST:
+class DungeonKeyMst:
     id = { "16KMNJLb": int }
     name = { "BM29ZgnK": str }
     dungeon_id = { "MHx05sXt": int }
