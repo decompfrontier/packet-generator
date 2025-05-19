@@ -1,6 +1,7 @@
 from datetime import datetime
 from gen import Generator
 from schema import *
+import os
 
 class SchemaParser:
     @staticmethod
@@ -101,7 +102,7 @@ class SchemaParser:
 
 class SchemaWriter:
     @staticmethod
-    def write(py_file: str, out_file: str, types: list[type], gen: Generator):
+    def write(py_file: str, output_dir: str, types: list[type], gen: Generator):
         """Generates the output file from packet specifications.
 
         :param pyfile: Python file name
@@ -110,11 +111,59 @@ class SchemaWriter:
         :param gen: Generator type
         """
 
+        types.sort(key=lambda m: m.__pkprocess__)
+
+        def expand_output_dir(pyfile: str, outdir: str, ext: str) -> str:
+            to_subst = pyfile.rfind(".mst.")
+            dir_root = ""
+            sub_file = pyfile
+            if to_subst != -1:
+                dir_root = "mst_"
+                sub_file = pyfile[to_subst + 5:]
+            else:
+                to_subst = pyfile.rfind(".net.")
+                if to_subst != -1:
+                    dir_root = "net_"
+                    sub_file = pyfile[to_subst + 5:]
+            
+            sub_file = sub_file.replace(".", "_")
+            outdir = os.path.abspath(outdir).replace("\\", "/")
+
+            return "".join((outdir, "/", dir_root, sub_file, ext))
+
+        pyfile_fix = py_file[:-3][2:].replace("/", ".")
+        out_file = expand_output_dir(pyfile_fix, output_dir, gen.get_extension())
+
         buffer = gen.get_start_mark(py_file)
 
-        # generate all types!
+        exclude_mods = [
+            "schema",
+            "builtins",
+            "datetime",
+            pyfile_fix
+        ]
+
+        import_mods = []
+        schemas = []
+
+        # parse all files
         for x in types:
             q = SchemaParser.parse(x)
+
+            # inspect all the schema to find it's imports
+            for field in q.fields:
+                mod = inspect.getmodule(field.type_id)
+                if not mod.__name__ in exclude_mods:
+                    if not mod.__name__ in import_mods:
+                        import_mods.append(mod)
+
+            schemas.append(q)
+
+        for mod in import_mods:
+            mod_out = expand_output_dir(mod.__name__, output_dir, gen.get_extension())
+            buffer = "".join((buffer, gen.add_import(mod_out)))
+
+        for q in schemas:
             buffer = "".join((buffer, gen.step(q) ))
         
         buffer = "".join((buffer, gen.get_end_mark()))

@@ -63,6 +63,10 @@ class GlazeGenerator(Generator):
     def get_end_mark(self) -> str:
         return ""
     
+    def add_import(self, imp: str) -> str:
+        return """#include <{}>
+""".format(imp)
+
     def _get_genfield_typestring(self, t: GeneratorField, parent: GeneratorData) -> str:
         """Generates the C++ type of the field.
 

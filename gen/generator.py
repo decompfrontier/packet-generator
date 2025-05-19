@@ -16,6 +16,15 @@ class Generator(ABC):
         pass
 
     @abstractmethod
+    def add_import(self, imp: str) -> str:
+        """
+        Adds an import to the current file to generate
+
+        :param imp: Python module name (ie: data.mst.something)
+        :return: String rapresentation of the import
+        """
+
+    @abstractmethod
     def get_end_mark(self) -> str:
         """
         Gets the mark to apply at the end of the file.

@@ -84,17 +84,8 @@ def main():
                 if len(add_types) < 1:
                     continue
 
-                add_types.sort(key=lambda m: m.__pkprocess__)
-
-                idx = pyfile_fix.rfind(".")
-                outname = pyfile_fix
-                if idx != -1:
-                    outname = pyfile_fix[idx+1:]
-
-                outname = "".join((argz.outputdir, "/", dirroot, "_", outname, gen.get_extension()))
-                
                 print(f"Writing module: {pyfile}")
-                SchemaWriter.write(pyfile, outname, add_types, gen)
+                SchemaWriter.write(pyfile, argz.outputdir, add_types, gen)
 
         
 
