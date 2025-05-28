@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "signalkey.hpp"
-#include "challenge_arena.hpp"
-#include "daily_login.hpp"
+#include <net_signalkey.hpp>
+#include <net_challenge_arena.hpp>
+#include <net_daily_login.hpp>
 
 TEST(packetgen, signalkey)
 {

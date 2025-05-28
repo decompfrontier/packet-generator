@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "gacha.hpp"
+#include <mst_gatcha.hpp>
 
 using namespace date;
 using namespace std;
@@ -46,4 +46,17 @@ TEST(packetgen, gachacat)
 
 	ASSERT_EQ(ec.ec, glz::error_code::none);
 	ASSERT_EQ(buffer, "{\"IBs49NiH\":[{\"2r4EoNt4\":0,\"SzV0Nps7\":0,\"3rCmq58M\":\"\",\"vx9uyQVQ\":45,\"In7lGGLn\":\"ciaociao\",\"qA7M9EjP\":1426982400}]}");
+}
+
+TEST(packetgen, gachaeffect)
+{
+	GachaEffectMst d;
+	GachaEffectMstData d2;
+	d2.rate = 0.4f;
+	d.data.emplace_back(d2);
+
+	std::string buffer;
+	const auto& ec = glz::write_json(d, buffer);
+
+	ASSERT_EQ(ec.ec, glz::error_code::none);
 }

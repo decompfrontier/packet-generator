@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "gme.hpp"
+#include <net_gme.hpp>
 
 TEST(packetgen, gme)
 {

@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "logincampaign.hpp"
+#include <net_logincampaign.hpp>
 
 TEST(packetgen, logincampaign)
 {
