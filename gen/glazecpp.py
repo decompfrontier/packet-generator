@@ -41,8 +41,10 @@ class GlazeGenerator(Generator):
         bool:           "bool",
         intbool:        "bool",
         strbool:        "bool",
-        datetimeunix:   "std::chrono::system_clock::time_point",
-        datetime:       "std::chrono::system_clock::time_point"
+        datetimeunix:   "glzhlp::chronotime",
+        datetime:       "glzhlp::chronotime",
+        float:          "glzhlp_float32",
+        double:         "glzhlp_float64",
     }
     """Mapping of Python python to C++ strings."""
 
@@ -140,8 +142,9 @@ class GlazeGenerator(Generator):
             # Ex: glz::quoted<&T::myField>
             glazemt = "glz::quoted<&T::{}>".format(f.name)
         elif f.type_id == float:
-            # Ex: glz::write_float32<&T::myField>
-            glazemt = "glz::write_float32<&T::{}>".format(f.name)
+            glazemt = "glzhlp_write_float32(&T::{})".format(f.name)
+        elif f.type_id == double:
+            glazemt = "glzhlp_write_float64(&T::{})".format(f.name)
         elif f.type_id == intbool:
             # Ex: glz::bools_as_numbers<&T::myField>
             glazemt = "glz::bools_as_numbers<&T::{}>".format(f.name)

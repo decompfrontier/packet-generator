@@ -6,6 +6,23 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <stdfloat>
+
+#if __STDCPP_FLOAT32_T__ != 1
+#define glzhlp_float32 float
+#define glzhlp_write_float32(memptr) memptr
+#else
+#define glzhlp_float32 std::float32_t
+#define glzhlp_write_float32(memptr) glz::write_float32< memptr >
+#endif
+
+#if __STDCPP_FLOAT64_T__ != 1
+#define glzhlp_float64 long double
+#define glzhlp_write_float64(memptr) memptr
+#else
+#define glzhlp_float64 std::float64_t
+#define glzhlp_write_float64(memptr) glz::write_float64< memptr >
+#endif
 
 namespace glzhlp
 {
