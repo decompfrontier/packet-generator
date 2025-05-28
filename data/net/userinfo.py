@@ -44,7 +44,7 @@ class UserItemDictionaryInfo:
 '''
 
 @keyjson(key_group = "IKqx1Cn9", single = True)
-class UserInfo:
+class UserInfoResp:
     "Main object that holds all the player information."
 
     user_id = { "h7eY3sAK": str, "doc": "ID of the user for this session." }
@@ -235,7 +235,7 @@ class UserUnitInfo:
 ## --- request
 
 @keyjson(key_group = "IKqx1Cn9", array = False)
-class UserInfoReq(GumiLiveInfo):
+class UserInfoReq(GumiLiveInfo): # TODO: actually support (GumiLiveInfo), as it's not support right now....
     user_id = { "h7eY3sAK": str }
     contact_id = { "90LWtVUN": str }
     model_change_count = { "nrg19RGe": int }

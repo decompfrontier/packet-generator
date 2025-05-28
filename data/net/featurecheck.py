@@ -108,13 +108,13 @@ class FeatureCheck:
     # end of new
 
     guild_visible = { "guild_visible": intbool }
-    enable_guilds = { "guid": intbool, "doc": "Enables guids system"}
+    enable_guilds = { "guild": intbool, "doc": "Enables guids system"}
 
     # new
     enable_old_video_ads_slot = { "old_video_ads_slot": intbool }
     # end of new
 
-    daily_dungeon_list = { "daily_dungeon_list": str } # TODO: this is a list with a comma!! (100000,100050,100100,100200,100300,100310,100320,100400,100500)
+    daily_dungeon_list = { "daily_dungeon_list": str } # TODO: s/str/commalist[int]/ (100000,100050,100100,100200,100300,100310,100320,100400,100500)
     new_164_trial = { "new_164_trial": intbool }
     enable_mystery_chests = { "mystery_chest": intbool, "doc": "Enables mystery chests" }
     freepaid_gems = { "freepaid_gems": intbool }

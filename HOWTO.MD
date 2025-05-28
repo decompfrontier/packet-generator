@@ -108,6 +108,8 @@ Available data types to map to the JSON are:
 | datetimeunix | native unix datetime (time_t) | long (date format: unix timestamp) |
 | list[str] | list of strings | array of strings (example: [ "a", "b" ]) |
 | list[int] | list of integers | array of integers (example: [ 0, 1 ]) |
+| commalist[str] | list of strings | a string that contains a list of strings separated by a comma (example: "a,b,c" ) |
+| commalist[int] | list of integers | a string that contains a list of integers separated by a comma (example: "0,1,2" ) |
 
 ### Custom attributes in fields
 In certain situations, a field definition might not be enough, as the brave frontier

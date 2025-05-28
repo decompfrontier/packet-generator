@@ -19,9 +19,12 @@ from data.mst.dailytaskbonus import *
 from data.net.guild import *
 from data.net.daily_login import *
 from data.net.summonerjournaluserinfo import *
+from data.net.userinfo import *
 
 @json(array = False)
 class InitializeResp:
+    """Response of the initialize command"""
+    
     # cachable
     loginCampagin = { "" : LoginCampaignMst }
     progression = { "" : UserLevelMst, "doc": "Configuration of the user stats progression" }
@@ -41,7 +44,7 @@ class InitializeResp:
     bannerInfo = { "": BannerInfoMst }
     excludedDungeonMissions = { "": ExcludedDungeonMissionMst }
     extraPassiveSkills = { "": ExtraPassiveSkillMst }
-    noticeInfo = { "": NoticeInfo }
+    noticeInfo = { "": NoticeInfo, "doc": "Configuration of notices" }
     # user specific
     signalKey = { "": SignalKey }
     challengeArenaUserInfo = { "": ChallengeArenaUserInfo }
@@ -49,6 +52,7 @@ class InitializeResp:
     dailyTaskPrizes = { "" : DailyTaskPrizeMst }
     dailyTasks = { "": DailyTaskMst }
     dailyLoginRewards = { "": DailyLoginRewardsUserInfo }
-    guild = { "": GuildInfo }
+    guild = { "": GuildInfo, "doc": "Guild information" }
     videoAdSlots = { "": VideoAdsSlotGameInfo }
     summonerJournal = { "": SummonerJournalUserInfo }
+    userInfo = { "": UserInfoResp, "doc": "User information" }

@@ -44,10 +44,10 @@ class GachaMst:
     gatcha_detail_id = { "8Z9CYQDq": str, "default": DefaultType.Omit }
     contents_banner_img = { "sA9dDAqB": str, "default": DefaultType.Omit }
 
-@keyjson(key_group = "da3qD39b")
+'''@keyjson(key_group = "da3qD39b")
 class ResummonGachaMst:
     pass
 
 @keyjson(key_group = "hE1d083b")
 class SummonTicketV2Mst:
-    pass
+    pass'''
