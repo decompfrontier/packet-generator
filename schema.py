@@ -2,20 +2,21 @@
 from dataclasses import dataclass, field
 from enum import Enum, Flag
 import inspect
+from typing import TypeVar, MutableSequence
 
 def processable(cls = None, /):
     """This decodator informs the generator that this file would be generated."""
-    def _process_pcl(cls):
-        cls.__pkprocess__ = inspect.currentframe().f_back.f_back.f_back.f_lineno
-        return cls
 
     def wrap(cls):
-        return _process_pcl(cls)
-    
+        cls.__pkprocess__ = inspect.currentframe().f_back.f_lineno
+        return cls
+
     if cls is None:
         return wrap
-    
-    return wrap(cls)
+
+    cls2 = wrap(cls)
+    cls2.__pkprocess__ = inspect.currentframe().f_back.f_lineno
+    return cls2
 
 def json(cls = None, /, *, array = True, single = False):
     """This decorator rapresents a JSON fields or class.
@@ -30,19 +31,18 @@ def json(cls = None, /, *, array = True, single = False):
     :param single: True if the object is an array that contains only one element
     """
 
-    def _process_json(cls, array):
+    def wrap(cls):
         cls.is_array = array
         cls.is_single = single
-        cls.__pkprocess__ = inspect.currentframe().f_back.f_back.f_lineno
+        cls.__pkprocess__ = inspect.currentframe().f_back.f_lineno
         return cls
-    
-    def wrap(cls):
-        return _process_json(cls, array)
     
     if cls is None:
         return wrap
     
-    return wrap(cls)
+    cls2 = wrap(cls)
+    cls2.__pkprocess__ = inspect.currentframe().f_back.f_lineno
+    return cls2
 
 def keyjson(cls: object = None, /, *, key_group: str, array = True, single = False):
     """This decorator represents a JSON class that contains a custom key group.
@@ -62,14 +62,19 @@ def keyjson(cls: object = None, /, *, key_group: str, array = True, single = Fal
 
     def _wrap(cls: object):
         cls.key_group = key_group
-        return json(cls, array = array, single = single)
+        q = json(cls, array = array, single = single)
+        q.__pkprocess__ = inspect.currentframe().f_back.f_lineno
+        return q
     
     if cls is None:
         return _wrap
-    
-    return _wrap(cls)
+
+    cls2 = _wrap(cls)
+    cls2.__pkprocess__ = inspect.currentframe().f_back.f_lineno
+    return cls2
 
 # custom types, only useful for names
+_ST = TypeVar("_T")
 
 class strbool(type):
     """A boolean that is serialized as a string. ("0" or "1" defined as normal boolean for generators)"""
@@ -77,6 +82,10 @@ class strbool(type):
 
 class long(type):
     """A 64-bit integer."""
+    pass
+
+class double(type):
+    """A 64-bit floating point."""
     pass
 
 class intbool(type):
@@ -87,6 +96,9 @@ class datetimeunix(type):
     """A date time stored in unix epoch. (long with time like 1740763959)"""
     pass
 
+class commalist(list[_ST]):
+    """A list that is separated by commas 'a,b,c' """
+    pass
 
 class ArrayStep(Enum):
     """This enum describes the types of Array that a JSON can contain."""

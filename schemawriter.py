@@ -143,8 +143,8 @@ class SchemaWriter:
             pyfile_fix
         ]
 
-        import_mods = []
-        schemas = []
+        import_mods: list[inspect.ModuleType] = []
+        schemas: list[GeneratorData] = []
 
         # parse all files
         for x in types:
@@ -154,7 +154,7 @@ class SchemaWriter:
             for field in q.fields:
                 mod = inspect.getmodule(field.type_id)
                 if not mod.__name__ in exclude_mods:
-                    if not mod.__name__ in import_mods:
+                    if not mod in import_mods:
                         import_mods.append(mod)
 
             schemas.append(q)
