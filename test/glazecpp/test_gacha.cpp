@@ -60,3 +60,23 @@ TEST(packetgen, gachaeffect)
 
 	ASSERT_EQ(ec.ec, glz::error_code::none);
 }
+
+TEST(packetgen, gachacat_read)
+{
+	constexpr auto p = 2015_y / March / 22;
+
+	GachaCategory d;
+	std::string buffer = "{\"IBs49NiH\":[{\"2r4EoNt4\":0,\"SzV0Nps7\":0,\"3rCmq58M\":\"\",\"vx9uyQVQ\":45,\"In7lGGLn\":\"ciaociao\",\"qA7M9EjP\":1426982400}]}";
+	const auto& ec = glz::read_json(d, buffer);
+
+	const auto& ex = glz::format_error(ec, buffer);
+
+
+	ASSERT_EQ(ec.ec, glz::error_code::none);
+	ASSERT_EQ(d.data.size(), 1);
+
+	const auto& d1 = d.data[0];
+	ASSERT_EQ(d1.id, 45);
+	ASSERT_EQ(d1.img, "ciaociao");
+	ASSERT_EQ(d1.start_date, tp{ sys_days{p} });
+}

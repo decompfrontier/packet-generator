@@ -126,7 +126,7 @@ class GlazeGenerator(Generator):
         # Example: uint32_t  my_field{};
         return "{}\t{}{{}};".format(string_type, clz.name)
 
-    def _get_glazecpp_field_metadata(self, f: GeneratorField) -> str:
+    def _get_glazecpp_field_metadata(self, parent: GeneratorData, f: GeneratorField) -> str:
         """Generates the glaze c++ metadata mapping for a field.
 
         Example:
@@ -137,6 +137,9 @@ class GlazeGenerator(Generator):
         """
 
         glazemt = ""
+        parentdata = parent.name
+        if parent.array_step != ArrayStep.NoArray:
+            parentdata = "".join((parentdata, "Data"))
 
         if f.type_id == str and f.quoted:
             # Ex: glz::quoted<&T::myField>
@@ -150,13 +153,13 @@ class GlazeGenerator(Generator):
             glazemt = "glz::bools_as_numbers<&T::{}>".format(f.name)
         elif f.type_id == strbool:
             # Ex: glz::strbool<&T::myField>
-            glazemt = "glzhlp::strbool<&T::{}>".format(f.name)
+            glazemt = "glzhlp::strbool<{}, &T::{}>".format(parentdata, f.name)
         elif f.type_id == datetimeunix:
             # Ex: glzhlp::datetimeunix<&T::myField>
-            glazemt = "glzhlp::datetimeunix<&T::{}>".format(f.name, f.name)
+            glazemt = "glzhlp::datetimeunix<{}, &T::{}>".format(parentdata, f.name)
         elif f.type_id == datetime:
             # Ex: glzhlp::datetime<&T::myField>
-            glazemt = "glzhlp::datetime<&T::{}>".format(f.name, f.name)
+            glazemt = "glzhlp::datetime<{}, &T::{}>".format(parentdata, f.name)
         else:
             # Ex: &T::myField
             glazemt = "&T::{}".format(f.name)
@@ -275,7 +278,7 @@ struct glz::meta<{}>
 
         for field in clz.fields:
             #       &T::myField,
-            buf = "".join((buf, "\t\t", self._get_glazecpp_field_metadata(field), "\n"))
+            buf = "".join((buf, "\t\t", self._get_glazecpp_field_metadata(clz, field), "\n"))
         
         buf = "".join(( buf[:-2], """
     );""" ))
