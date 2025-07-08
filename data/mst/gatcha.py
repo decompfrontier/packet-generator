@@ -1,7 +1,7 @@
 from schema import *
 from datetime import datetime
 
-@keyjson(key_group = "Pf97SzVw")
+@keyjson(key_group = "Pf97SzVw", array=ArrayStep.Array)
 class GachaEffectMst:
     id = { "u0vkt9yH": int }
     gatcha_id = { "7Ffmi96v": int }
@@ -11,7 +11,7 @@ class GachaEffectMst:
     effect_after = { "tj0i9JhC": str }
     effect = { "YTx3c1jQ": str }
     
-@keyjson(key_group = "IBs49NiH")
+@keyjson(key_group = "IBs49NiH", array=ArrayStep.Array)
 class GachaCategory:
     id = { "vx9uyQVQ": int }
     img = { "In7lGGLn": str }
@@ -20,7 +20,7 @@ class GachaCategory:
     start_date = { "qA7M9EjP": datetimeunix }
     end_date = { "SzV0Nps7": datetimeunix }
 
-@keyjson(key_group = "5Y4GJeo3")
+@keyjson(key_group = "5Y4GJeo3", array=ArrayStep.Array)
 class GachaMst:
     id = { "7Ffmi96v": int }
     name = { "4N27mkt1": str }

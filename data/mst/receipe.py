@@ -1,7 +1,7 @@
 from schema import *
 from datetime import datetime
 
-@keyjson(key_group = "8f0bCciN")
+@keyjson(key_group = "8f0bCciN", array=ArrayStep.Array)
 class ReceipeMst:
     id = { "4HqhTf3a": int }
     item_id = { "kixHbe54": int }

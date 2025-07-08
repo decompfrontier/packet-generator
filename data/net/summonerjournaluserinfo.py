@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "M3dw18eB", array = False)
+@keyjson(key_group = "M3dw18eB")
 class SummonerJournalUserInfo:
     user_id = { "h7eY3sAK": str }
     points = { "9hH0neGa": int }

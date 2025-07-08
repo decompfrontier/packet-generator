@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "4NG79sX1")
+@keyjson(key_group = "4NG79sX1", array=ArrayStep.Array)
 class DungeonKeyMst:
     id = { "16KMNJLb": int }
     name = { "BM29ZgnK": str }

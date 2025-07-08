@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "KeC10fuL")
+@keyjson(key_group = "KeC10fuL", array=ArrayStep.Array)
 class VersionInfo:
     id = { "moWQ30GH": int }
     description = { "e3QNsuZ8": str }

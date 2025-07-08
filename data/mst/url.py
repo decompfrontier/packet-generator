@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "At7Gny2V", single = True)
+@keyjson(key_group = "At7Gny2V", array=ArrayStep.Single)
 class UrlMst:
     id = { "ut3nd0yV": str }
     official_site = { "ME4h3vDn": str }

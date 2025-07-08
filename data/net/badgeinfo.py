@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "h23iRjGN", array = False)
+@keyjson(key_group = "h23iRjGN")
 class BadgeInfo:
     scenario_num = { "u7Htm9P4": int }
     unit_dict_num = { "yCLEs28F": int }

@@ -2,7 +2,7 @@ from schema import *
 
 """This module contains the configuration of the server and enabled contents."""
 
-@json(array = False)
+@json
 class FeatureCheck:
     """Features of the server"""
 

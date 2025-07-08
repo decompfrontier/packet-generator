@@ -4,80 +4,17 @@ from enum import Enum, Flag
 import inspect
 from typing import TypeVar, MutableSequence
 
-def processable(cls = None, /):
-    """This decodator informs the generator that this file would be generated."""
-
-    def wrap(cls):
-        cls.__pkprocess__ = inspect.currentframe().f_back.f_lineno
-        return cls
-
-    if cls is None:
-        return wrap
-
-    cls2 = wrap(cls)
-    cls2.__pkprocess__ = inspect.currentframe().f_back.f_lineno
-    return cls2
-
-def json(cls = None, /, *, array = True, single = False):
-    """This decorator rapresents a JSON fields or class.
-    
-    For example:
-        {
-            ...
-        }
-
-    :param cls: Base object to serialize
-    :param array: True if the object should be generated as a JSON array
-    :param single: True if the object is an array that contains only one element
-    """
-
-    def wrap(cls):
-        cls.is_array = array
-        cls.is_single = single
-        cls.__pkprocess__ = inspect.currentframe().f_back.f_lineno
-        return cls
-    
-    if cls is None:
-        return wrap
-    
-    cls2 = wrap(cls)
-    cls2.__pkprocess__ = inspect.currentframe().f_back.f_lineno
-    return cls2
-
-def keyjson(cls: object = None, /, *, key_group: str, array = True, single = False):
-    """This decorator represents a JSON class that contains a custom key group.
-    
-    For example:
-        {
-            "key_group": [
-                ...
-            ]
-        }
-
-    :param cls: Base object to serialize
-    :param key_group: Key group name (like 6FrKacq7)
-    :param array: True if the object should be generated as a JSON array
-    :param single: True if the object is an array that contains only one element
-    """
-
-    def _wrap(cls: object):
-        cls.key_group = key_group
-        q = json(cls, array = array, single = single)
-        q.__pkprocess__ = inspect.currentframe().f_back.f_lineno
-        return q
-    
-    if cls is None:
-        return _wrap
-
-    cls2 = _wrap(cls)
-    cls2.__pkprocess__ = inspect.currentframe().f_back.f_lineno
-    return cls2
-
-# custom types, only useful for names
+# define a generic typevar
 _ST = TypeVar("_T")
+
+# definitions of dummy types that are only used as distionctions for different generations
 
 class strbool(type):
     """A boolean that is serialized as a string. ("0" or "1" defined as normal boolean for generators)"""
+    pass
+
+class intstr(type):
+    """An integer that is serialized as a string. ("45" or "1" defined as a normal int for generators)"""
     pass
 
 class long(type):
@@ -98,6 +35,10 @@ class datetimeunix(type):
 
 class commalist(list[_ST]):
     """A list that is separated by commas 'a,b,c' """
+    pass
+
+class atlist(list[_ST]):
+    """A list that is separated by at 'a@b@c' """
     pass
 
 class ArrayStep(Enum):
@@ -224,8 +165,8 @@ class GeneratorField:
     """Should the field be quoted as a String no matter it's type."""
 
 @dataclass
-class GeneratorData:
-    """This object represents an object to be converted to JSON.
+class GeneratorStruct:
+    """This object represents a structure to be converted to JSON.
     
     For example this represents an object like:
 
@@ -250,3 +191,75 @@ class GeneratorData:
 
     class_type: ClassType = ClassType.Struct
     """Determines the type of the object."""
+
+
+def processable(cls = None, /):
+    """This decodator informs the generator that this file would be generated."""
+
+    def wrap(cls):
+        # __ir_declaration_line__ is an internal field to know if the type should be convertible to IR or not.
+        # it contains the line number of the python declaration used for type declaration ordering (required for strong typed languages like C++).
+        # Please note that the logic of pkprocess is very dummy and there are great possibilities that it might break on specific declaration conditions as python
+        # doesn't have a real inspection, another alternative would be to parse the source code as string and get the line from there, but it sounds more complex than it should be
+        cls.__ir_declaration_line__ = inspect.currentframe().f_back.f_lineno
+        cls.__ir_array_step__ = ArrayStep.NoArray
+        return cls
+
+    if cls is None:
+        return wrap
+
+    cls2 = wrap(cls)
+    cls2.__ir_declaration_line__ = inspect.currentframe().f_back.f_lineno
+    return cls2
+
+def json(cls = None, /, *, array = ArrayStep.NoArray):
+    """This decorator rapresents a JSON fields or class.
+    
+    For example:
+        {
+            ...
+        }
+
+    :param cls: Base object to serialize
+    :param array: Type of array step
+    """
+
+    def wrap(cls):
+        cls.__ir_array_step__ = array
+        cls.__ir_declaration_line__ = inspect.currentframe().f_back.f_lineno
+        return cls
+    
+    if cls is None:
+        return wrap
+    
+    cls2 = wrap(cls)
+    cls2.__ir_declaration_line__ = inspect.currentframe().f_back.f_lineno
+    return cls2
+
+def keyjson(cls: object = None, /, *, key_group: str, array = ArrayStep.NoArray):
+    """This decorator represents a JSON class that contains a custom key group.
+    
+    For example:
+        {
+            "key_group": [
+                ...
+            ]
+        }
+
+    :param cls: Base object to serialize
+    :param key_group: Key group name (like 6FrKacq7)
+    :param array: Type of array step
+    """
+
+    def _wrap(cls: object):
+        cls.__ir_key_group__ = key_group
+        q = json(cls, array = array)
+        q.__ir_declaration_line__ = inspect.currentframe().f_back.f_lineno
+        return q
+    
+    if cls is None:
+        return _wrap
+
+    cls2 = _wrap(cls)
+    cls2.__ir_declaration_line__ = inspect.currentframe().f_back.f_lineno
+    return cls2

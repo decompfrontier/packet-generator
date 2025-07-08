@@ -1,18 +1,18 @@
 from schema import *
 
-@json(array = False)
+@json
 class NpcPartyInfo:
     id = { "P_USER_UNIT_ID": int }
     type = { "P_MEMBER_TYPE": int }
     disp_order = { "P_DISPORDER": int }
 
-@json(array = False)
+@json
 class NpcTeamInfo:
     user_id = { "P_USER_ID": str }
     lv = { "P_LV": int }
     friend_message = { "P_FRIEND_MESSAGE": str }
 
-@json(array = False)
+@json
 class NpcUnitInfo:
     id = { "P_UNIT_ID": int }
     party_id = { "P_USER_UNIT_ID": int }
@@ -26,7 +26,7 @@ class NpcUnitInfo:
     skill_lv = { "P_SKILL_ID": int }
     equip_item_id = { "P_EQP_ITEM_ID": int }
 
-@keyjson(key_group = "hV5vWu6C")
+@keyjson(key_group = "hV5vWu6C", array=ArrayStep.Array)
 class NpcMst:
     id = { "7zyHb5h9": int }
     handle_name = { "B5JQyV8j": str }

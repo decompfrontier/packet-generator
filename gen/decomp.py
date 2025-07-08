@@ -114,5 +114,5 @@ class DecompGenerator(Generator):
         return ""
 
 
-    def step(self, clz: GeneratorData) -> str:
+    def step(self, struct: GeneratorStruct) -> str:
         pass

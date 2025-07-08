@@ -21,7 +21,7 @@ from data.net.daily_login import *
 from data.net.summonerjournaluserinfo import *
 from data.net.userinfo import *
 
-@json(array = False)
+@json
 class InitializeResp:
     """Response of the initialize command"""
     

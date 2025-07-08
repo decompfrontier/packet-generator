@@ -33,20 +33,20 @@ class GmeErrorCommand(Enum):
     LogoutFacebook = 9
     Close3 = 10
 
-@keyjson(key_group = "F4q6i9xe", array = False)
+@keyjson(key_group = "F4q6i9xe")
 class GmeHeader:
     """Header of a game request/response."""
     
     id = { "Hhgi79M1": str, "doc": "ID of the request" }
     client_id = { "aV6cLn3v": str, "doc": "ID of the client that invoked the request" }
 
-@keyjson(key_group = "a3vSYuq2", array = False)
+@keyjson(key_group = "a3vSYuq2")
 class GmeBody:
     """Content of the game request/response."""
 
     body = { "Kn51uR4Y": str, "doc": "Encrypted JSON content." }
 
-@keyjson(key_group = "b5PH6mZa", array = False)
+@keyjson(key_group = "b5PH6mZa")
 class GmeError:
     """Object that stores any possible error with the request or response."""
 
@@ -55,7 +55,7 @@ class GmeError:
     message = { "ZC0msu2L": str, "doc": "Message to show on the error." }
     url = { "zcJeTx18": str, "doc": "URL to open in the browser after OK is pressed. (like for update the game)" }
 
-@json(array = False)
+@json
 class GmeAction:
     "Main packet of interaction between client and server."
     

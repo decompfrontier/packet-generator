@@ -48,7 +48,7 @@ While a JSON implies a simple JSON that is generated in this way:
 }
 ```
 
-Notice the missing of the identifier `6FrKacq7` which is what the group rapresents.
+Notice the missing of the identifier `6FrKacq7` which is what the group represents.
 
 **Usage:**
 
@@ -99,6 +99,7 @@ Available data types to map to the JSON are:
 | ----------- | ------------------- | ----------------- |
 | int | 32-bit unsigned int | number |
 | str | string | string |
+| strint | 32-bit unsigned int converted as int | int | string |
 | bool | boolean | boolean |
 | long | 64-bit unsigned int | number |
 | float | 32-bit floating point | float |
@@ -106,10 +107,9 @@ Available data types to map to the JSON are:
 | intbool | boolean | integer with value 1 or 0 |
 | datetime | native datetime | string (data format: "2017-10-24 08:00:00") |
 | datetimeunix | native unix datetime (time_t) | long (date format: unix timestamp) |
-| list[str] | list of strings | array of strings (example: [ "a", "b" ]) |
-| list[int] | list of integers | array of integers (example: [ 0, 1 ]) |
-| commalist[str] | list of strings | a string that contains a list of strings separated by a comma (example: "a,b,c" ) |
-| commalist[int] | list of integers | a string that contains a list of integers separated by a comma (example: "0,1,2" ) |
+| list[type] | list of a type | array of a type (example: [ "a", "b" ]) |
+| commalist[type] | list of strings | a string that contains a list of strings separated by a comma (example: "a,b,c" ), remember that the types should be string convertible |
+| atlist[type] | list of types | a string that contains a list of a type separated by a at (example: "a@b@c"), remember that the types should be string convertible |
 
 ### Custom attributes in fields
 In certain situations, a field definition might not be enough, as the brave frontier

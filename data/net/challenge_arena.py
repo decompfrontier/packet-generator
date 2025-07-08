@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "XGmGpmYW", single = True)
+@keyjson(key_group = "XGmGpmYW", array = ArrayStep.Single)
 class ChallengeArenaUserInfo:
     unk = { "h7eY3sAK": str }
     unkint = { "Nou5bCmm" : int }

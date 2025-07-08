@@ -1,20 +1,20 @@
 from schema import *
 
-@keyjson(key_group = "d0EkJ4TB")
+@keyjson(key_group = "d0EkJ4TB", array=ArrayStep.Array)
 class TownFacilityLvMst:
     id = { "y9ET7Aub": int }
     lv = { "D9wXQI2V": int }
     karma = { "HTVh8a65": int }
     release_receipe = { "rGoJ6Ty9": list[int] }
 
-@keyjson(key_group = "d0EkJ4TB")
+@keyjson(key_group = "d0EkJ4TB", array=ArrayStep.Array)
 class TownLocationLvMst:
     id = { "y9ET7Aub": int }
     lv = { "D9wXQI2V": int }
     karma = { "HTVh8a65": int }
     release_receipe = { "rGoJ6Ty9": list[int] }
 
-@keyjson(key_group = "Lh1I3dGo")
+@keyjson(key_group = "Lh1I3dGo", array=ArrayStep.Array)
 class TownFacilityMst:
     id = { "y9ET7Aub": int }
     name = { "aAFI6S5w": str }
@@ -24,7 +24,7 @@ class TownFacilityMst:
     height = { "FCzW4g6P": int }
     need_mission_id = { "HSRhkf70": int }
 
-@keyjson(key_group = "Lh1I3dGo")
+@keyjson(key_group = "Lh1I3dGo", array=ArrayStep.Array)
 class TownLocationMst:
     id = { "y9ET7Aub": int }
     name = { "aAFI6S5w": str }

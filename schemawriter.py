@@ -5,115 +5,125 @@ import os
 
 class SchemaParser:
     @staticmethod
-    def _parse_enum(clz: Enum) -> GeneratorData:
-        """Creates a generator data class (rapresentation of a JSON in the generator) from a Python enumerator.
+    def _parse_enum(enum: Enum) -> GeneratorStruct:
+        """Creates an intermediate rappresentation of the Python enumerator.
 
-        :param clz: Python enumerator to generate
+        :param enum: Python enumerator to parse
         :return: Synthetized generator data
         """
-        g = GeneratorData()
-        g.name = clz.__name__
-        g.class_type = ClassType.Enumerator
+        ir = GeneratorStruct()
+        ir.name = enum.__name__
+        ir.class_type = ClassType.Enumerator
 
-        if hasattr(g, "__doc__"):
-            g.__doc__ = getattr(g, "__doc__")
+        if hasattr(ir, "__doc__"): # documentation of the enumerator
+            ir.__doc__ = getattr(enum, "__doc__")
         
         __doc_fields__ = {}
-        if hasattr(g, "__doc_fields__"):
-            __doc_fields__ = getattr(g, "__doc_fields__")
+        if hasattr(ir, "__doc_fields__"):
+            # map that contains the documentation of all fields, we have to do this way
+            # because python doesn't expose __doc__ for Enum fields
+            __doc_fields__ = getattr(ir, "__doc_fields__")
 
-        for name in clz._member_names_:
+        for name in enum._member_names_:
             if name == "__doc__" or name == "__doc_fields__":
                 continue
 
-            val = getattr(clz, name)
+            val = getattr(enum, name) # get all fields of the enum
 
             f = GeneratorField()
             f.name = name
             f.type_id = val
 
             if type(val.value) == str: ## this is a string enum
-                g.class_type = ClassType.EnumeratorString
+                ir.class_type = ClassType.EnumeratorString
 
             if val in __doc_fields__:
                 f.__doc__ = __doc_fields__[val]
 
-            g.fields.append(f)
+            ir.fields.append(f)
         
-        return g
+        return ir
 
     @staticmethod
-    def parse(clz: type) -> GeneratorData:
-        """Creates the generator data class (rapresentation of a JSON in the generator) from a Python type specification.
+    def parse(obj: type) -> GeneratorStruct:
+        """Creates an intermediate rapresentation of a Python object.
 
-        :param clz: Python class to generate
+        :param obj: Python class type to generate
         :return: Synthetized generator data
         """
-        if issubclass(clz, Enum) or issubclass(clz, Flag):
-            return SchemaParser._parse_enum(clz)
+        if issubclass(obj, Enum) or issubclass(obj, Flag):
+            return SchemaParser._parse_enum(obj) # parse the enumerator if the type is compatible with it
         
-        g = GeneratorData()
-        q = clz()
-        g.name = clz.__name__
-        if hasattr(clz, "key_group"):
-            g.key = getattr(clz, "key_group")
-        if clz.is_single:
-            g.array_step = ArrayStep.Single
-        elif not clz.is_array:
-            g.array_step = ArrayStep.NoArray
+        ir = GeneratorStruct()
+        obj_inst = obj() # instance of the object type
         
-        for f in dir(q):
-            if callable(getattr(q, f)) or f.startswith("__") or f == "is_single" or f == "key_group" or f == "is_array" or f == "configure_name":
+        ir.name = obj.__name__
+        if hasattr(obj, "__ir_key_group__"): # if there is ir_key_group then the type is a KeyJson
+            ir.key = getattr(obj, "__ir_key_group__")
+
+        ir.array_step = getattr(obj, "__ir_array_step__")    
+
+        if hasattr(obj_inst, "__doc__"):
+            ir.__doc__ = getattr(obj_inst, "__doc__")
+
+        for field_name in dir(obj_inst): # as the object is a dataclass, when we instance it we can iterate for all the created fields
+            if callable(getattr(obj_inst, field_name)) or field_name.startswith("__"): # skip all internal fields that starts with "__" and are not gettable
                 continue
             
-            f_attr = getattr(q, f)
+            # get the actual dictionary of the field
+            field = getattr(obj_inst, field_name)
 
-            if f == "__doc__":
-                g.__doc__ = getattr(q, f)
-                continue
-            elif not type(f_attr) == dict:
-                        raise Exception("Invalid field {}".format(f))
+            if not type(field) == dict: # skip all fields that are not generated as dictionaries (this is enforced as it's how the format works)
+                raise Exception("Invalid field declaration {}".format(field_name))
             
-            f_gen = GeneratorField()
-            f_gen.name = f
+            ir_field = GeneratorField()
+            ir_field.name = field_name
 
-            # this has to be done this way beause I can't know the key, maybe the format should be changed
-            #  to have key: value ?        
-            for k, v in f_attr.items():
+            # iterate the content of the dictionary
+            for k, v in field.items():
                 match k:
+                    # read special keys
                     case "default":
-                        f_gen.default_action = v
+                        ir_field.default_action = v
                     case "quote":
-                        f_gen.quoted = True
+                        ir_field.quoted = True
                     case "string":
-                        f_gen.force_as_string = True
+                        ir_field.force_as_string = True
                     case "doc":
-                        f_gen.__doc__ = v
-                    case _:
-                        f_gen.key = k
-                        f_gen.type_id = v
+                        ir_field.__doc__ = v
+                    case _: # by default, a declaration of a field for the JSON mapping is "json name": type of this field
+                        ir_field.key = k
+                        ir_field.type_id = v
 
                         if v == None:
-                            raise Exception("Rferenced type is broken")
+                            raise Exception("Referenced type of {} is broken".format(field_name))
 
-            g.fields.append(f_gen)
+            ir.fields.append(ir_field)
         
-        return g
+        return ir
 
 class SchemaWriter:
     @staticmethod
     def write(py_file: str, output_dir: str, types: list[type], gen: Generator):
         """Generates the output file from packet specifications.
 
-        :param pyfile: Python file name
-        :param out_file: Output file path
-        :param types: List of types to be serialized from the python file
-        :param gen: Generator type
+        :param py_file: Python file name
+        :param output_dir: Output directory of the generated files
+        :param types: List of Python types to be serialized from the python file
+        :param gen: Generator of this type
         """
 
-        types.sort(key=lambda m: m.__pkprocess__)
+        types.sort(key=lambda m: m.__ir_declaration_line__) # sort the types by their declaration line
 
         def expand_output_dir(pyfile: str, outdir: str, ext: str) -> str:
+            """Converts the Python import name (like data.net.userinfo) to a file name valid for the generator imports
+
+            TODO: This function is hardcoded to support ONLY .net. and .mst. as directories, this should be changed.
+
+            :param pyfile: Python file name (like data.net.userinfo)
+            :param outdir: Output directory of the generated files
+            :param ext: Generator extension (like .hpp)
+            """
             to_subst = pyfile.rfind(".mst.")
             dir_root = ""
             sub_file = pyfile
@@ -131,11 +141,13 @@ class SchemaWriter:
 
             return "".join((outdir, "/", dir_root, sub_file, ext))
 
-        pyfile_fix = py_file[:-3][2:].replace("/", ".")
-        out_file = expand_output_dir(pyfile_fix, output_dir, gen.get_extension())
+        pyfile_fix = py_file[:-3][2:].replace("/", ".") # converted python file name to an import name
+        out_file = expand_output_dir(pyfile_fix, output_dir, gen.get_extension()) # output file for the generator
 
-        buffer = gen.get_start_mark(py_file)
+        # add a mark to the beginning of the file
+        buffer = gen.get_start_mark(py_file) # buffer is a string that contains all the generated file content
 
+        # list of modules that should be excluded when iterating the types declarated by this module
         exclude_mods = [
             "schema",
             "builtins",
@@ -144,29 +156,35 @@ class SchemaWriter:
         ]
 
         import_mods: list[inspect.ModuleType] = []
-        schemas: list[GeneratorData] = []
+        structures: list[GeneratorStruct] = []
 
-        # parse all files
-        for x in types:
-            q = SchemaParser.parse(x)
+        # parse all types declarated in this module
+        for type in types:
+            ir = SchemaParser.parse(type)
 
-            # inspect all the schema to find it's imports
-            for field in q.fields:
+            # inspect all the generated IRs to find if the generated file should
+            # import other file types
+            for field in ir.fields:
                 mod = inspect.getmodule(field.type_id)
-                if not mod.__name__ in exclude_mods:
+                if not mod.__name__ in exclude_mods: # skip default type mappings
                     if not mod in import_mods:
                         import_mods.append(mod)
 
-            schemas.append(q)
+            structures.append(ir)
 
+        # generate the lines that declares all the extra modules that should be imported
+        ## this is done for referencing a type outside of it's declaration (which is done in the schemas as normal Python imports)
         for mod in import_mods:
             mod_out = expand_output_dir(mod.__name__, output_dir, gen.get_extension())
             buffer = "".join((buffer, gen.add_import(mod_out)))
 
-        for q in schemas:
-            buffer = "".join((buffer, gen.step(q) ))
+        # generate all the processed structures
+        for ir in structures:
+            buffer = "".join((buffer, gen.step(ir) ))
         
+        # add a mark to the end of file
         buffer = "".join((buffer, gen.get_end_mark()))
 
+        # finally write our file!
         with open(out_file, "wb") as fp:
             fp.write(buffer.encode("utf-8"))

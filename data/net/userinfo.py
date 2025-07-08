@@ -2,7 +2,7 @@ from .gumi_live import GumiLiveInfo
 from schema import *
 
 '''
-@keyjson(key_group = "Bnc4LpM8", array = False)
+@keyjson(key_group = "Bnc4LpM8")
 class UserAchievementInfo:
     pass
 
@@ -43,7 +43,7 @@ class UserItemDictionaryInfo:
     pass
 '''
 
-@keyjson(key_group = "IKqx1Cn9", single = True)
+@keyjson(key_group = "IKqx1Cn9", array=ArrayStep.Single)
 class UserInfoResp:
     "Main object that holds all the player information."
 
@@ -75,7 +75,7 @@ class UserInfoResp:
     facebook_id = { "K29dp2Q": long, "doc": "Facebook ID of the associated account." }
     associated_user_id = { "uJP4aeg9": str }
 
-@keyjson(key_group = "dX7S2Lc1")
+@keyjson(key_group = "dX7S2Lc1", array=ArrayStep.Array)
 class UserPartyDeckInfo:
     deck_type = { "U9ABSYEp": int }
     deck_num = { "zsiAn9P1": int }
@@ -141,7 +141,7 @@ class UserWarehouseInfo:
     pass
 '''
 
-@json(array = False)
+@json
 class UserTeamInfo:
     user_id = { "h7eY3sAK": str }
     level = { "D9wXQI2V": int }
@@ -184,7 +184,7 @@ class UserTeamInfo:
     inbox_message_count = { "7qncTHUJ" : int }
     current_brave_points = { "22rqpZTo" : int }
 
-@keyjson(key_group = "4ceMWH6k")
+@keyjson(key_group = "4ceMWH6k", array=ArrayStep.Array)
 class UserUnitInfo:
     user_id = { "h7eY3sAK" : str }
     user_unit_id = { "edy7fq3L" : int }
@@ -234,7 +234,7 @@ class UserUnitInfo:
 
 ## --- request
 
-@keyjson(key_group = "IKqx1Cn9", array = False)
+@keyjson(key_group = "IKqx1Cn9")
 class UserInfoReq(GumiLiveInfo): # TODO: actually support (GumiLiveInfo), as it's not support right now....
     user_id = { "h7eY3sAK": str }
     contact_id = { "90LWtVUN": str }
@@ -248,9 +248,7 @@ class UserInfoReq(GumiLiveInfo): # TODO: actually support (GumiLiveInfo), as it'
     notice_mst_list_req = { "aXf114Oz": str }
     minfo = { "236dItKo": str }
 
-@keyjson(key_group = "KeC10fuL")
+@keyjson(key_group = "KeC10fuL", array=ArrayStep.Array)
 class MstUrlList:
     id = { "moWQ30GH": str }
     version = { "d2RFtP8T": str }
-
-    

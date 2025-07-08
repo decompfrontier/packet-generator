@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "VkoZ5t3K", single = True)
+@keyjson(key_group = "VkoZ5t3K", array=ArrayStep.Single)
 class DefineMst:
     max_zel = { "DXm2W8vY": long }
     max_karma = { "jSxdlwqd": long }

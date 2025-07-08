@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "3da6bd0a")
+@keyjson(key_group = "3da6bd0a", array= ArrayStep.Array)
 class UserLoginCampaignInfo:
     id = { "H1Dkq93v": int }
     current_day = { "ad6i23pO": int }

@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "YDv9bJ3s")
+@keyjson(key_group = "YDv9bJ3s", array=ArrayStep.Array)
 class UserLevelMst:
     level = { "D9wXQI2V": int }
     exp = { "d96tuT2E": long }

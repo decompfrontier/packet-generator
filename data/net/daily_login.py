@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "Drudr2w5", array = False)
+@keyjson(key_group = "Drudr2w5")
 class DailyLoginRewardsUserInfo:
     id = { "XIvaD6Jp": int }
     user_current_count = { "35JXN4Ay": int }

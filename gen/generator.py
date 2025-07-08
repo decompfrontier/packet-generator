@@ -1,6 +1,6 @@
 from datetime import datetime
 from abc import ABC, abstractmethod
-from schema import GeneratorData
+from schema import GeneratorStruct
 
 class Generator(ABC):
     """This interface exposes the generic methods for implementing a source generator for BF data."""
@@ -35,12 +35,12 @@ class Generator(ABC):
         pass
 
     @abstractmethod
-    def step(self, clz: GeneratorData) -> str:
+    def step(self, struct: GeneratorStruct) -> str:
         """
         Performs one step of the generator and generates the string rapresentation of the
-        specified generator class.
+        specified structure.
 
-        :param clz: Class to generate
+        :param struct: Structure to generate
         :return: String conversion of the class
         """
         pass

@@ -41,10 +41,11 @@ class GlazeGenerator(Generator):
         bool:           "bool",
         intbool:        "bool",
         strbool:        "bool",
+        intstr:         "uint32_t",
         datetimeunix:   "glzhlp::chronotime",
         datetime:       "glzhlp::chronotime",
-        float:          "glzhlp_float32",
-        double:         "glzhlp_float64",
+        float:          "glzhlp_float32", # support for c++20 floating point
+        double:         "glzhlp_float64", # support for c++20 floating point
     }
     """Mapping of Python python to C++ strings."""
 
@@ -69,102 +70,113 @@ class GlazeGenerator(Generator):
         return """#include <{}>
 """.format(imp)
 
-    def _get_genfield_typestring(self, t: GeneratorField, parent: GeneratorData) -> str:
+    def _get_genfield_typestring(self, current_type: GeneratorField, parent: GeneratorStruct) -> str:
         """Generates the C++ type of the field.
 
-        :param t: Generator field to get the C++ type from
+        :param current_type: Generator field to get the C++ type from
         :param parent: Parent generator field
         :return: C++ type in string
         """
-        #if parent.class_type == ClassType.EnumeratorString:
-        #    return "std::string"
-        
-        strtype = ""
-        if t.type_id in GlazeGenerator.TYPE_MAPPING:
-            strtype = GlazeGenerator.TYPE_MAPPING[t.type_id]
-        elif hasattr(t.type_id, "__origin__"):
-            orig = t.type_id.__origin__
-            if orig == list:
-                argtype = t.type_id.__args__[0]
-                argstr = self._get_genfield_typestring(GeneratorField(type_id = argtype), parent)
-                strtype = "std::vector<{}>".format(argstr)
-            else:
-                raise ValueError("Unsupported args type: {}".format(orig))
-        else:
-            strtype = t.type_id.__name__
-        
-        if t.default_action == DefaultType.Omit:
-            return "std::optional<{}>".format(strtype)
-        
-        return strtype
 
-    def _get_genfield_declaration(self, clz: GeneratorField, parent: GeneratorData) -> str:
+        cpp_type = ""
+        if current_type.type_id in GlazeGenerator.TYPE_MAPPING: # case 1: the current type is from a mapping
+            cpp_type = GlazeGenerator.TYPE_MAPPING[current_type.type_id]
+        elif hasattr(current_type.type_id, "__origin__"): # case 2: the type is an annotation like dict[] or list[], this is apython specific internal field
+            original_type = current_type.type_id.__origin__
+            if original_type == list or original_type == commalist or original_type == atlist:
+                contained_python_type = current_type.type_id.__args__[0] # argument of the list
+                contained_cpp_type = self._get_genfield_typestring(GeneratorField(type_id = contained_python_type), parent) # call this function again for generating the argument
+                cpp_type = "std::vector<{}>".format(contained_cpp_type)
+            else:
+                raise ValueError("Unsupported Python origin-type: {}".format(original_type))
+        else: # if it's not a python builtin type, threat this as a custom type
+            cpp_type = current_type.type_id.__name__
+        
+        if current_type.default_action == DefaultType.Omit:
+            cpp_type = "std::optional<{}>".format(cpp_type) # append the optional<> to allow glaze to skip types that should be omitted if null
+        
+        return cpp_type
+
+    def _get_genfield_declaration(self, current_field: GeneratorField, parent: GeneratorStruct) -> str:
         """Generates the field declaration.
 
         Example: std::string key{};
 
-        :param clz: Field to generate
-        :param parent: Parent field
+        :param current_field: Field to generate
+        :param parent: Parent of the field
         :return: String that contains the declaration
         """
 
-        if parent.class_type == ClassType.Enumerator:
-            if issubclass(type(clz.type_id), Enum):
+        if parent.class_type == ClassType.Enumerator: # the container of this field is an enumerator?
+            if issubclass(type(current_field.type_id), Enum): # is this a normal enumerator?
                 # Example: MY_ENUM_FIELD_1 = 4,
-                return "{} = {},".format(clz.name, clz.type_id.value)
-            elif issubclass(type(clz.type_id), Flag):
-                return "{} = 1 << {},".format(clz.name, clz.type_id.value)
+                return "{} = {},".format(current_field.name, current_field.type_id.value)
+            elif issubclass(type(current_field.type_id), Flag): # is this a flag enumerator? (bitwise flag enumerator)
+                # Example: MY_ENUM_FIELD_1 = 1 << 1,
+                return "{} = 1 << {},".format(current_field.name, current_field.type_id.value)
             else:
-                raise Exception("Something wrong?")
-        elif parent.class_type == ClassType.EnumeratorString:
-            if issubclass(type(clz.type_id), Enum):
-                return "constexpr const auto {} = \"{}\";".format(clz.name, clz.type_id.value)
+                raise Exception("Unsupported field in enumerator: {}".format(current_field))
+        elif parent.class_type == ClassType.EnumeratorString: # the container of this field is an enumerator that maps into a string?
+            if issubclass(type(current_field.type_id), Enum): # is this a normal enumerator?
+                return "constexpr const auto {} = \"{}\";".format(current_field.name, current_field.type_id.value) # In C++ there are no string enumerators, therefore we assign them as constant strings
             else:
-                raise Exception("Something wrong?")
-        
-        string_type = self._get_genfield_typestring(clz, parent)
-        # Example: uint32_t  my_field{};
-        return "{}\t{}{{}};".format(string_type, clz.name)
+                raise Exception("Unsupported field in enumerator string: {}".format(current_field))
+        else: # is the type any other thing, like a normal field of a structure?
+            # Example: uint32_t  my_field{};
+            string_type = self._get_genfield_typestring(current_field, parent)
+            return "{}\t{}{{}};".format(string_type, current_field.name)
 
-    def _get_glazecpp_field_metadata(self, parent: GeneratorData, f: GeneratorField) -> str:
+    def _get_glazecpp_field_metadata(self, current_field: GeneratorField, parent: GeneratorStruct) -> str:
         """Generates the glaze c++ metadata mapping for a field.
 
         Example:
             "Kn51uR4Y", glz::quoted<&T::key>,
 
-        :param f: Field to generate
+        :param current_field: Field to generate
+        :param parent: Parent of the field
         :return: C++ glaze metadata generated
         """
 
-        glazemt = ""
-        parentdata = parent.name
-        if parent.array_step != ArrayStep.NoArray:
-            parentdata = "".join((parentdata, "Data"))
+        glaze_metadata_type = ""
 
-        if f.type_id == str and f.quoted:
+        cpp_parent_name = parent.name
+        if parent.array_step != ArrayStep.NoArray:
+            cpp_parent_name = "".join((cpp_parent_name, "Data")) # a JSON array adds "Data" at the end to specify the single field
+
+        if current_field.type_id == str and current_field.quoted: # this is a string that should be escaped (like a MySQL string)
             # Ex: glz::quoted<&T::myField>
-            glazemt = "glz::quoted<&T::{}>".format(f.name)
-        elif f.type_id == float:
-            glazemt = "glzhlp_write_float32(&T::{})".format(f.name)
-        elif f.type_id == double:
-            glazemt = "glzhlp_write_float64(&T::{})".format(f.name)
-        elif f.type_id == intbool:
+            glaze_metadata_type = "glz::quoted<&T::{}>".format(current_field.name)
+        elif current_field.type_id == float: # We use a custom glaze mapping for C++20 float32/float64 support
+            glaze_metadata_type = "glzhlp_write_float32(&T::{})".format(current_field.name)
+        elif current_field.type_id == double:
+            glaze_metadata_type = "glzhlp_write_float64(&T::{})".format(current_field.name)
+        elif current_field.type_id == intbool: # boolean that should be converted to an integer (and not a JSON boolean)
             # Ex: glz::bools_as_numbers<&T::myField>
-            glazemt = "glz::bools_as_numbers<&T::{}>".format(f.name)
-        elif f.type_id == strbool:
+            glaze_metadata_type = "glz::bools_as_numbers<&T::{}>".format(current_field.name)
+        elif current_field.type_id == strbool: # a boolean that should be converted to a string
             # Ex: glz::strbool<&T::myField>
-            glazemt = "glzhlp::strbool<{}, &T::{}>".format(parentdata, f.name)
-        elif f.type_id == datetimeunix:
+            glaze_metadata_type = "glzhlp::strbool<{}, &T::{}>".format(cpp_parent_name, current_field.name)
+        elif current_field.type_id == intstr:
+            glaze_metadata_type = "glz::quoted_num<&T::{}>".format(current_field.name)
+        elif current_field.type_id == datetimeunix: # a datetime expressed in UNIX timestamp (long)
             # Ex: glzhlp::datetimeunix<&T::myField>
-            glazemt = "glzhlp::datetimeunix<{}, &T::{}>".format(parentdata, f.name)
-        elif f.type_id == datetime:
+            glaze_metadata_type = "glzhlp::datetimeunix<{}, &T::{}>".format(cpp_parent_name, current_field.name)
+        elif current_field.type_id == datetime: # a datetime expressed in string
             # Ex: glzhlp::datetime<&T::myField>
-            glazemt = "glzhlp::datetime<{}, &T::{}>".format(parentdata, f.name)
-        else:
+            glaze_metadata_type = "glzhlp::datetime<{}, &T::{}>".format(cpp_parent_name, current_field.name)
+        elif hasattr(current_field.type_id, "__origin__"):
+            original_type = current_field.type_id.__origin__
+            if original_type == commalist:
+                glaze_metadata_type = "glzhlp::commalist<{}, &T::{}>".format(cpp_parent_name, current_field.name)
+            elif original_type == atlist:
+                glaze_metadata_type = "glzhlp::atlist<{}, &T::{}>".format(cpp_parent_name, current_field.name)
+            else: # any other type that theorically doesn't require a mapping, we just use the default one
+                glaze_metadata_type = "&T::{}".format(current_field.name)
+        else: # any other type that doesn't require a mapping
             # Ex: &T::myField
-            glazemt = "&T::{}".format(f.name)
+            glaze_metadata_type = "&T::{}".format(current_field.name)
         
-        glazekey = f.key
+        glaze_key_name = current_field.key
 
         """
             Some fields might not have a key group as it uses the keygroup of the
@@ -173,14 +185,14 @@ class GlazeGenerator(Generator):
             To account for this data, we fetch the key_group field from the associated
             type, this can help when adding custom fields that uses keyjson types.
         """
-        if len(f.key) < 1:
-            if not hasattr(f.type_id, "key_group"):
-                raise ValueError("The specified type {} does not have a key_group. Are you sure the specification is correct?".format(f.type_id.__name__))
+        if len(current_field.key) < 1:
+            if not hasattr(current_field.type_id, "__ir_key_group__"):
+                raise ValueError("The specified type {} does not have a key_group. Are you sure the specification is correct?".format(current_field.type_id.__name__))
 
-            glazekey = getattr(f.type_id, "key_group")
+            glaze_key_name = getattr(current_field.type_id, "__ir_key_group__")
 
         # "key": "glaze mapper", example: "a3vSYuq2", &T::body, 
-        return "\"{}\", {},".format(glazekey, glazemt)
+        return "\"{}\", {},".format(glaze_key_name, glaze_metadata_type)
     
     def _get_classtype_name(self, type: ClassType) -> str:
         """
@@ -199,34 +211,37 @@ class GlazeGenerator(Generator):
             case _:
                 raise Exception("Unsupported class type: {}".format(str(type)))
 
-    def _get_cpp_class_definition(self, clz: GeneratorData, def_name: str) -> str:
+    def _get_cpp_class_definition(self, struct: GeneratorStruct, cpp_type_name: str) -> str:
         """Generates the C++ class definition.
 
-        :param clz: Class to generate
-        :param def_name: C++ class name
+        :param struct: Structure to generate
+        :param cpp_type_name: Typename of the structure for C++
         :return: Generated C++ class type
         """
 
-        if clz.class_type == ClassType.EnumeratorString:
+        if struct.class_type == ClassType.EnumeratorString:
             # because C++ does not have enum string, the idea
-            # is that we generate a namespace and a using type
-            buf = """using {} = std::string;
+            # is that we generate the structure as a namespace
+            # (this allows us to avoid conflicts with the fields name)
+            # and generate a special ""structure type"" that maps to std::string
+            # so this mimics the generation of a real class type.
+            cpp_output = """using {} = std::string;
 
 namespace v_{} {{
-""".format(def_name, def_name)
-        else:
+""".format(cpp_type_name, cpp_type_name)
+        else: # this is a normal c++ type (either enum, enum class or class)
             # Example: class MyData {\n
-            buf = """{} {} {{
-""".format(self._get_classtype_name(clz.class_type), def_name)
+            cpp_output = """{} {} {{
+""".format(self._get_classtype_name(struct.class_type), cpp_type_name)
 
-        for field in clz.fields:
+        for field in struct.fields: # iterate all fields in the structure and generate them
             # Example:      uint32_t field;
-            buf = "".join((buf, "\t", self._get_genfield_declaration(field, clz), "\n"))
+            cpp_output = "".join((cpp_output, "\t", self._get_genfield_declaration(field, struct), "\n"))
         
         # };
-        return "".join((buf, "};"))
+        return "".join((cpp_output, "};"))
     
-    def _get_glaze_cpp_metadata(self, clz: GeneratorData, def_name: str) -> str:
+    def _get_glaze_cpp_metadata(self, struct: GeneratorStruct, cpp_type_name: str) -> str:
         """Generates the Glaze C++ explicit metadata (struct glz::meta).
         
         Generation example for classes with "ArrayStep.NoArray":
@@ -252,13 +267,13 @@ namespace v_{} {{
                 );
             };
 
-        :param clz: Class to generate
-        :param def_name: C++ class name
-        :return: C++ metadata string
+        :param struct: Structure to generate
+        :param cpp_type_name: Typename of the structure for C++
+        :return: Generated C++ glaze metadata mapping
         """
 
-        if clz.class_type != ClassType.Struct:
-            return "" # do not make any metadata for structures
+        if struct.class_type != ClassType.Struct:
+            return "" # do not make any metadata for enumerators
 
         """ Example:
             template <>
@@ -269,25 +284,28 @@ namespace v_{} {{
                 
         """
 
-        buf = """template <>
+        # metadata start
+        cpp_output = """template <>
 struct glz::meta<{}>
 {{
     using T = {};
     static constexpr auto value = object(
-""".format(def_name, def_name)
+""".format(cpp_type_name, cpp_type_name)
 
-        for field in clz.fields:
+        for field in struct.fields: # iterate and generate all the metadatas
             #       &T::myField,
-            buf = "".join((buf, "\t\t", self._get_glazecpp_field_metadata(clz, field), "\n"))
+            cpp_output = "".join((cpp_output, "\t\t", self._get_glazecpp_field_metadata(field, struct), "\n"))
         
-        buf = "".join(( buf[:-2], """
+        # remove the final ",\n" as this is the end and append the metadata field end
+        cpp_output = "".join(( cpp_output[:-2], """
     );""" ))
 
-        buf = "".join(( buf, """
+        # append the metadata end
+        cpp_output = "".join(( cpp_output, """
 };""" ))
-        return buf
+        return cpp_output
 
-    def _get_class_array_container(self, clz: GeneratorData, def_name: str):
+    def _get_class_array_container(self, struct: GeneratorStruct, cpp_type_name: str):
         """This function generates the array container of a JSON field/group that is an array.
 
         In case the function is not an array, simply define an alias of the Data element (the single field container)
@@ -316,23 +334,22 @@ struct glz::meta<{}>
                     ARRAY_TYPE _internal_data;
             };
 
-            :param clz: Class to generate
-            :param def_name: C++ class name
+            :param struct: Structure to generate
+            :param cpp_type_name: Typename of the structure for C++
             :return: Output C++ type
         """
         
-        if clz.class_type != ClassType.Struct:
-            return ""
+        if struct.class_type != ClassType.Struct:
+            return "" # enumerators cannot be arrays!
 
-        if clz.array_step == ArrayStep.Array:
-            # Simple array that should be mapped
-            return '''struct {} {{
+        cpp_output = ""
+        if struct.array_step == ArrayStep.Array: # the type is a simple array
+            cpp_output = '''struct {} {{
     using TYPE = {};
     std::deque<TYPE> data;
-}};'''.format(clz.name, def_name)
-        elif clz.array_step == ArrayStep.Single:
-            # Array of a single element, create a fixed array with one element and relative stubs to use it
-            return '''struct {};
+}};'''.format(struct.name, cpp_type_name)
+        elif struct.array_step == ArrayStep.Single: # Array of a single element, create a fixed array with one element and relative stubs to use it
+            cpp_output = '''struct {};
 template <> struct glz::meta<{}>; 
 
 struct {} : public {} {{ 
@@ -346,17 +363,18 @@ struct {} : public {} {{
         explicit {}(const TYPE& q) : TYPE(q) {{}}
         ARRAY_TYPE _internal_data;
 
-}};'''.format(clz.name, 
-              clz.name,
-              clz.name, def_name, 
-              def_name,
-              clz.name,
-              clz.name,
-              clz.name)
+}};'''.format(struct.name,  # struct ...
+              struct.name, # glz::meta<...>
+              struct.name, cpp_type_name, # struct ...Data, public ...
+              cpp_type_name, # TYPE = ...Data
+              struct.name, # meta<...>
+              struct.name, # constructor
+              struct.name # explicit constructor
+            )
 
-        return ""
+        return cpp_output
     
-    def _get_class_superarray_metadata(self, clz: GeneratorData, def_name: str):
+    def _get_class_superarray_metadata(self, field: GeneratorStruct, cpp_type_name: str):
         """This function generates the array container of a JSON field/group that is an array.
 
         Output code if the class is an array:
@@ -377,51 +395,55 @@ struct {} : public {} {{
                 static constexpr auto value = object("6FrKacq7", glz::custom<read_x, write_x>);
             };
 
-            :param clz: Class to generate
-            :param def_name: C++ class name
+            :param struct: Structure to generate
+            :param cpp_type_name: Typename of the structure for C++
             :return: Output C++ type
         """
 
-        if clz.class_type != ClassType.Struct:
-            return ""
+        if field.class_type != ClassType.Struct:
+            return "" # enumerators cannot be arrays!
 
-        if clz.array_step == ArrayStep.Single:
-            buf = '''template <>
+        if field.array_step == ArrayStep.Single: # array with one element, generate an explicit mapping to force the map of one element only
+            cpp_output = '''template <>
 struct glz::meta<{}>
 {{
     using T = {};
     static constexpr auto read_x = [](T& s, const T::ARRAY_TYPE& input) {{ s = T(input[0]); }};
     static constexpr auto write_x = [](T& s) -> T::ARRAY_TYPE& {{ s._internal_data = T::ARRAY_TYPE{{s}}; return s._internal_data; }};
-    static constexpr auto value = '''.format(clz.name, clz.name)
-    
-            buf = "".join(( buf, "glz::custom<read_x, write_x>"))
-
-            return "".join(( buf, ''';
+    static constexpr auto value = '''.format(field.name, field.name)
+            
+            cpp_output = "".join(( cpp_output, "glz::custom<read_x, write_x>")) # set the custom mapping functions to glaze
+            # close definition
+            cpp_output = "".join(( cpp_output, ''';
 };''' ))
 
-        elif clz.array_step == ArrayStep.Array:
-            return '''template <>
+        elif field.array_step == ArrayStep.Array: # normal array
+            cpp_output = '''template <>
 struct glz::meta<{}>
 {{
     using T = {};
     static constexpr auto value = object("{}", &T::data);
-}};'''.format(clz.name, clz.name, clz.key)
+}};'''.format(field.name, field.name, field.key)
+        else:
+            cpp_output = ""
 
-        return ""
+        return cpp_output
 
-    def step(self, clz: GeneratorData) -> str:
-        def_name = clz.name
-        if clz.class_type == ClassType.Struct and clz.array_step != ArrayStep.NoArray:
-            def_name = "".join(( clz.name, "Data" ))
+    def step(self, struct: GeneratorStruct) -> str:
+        cpp_struct_name = struct.name
+        if struct.class_type == ClassType.Struct and struct.array_step != ArrayStep.NoArray:
+            cpp_struct_name = "".join(( cpp_struct_name, "Data" )) # we append "Data" so we make sure we have a base structure type (StructData) and an structure that contains the array to the data (Struct)
 
+        # call the various generation steps
         return "{}\n{}\n\n{}\n{}\n\n".format(
             # C++ class definition (struct bla bla)
-            self._get_cpp_class_definition(clz, def_name),
+            self._get_cpp_class_definition(struct, cpp_struct_name),
             # Glaze c++ metadata definition (mapping of the JSON keys and how the fields should be converted for glaze)
-            self._get_glaze_cpp_metadata(clz, def_name),
-
-            self._get_class_array_container(clz, def_name),
-            self._get_class_superarray_metadata(clz, def_name)
+            self._get_glaze_cpp_metadata(struct, cpp_struct_name),
+            # C++ array container (struct bla bla NOT DATA)
+            self._get_class_array_container(struct, cpp_struct_name),
+            # Glaze c++ metadata of the C++ container
+            self._get_class_superarray_metadata(struct, cpp_struct_name)
         )
 
 

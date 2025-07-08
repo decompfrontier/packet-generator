@@ -17,7 +17,7 @@ class StatusEnum(Enum):
     Success = "successful"
     Error = "failed"
 
-@json(array = False)
+@json
 class GuestLogin:
     """Gumi API login"""
 
@@ -27,7 +27,7 @@ class GuestLogin:
     status_number = { "status_no": int, "doc": "ID of the error" } # TODO: make an enum out of this
     servers = { "servers": list[str], "doc": "Unknown" } # TODO: this is a list of IP?
 
-@json(array = False)
+@json
 class GameDls:
     """Game dynamic configuration"""
 
@@ -39,7 +39,7 @@ class GameDls:
     force = { "force": bool, "default": DefaultType.Omit, "doc": "Block the client login attempt and force it to close" }
     msg = { "force_msg": str, "default": DefaultType.Omit, "doc": "Message to show when the login attempt was blocked (only valid when force is true)"}
 
-@json(array = False)
+@json
 class SREE:
     """This object is a container of encrypted JSON data used in DLS API.
     
@@ -50,5 +50,6 @@ class SREE:
 
     body = { "SREE": str, "doc": "Crypted data" }
 
+#@processable
 class GumiLiveInfo:
     pass

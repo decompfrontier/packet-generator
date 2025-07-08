@@ -1,6 +1,6 @@
 from schema import *
 
-@keyjson(key_group = "6FrKacq7", single = True)
+@keyjson(key_group = "6FrKacq7", array=ArrayStep.Single)
 class SignalKey:
     """test test test test"""
 
