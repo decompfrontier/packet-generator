@@ -15,7 +15,7 @@ class DailyTaskMst:
     brave_points_total = { "bya9a67k": intstr }
     brave_points = { "22rqpZTo": intstr }
     area_id = { "a3011F8b": str }
-    times_completed = { "9cKyb15U": intstr, "doc": "Number of times the task was completed" }
+    times_completed = { "9cKyb15U": int, "doc": "Number of times the task was completed" }
 
 @keyjson(key_group = "a739yK18", array=ArrayStep.Array)
 class DailyTaskPrizeMst:
@@ -29,5 +29,5 @@ class DailyTaskPrizeMst:
     brave_points_cost = { "4NuIwm77": intstr }
     time_limit = { "qY49LBjw": long }
     max_claim_count = { "D2BlS89M": intstr } # max number of times you can claim this
-    current_claim_count = { "jT3oB57e": intstr } # if the user has claimed it
+    current_claim_count = { "jT3oB57e": int } # if the user has claimed it
     milestone_prize = { "J3l5We66": strbool }

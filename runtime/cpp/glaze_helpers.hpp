@@ -28,16 +28,12 @@ namespace glzhlp
 {
 	using chronotime = std::chrono::system_clock::time_point;
 
-	template <class T, typename = void>
-	struct inner_type {
-		using value = T;
-	};
+	template <typename T>
+	using inner_type_v = typename T::value_type;
 
-	template <class T>
-	struct inner_type<T, std::void_t<typename T::value_type>> : inner_type<typename T::value_type> {};
+	template <typename T>
+	constexpr bool is_arithmetic_inner_v = std::is_arithmetic_v<inner_type_v<T>>;
 
-	template <class T>
-	using inner_type_v = typename inner_type<T>::value;
 
 	template <typename P, auto T>
 	constexpr auto strbool = glz::custom<
@@ -100,34 +96,57 @@ namespace glzhlp
 	>;
 
 	template <typename T> requires std::is_same_v<inner_type_v<T>, uint32_t>
-	constexpr auto str_to_int(const std::string_view v, int base = 10)
+	constexpr auto str_to_int(const std::string& v, int base = 10)
 	{
-		return std::stoul(v, nullptr, base);
+		try
+		{
+			return std::stoul(v, nullptr, base);
+		}
+		catch (std::exception& ex)
+		{
+			throw std::runtime_error(std::format("stoul: \"{}\"", v));
+
+		}
 	}
 
 	template <typename T> requires std::is_same_v<inner_type_v<T>, uint64_t>
-	constexpr auto str_to_int(const std::string_view v, int base = 10)
+	constexpr auto str_to_int(const std::string& v, int base = 10)
 	{
-		return std::stoull(v, nullptr, base);
+		try
+		{
+			return std::stoull(v, nullptr, base);
+		}
+		catch (std::exception& ex)
+		{
+			throw std::runtime_error(std::format("stoull: \"{}\"", v));
+		}
 	}
 
-	template <typename P, auto T>
-	constexpr auto commalist = glz::custom<
-		[](P& out, glz::sv in)
+	template <typename P, auto T, char CH>
+	constexpr auto stringlist = glz::custom<
+		[](P& out, const std::string& in)
 		{
 			// read
+			if (in.empty())
+			{
+				return;
+			}
+
 			auto& p = glz::get_member(out, T);
+
+			using pV = std::remove_reference_t<decltype(p)>;
+
 			p.clear();
 
 			size_t pos = 0, lastpos = 0;
-			while ((pos = in.find(',', lastpos)) != std::string::npos)
+			while ((pos = in.find(CH, lastpos)) != std::string::npos)
 			{
 				const auto cur = in.substr(lastpos, pos - lastpos);
 				lastpos = pos + 1;
 
-				if constexpr (std::is_arithmetic_v<decltype(p)>)
+				if constexpr (std::is_arithmetic_v<inner_type_v<pV>>)
 				{
-					p.emplace_back(str_to_int<decltype(p)>(cur));
+					p.emplace_back(str_to_int<pV>(cur));
 				}
 				else
 				{
@@ -136,25 +155,31 @@ namespace glzhlp
 			}
 
 			const auto cur = in.substr(lastpos);
-			if constexpr (std::is_arithmetic_v<decltype(p)>)
+			
+			if constexpr (std::is_arithmetic_v<inner_type_v<pV>>)
 			{
-				p.emplace_back(str_to_int<decltype(p)>(cur));
+				p.emplace_back(str_to_int<pV>(cur));
 			}
 			else
 			{
 				p.emplace_back(cur);
 			}
-
 		},
 		[](const P& in) -> std::string
 		{
 			// write
 			const auto& data = glz::get_member(in, T);
-			std::string so;
+
+			if (data.empty())
+				return "";
+
+			using pV = std::remove_reference_t<decltype(data)>;
+
+			std::string so = "";
 			for (const auto& v : data)
 			{
-				so += ",";
-				if constexpr (std::is_arithmetic_v<decltype(data)>)
+				so += CH;
+				if constexpr (std::is_arithmetic_v<inner_type_v<pV>>)
 				{
 					so += std::to_string(v);
 				}

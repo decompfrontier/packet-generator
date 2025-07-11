@@ -99,10 +99,11 @@ Available data types to map to the JSON are:
 | ----------- | ------------------- | ----------------- |
 | int | 32-bit unsigned int | number |
 | str | string | string |
-| strint | 32-bit unsigned int converted as int | int | string |
+| intstr | 32-bit unsigned int converted as string | int | string |
 | bool | boolean | boolean |
 | long | 64-bit unsigned int | number |
 | float | 32-bit floating point | float |
+| floatstr | 32-bit floating point converted as string | float | string |
 | strbool | boolean | string with value "1" or "0" |
 | intbool | boolean | integer with value 1 or 0 |
 | datetime | native datetime | string (data format: "2017-10-24 08:00:00") |

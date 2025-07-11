@@ -20,7 +20,7 @@ class BannerInfoMst:
     target_os = { "aL70hVYQ": commalist[BannerOperativeSystem], "doc": "List of operative systems allowed" }
     display_order = { "XuJL4pc5": intstr, "doc": "Order which to display the banner" }
     url = { "jsRoN50z": str }
-    image = { "1gDkL6XR": int, "doc": "URL of the image to display" }
+    image = { "1gDkL6XR": str, "doc": "URL of the image to display" }
     param = { "t5R47iwj": str }
     page_type = { "LM34kfVC": str, "doc": "This parameter seems unused in the last version of the game" }
-    read_count = { "d36D1g8T": intstr, "doc": "Number of times the page was read" }
+    read_count = { "d36D1g8T": int, "doc": "Number of times the page was read" }

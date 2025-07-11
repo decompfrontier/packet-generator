@@ -17,8 +17,16 @@ class intstr(type):
     """An integer that is serialized as a string. ("45" or "1" defined as a normal int for generators)"""
     pass
 
+class floatstr(type):
+    """A float that is serialized as a string. ("45.0" or "1.11" defined as a normal float for generators)"""
+    pass
+
 class long(type):
     """A 64-bit integer."""
+    pass
+
+class longstr(type):
+    """A 64-bit integer that is serialized as a string. ("45" or "1" defined as a normal int for generators)"""
     pass
 
 class double(type):

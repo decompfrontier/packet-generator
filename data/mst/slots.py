@@ -5,7 +5,7 @@ class SlotGameInfo:
     id = { "zS45RFGb": int }
     name = { "I1Cki7Pb": str }
     reel_pos = { "h1PSnk5t": str }
-    use_medal = { "b5yeVr61": str } # this is actually a atlist[int] probably (atlist -> list delimited by @)
+    use_medal = { "b5yeVr61": atlist[str] }
     slot_help_url = { "jsRoN50z": str }
     slot_image = { "TX98PnpE": str }
 
@@ -48,7 +48,11 @@ class VideoAdsSlotGameStandInfo:
 
 @keyjson(key_group = "mebW7mKD", array=ArrayStep.Single)
 class VideoAdsSlotGameInfo:
-    game_info = { "C38FmiUn": SlotGameInfo, "string": True }
-    reel_info = { "iW62Scdg": SlotGameReelInfo, "string": True }
-    picture_info = { "rY6j0Jvs": SlotGamePictureInfo, "string": True }
-    game_stand_info = { "tclBMiv2": VideoAdsSlotGameStandInfo, "string": True }
+    #game_info = { "C38FmiUn": SlotGameInfo, "string": True }
+    #reel_info = { "iW62Scdg": SlotGameReelInfo, "string": True }
+    #picture_info = { "rY6j0Jvs": SlotGamePictureInfo, "string": True }
+    #game_stand_info = { "tclBMiv2": VideoAdsSlotGameStandInfo, "string": True }
+    game_info = { "C38FmiUn": str, "string": True }
+    reel_info = { "iW62Scdg": str, "string": True }
+    picture_info = { "rY6j0Jvs": str, "string": True }
+    game_stand_info = { "tclBMiv2": str, "string": True }

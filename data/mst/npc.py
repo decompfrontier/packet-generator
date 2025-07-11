@@ -28,9 +28,13 @@ class NpcUnitInfo:
 
 @keyjson(key_group = "hV5vWu6C", array=ArrayStep.Array)
 class NpcMst:
-    id = { "7zyHb5h9": int }
+    id = { "7zyHb5h9": intstr }
     handle_name = { "B5JQyV8j": str }
-    arena_rank_id = { "JmFn3g9t": int }
-    team = { "g94bDiaS": NpcTeamInfo, "string": True }
-    parties = { "oPsmRC18": NpcPartyInfo, "string": True }
-    units = { "bS9s4GCp": NpcUnitInfo, "string": True }
+    arena_rank_id = { "JmFn3g9t": intstr }
+    # TODO: Implement "string"=True
+    #team = { "g94bDiaS": NpcTeamInfo, "string": True }
+    #parties = { "oPsmRC18": NpcPartyInfo, "string": True }
+    #units = { "bS9s4GCp": NpcUnitInfo, "string": True }
+    team = { "g94bDiaS": str, "string": True }
+    parties = { "oPsmRC18": str, "string": True }
+    units = { "bS9s4GCp": str, "string": True }

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <mst_banner.hpp>
+#include <mst_town.hpp>
 
 TEST(packetgen, bannerlist)
 {
@@ -42,4 +43,23 @@ TEST(packetgen, bannerlist)
 	ASSERT_EQ(b.target_os[0], v_BannerOperativeSystem::Android);
 	ASSERT_EQ(b.target_os[1], "9");
 	ASSERT_EQ(b.target_os[2], "4");
+}
+
+TEST(packetgen, townlist)
+{
+	TownFacilityLvMst mst;
+	TownFacilityLvMstData d;
+	d.id = 4;
+	d.karma = 34;
+	d.lv = 9;
+	d.release_receipe.emplace_back(100);
+	d.release_receipe.emplace_back(75);
+	d.release_receipe.emplace_back(88);
+	d.release_receipe.emplace_back(33);
+	mst.data.emplace_back(d);
+
+	std::string buffer;
+	const auto& ec = glz::write_json(mst, buffer);
+	ASSERT_EQ(ec.ec, glz::error_code::none);
+	ASSERT_EQ(buffer, "{\"d0EkJ4TB\":[{\"y9ET7Aub\":4,\"HTVh8a65\":34,\"D9wXQI2V\":9,\"rGoJ6Ty9\":\"100,75,88,33\"}]}");
 }

@@ -36,14 +36,16 @@ class GlazeGenerator(Generator):
 
     TYPE_MAPPING: dict[type, str] = {
         int:            "uint32_t",
+        intstr:         "uint32_t",
         long:           "uint64_t",
+        longstr:        "uint64_t",
         str:            "std::string",
         bool:           "bool",
         intbool:        "bool",
         strbool:        "bool",
-        intstr:         "uint32_t",
         datetimeunix:   "glzhlp::chronotime",
         datetime:       "glzhlp::chronotime",
+        floatstr:       "glzhlp_float32",
         float:          "glzhlp_float32", # support for c++20 floating point
         double:         "glzhlp_float64", # support for c++20 floating point
     }
@@ -156,7 +158,7 @@ class GlazeGenerator(Generator):
         elif current_field.type_id == strbool: # a boolean that should be converted to a string
             # Ex: glz::strbool<&T::myField>
             glaze_metadata_type = "glzhlp::strbool<{}, &T::{}>".format(cpp_parent_name, current_field.name)
-        elif current_field.type_id == intstr:
+        elif current_field.type_id == intstr or current_field.type_id == floatstr or current_field.type_id == longstr:
             glaze_metadata_type = "glz::quoted_num<&T::{}>".format(current_field.name)
         elif current_field.type_id == datetimeunix: # a datetime expressed in UNIX timestamp (long)
             # Ex: glzhlp::datetimeunix<&T::myField>
@@ -167,9 +169,9 @@ class GlazeGenerator(Generator):
         elif hasattr(current_field.type_id, "__origin__"):
             original_type = current_field.type_id.__origin__
             if original_type == commalist:
-                glaze_metadata_type = "glzhlp::commalist<{}, &T::{}>".format(cpp_parent_name, current_field.name)
+                glaze_metadata_type = "glzhlp::stringlist<{}, &T::{}, ','>".format(cpp_parent_name, current_field.name)
             elif original_type == atlist:
-                glaze_metadata_type = "glzhlp::atlist<{}, &T::{}>".format(cpp_parent_name, current_field.name)
+                glaze_metadata_type = "glzhlp::stringlist<{}, &T::{}, '@'>".format(cpp_parent_name, current_field.name)
             else: # any other type that theorically doesn't require a mapping, we just use the default one
                 glaze_metadata_type = "&T::{}".format(current_field.name)
         else: # any other type that doesn't require a mapping

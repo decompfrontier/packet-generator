@@ -27,6 +27,7 @@ class InitializeResp:
     
     # cachable
     loginCampagin = { "" : LoginCampaignMst }
+    loginCampaignReward = { "" : LoginCampaignReward }
     progression = { "" : UserLevelMst, "doc": "Configuration of the user stats progression" }
     mst = { "" : VersionInfo, "doc": "Configuration of the versions of the MSTs" }
     townFacility = { "" : TownFacilityMst }
@@ -39,10 +40,7 @@ class InitializeResp:
     gachas = { "": GachaMst, "doc": "Configuration of current Gacha banners" }
     defines = { "": DefineMst, "doc": "Configuration of the server" }
     npcs = { "": NpcMst }
-    videoAdInfo = { "": VideoAdInfo }
-    videoRegions = { "": VideoAdRegion }
     bannerInfo = { "": BannerInfoMst }
-    excludedDungeonMissions = { "": ExcludedDungeonMissionMst }
     extraPassiveSkills = { "": ExtraPassiveSkillMst }
     noticeInfo = { "": NoticeInfo, "doc": "Configuration of notices" }
     # user specific
