@@ -234,11 +234,11 @@ class UserUnitInfo:
 
 ## --- request
 
-@keyjson(key_group = "IKqx1Cn9")
+@keyjson(key_group = "IKqx1Cn9", array=ArrayStep.Single)
 class UserInfoReq(GumiLiveInfo): # TODO: actually support (GumiLiveInfo), as it's not support right now....
     user_id = { "h7eY3sAK": str }
     contact_id = { "90LWtVUN": str }
-    model_change_count = { "nrg19RGe": int }
+    model_change_count = { "nrg19RGe": intstr }
     device_name = { "iN7buP0j": str }
     target_os = { "DFY3k6qp": str }
     build_platform_id = { "j2lk52Be": str }
@@ -247,8 +247,13 @@ class UserInfoReq(GumiLiveInfo): # TODO: actually support (GumiLiveInfo), as it'
     first_desc_mst_req = { "7oV00FeR": str }
     notice_mst_list_req = { "aXf114Oz": str }
     minfo = { "236dItKo": str }
-
-@keyjson(key_group = "KeC10fuL", array=ArrayStep.Array)
+    # TODO: REMOVE!!!!
+    gumi_live_userid = { "iN7buP2h": str, "doc": "Gumi live API User ID. (used for example in IAP)" }
+    gumi_live_token = { "iN7buP1i": str, "doc": "User token of the Gumi live API." }
+    current_language = { "h7LYasNK": str, "doc": "Current language" }
+    country_code = { "hceYTcAK": str, "doc": "Country code" }
+   
+@processable
 class MstUrlList:
-    id = { "moWQ30GH": str }
-    version = { "d2RFtP8T": str }
+    id = { "moWQ30GH": str, "doc": "Normal (not crypted) name of the MST" }
+    version = { "d2RFtP8T": intstr, "doc": "Saved MST version in the game" }

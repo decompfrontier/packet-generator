@@ -22,6 +22,14 @@ from data.net.summonerjournaluserinfo import *
 from data.net.userinfo import *
 
 @json
+class InitializeReq:
+    """Initialization command"""
+    
+    userInfo = { "" : UserInfoReq, "doc": "User information request" }
+    mstRequests = { "KeC10fuL" : list[MstUrlList], "doc": "MST that should be sent" }
+
+
+@json
 class InitializeResp:
     """Response of the initialize command"""
     
