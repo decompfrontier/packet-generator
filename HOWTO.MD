@@ -2,15 +2,15 @@
 
 
 ## Introduction 
-As Brave Frontier JSON data is shared between multiple projects, recreating the exact same input/output data every single time becomes a long task, with also the cost of implicitly understand the meaning of the code.
+As Brave Frontier JSON data is shared between multiple projects, recreating the exact same input/output data every single time becomes a long task, with the cost of implicitly understanding the meaning of the code.
 
 To address this issue, decompfrontier contains a simple python-based packet definition and generation to automatically generate packet and MST information.
 
-In order to add a new definition, you first need to clone the packet-generator repository (https://github.com/decompfrontier/packet-generator).
+In order to add a new definition, you'll need to clone the packet-generator repository (https://github.com/decompfrontier/packet-generator).
 
 There are generally two types of information that you want to generate:
-* Network definitions, this are the request/responses used by the game to talk with the server
-* MST definitions, this are the definition of the game data, such as units or items
+* Network definitions, these are the request/responses used by the game to talk with the server
+* MST definitions, these are the definitions of the game data, such as units or items
 
 You must have Python 3.10 or greater installed on your system.
 
@@ -30,11 +30,11 @@ class SignalKey:
 ```
 
 
-A JSON data can be configured in two ways:
-* `keyjson`: it's a JSON that is encapsulated by a group key. This is the typical type you want when adding a new packet definition.
-* `json`: it's a JSON without a group encapsulation. This is the typical type you want when adding a new MST.
+The JSON data can be configured in two ways:
+* `keyjson`: It's a JSON that is encapsulated by a group key. This is the typical type you want when adding a new packet definition.
+* `json`: It's a JSON without a group encapsulation. This is the typical type you want when adding a new MST.
 
-The main difference between this two is the type of output that is generated, a keyjson (taking the example above) implies a JSON that is generated in this way:
+The main difference between these two is the type of output that is generated, a keyjson (taking the example above) implies a JSON that is generated in this way:
 ```
 "6FrKacq7": {
     "Kn51uR4Y": "SOMETHING"
@@ -48,7 +48,7 @@ While a JSON implies a simple JSON that is generated in this way:
 }
 ```
 
-Notice the missing of the identifier `6FrKacq7` which is what the group represents.
+Notice the missing object identifier `6FrKacq7` which is what the group represents.
 
 **Usage:**
 
@@ -65,7 +65,7 @@ A keyjson inherits it's properties from a json.
 | key_name | This is the JSON group name (the encoded brave frontier name) |
 | array | When this is set to true, it means that the json group is not an array of data but a single definition |
 
-An array JSON means that the definition scheme can be used to contain more than one valorization, taking the case of the SignalKey definition before, this is what the output JSON would look like if the property array was setted:
+An array JSON means that the definition scheme can be used to contain more than one valorization, taking the case of the SignalKey definition before, this is what the output JSON would look like if the property array was set:
 ```
 "6FrKacq7": {
     [
@@ -92,29 +92,29 @@ All fields for the parser are defined as a python dictionary
 
 To write a field, simply do the following:
 
-`field_name = { "brave frontier encryptred key name" : python datatype }`
+`field_name = { "brave frontier encrypted key name" : python datatype }`
 
 Available data types to map to the JSON are:
 | python name | native map behavour | JSON map behavour |
 | ----------- | ------------------- | ----------------- |
 | int | 32-bit unsigned int | number |
 | str | string | string |
-| intstr | 32-bit unsigned int converted as string | int | string |
+| intstr | 32-bit unsigned int converted to string | int | string |
 | bool | boolean | boolean |
 | long | 64-bit unsigned int | number |
 | float | 32-bit floating point | float |
-| floatstr | 32-bit floating point converted as string | float | string |
+| floatstr | 32-bit floating point converted to string | float | string |
 | strbool | boolean | string with value "1" or "0" |
 | intbool | boolean | integer with value 1 or 0 |
 | datetime | native datetime | string (data format: "2017-10-24 08:00:00") |
 | datetimeunix | native unix datetime (time_t) | long (date format: unix timestamp) |
 | list[type] | list of a type | array of a type (example: [ "a", "b" ]) |
 | commalist[type] | list of strings | a string that contains a list of strings separated by a comma (example: "a,b,c" ), remember that the types should be string convertible |
-| atlist[type] | list of types | a string that contains a list of a type separated by a at (example: "a@b@c"), remember that the types should be string convertible |
+| atlist[type] | list of types | a string that contains a list of a type separated by an at symbol (example: "a@b@c"), remember that the types should be string convertible |
 
 ### Custom attributes in fields
 In certain situations, a field definition might not be enough, as the brave frontier
-json excepts different configurations, in order to do so, you can just append a
+json accepts different configurations, in order to do so, you can just append a
 custom key inside your field dictionary.
 
 Custom keys:
@@ -122,7 +122,7 @@ Custom keys:
 | key name | Possible values | Types which it can applies | Default value if not specified | Description |
 | -------- | --------------- | -------------------------- | ------------------------------ | ----------- |
 | default | DefaultType.Omit | int, str | False | When the field does not have a value (the value considered is 0 on int while on string it's an empty one), if the value is Omit, the key/value is omitted entirely from the JSON generation. |
-| quote | True/False | int, long, float | False | If it's true then the number will be rapresented as a quoted string |
+| quote | True/False | int, long, float | False | If it's true then the number will be represented as a quoted string |
 | string | True/False | custom types | False | If it's true the custom type will be serialized as a string and not as a JSON object |
 
 ## Writing documentation
@@ -151,7 +151,7 @@ class GmeErrorFlags(Flag):
     
     __doc_fields__ = {
         0: "No error oncurred.",
-        1: "The server oncurred an error.",
+        1: "The server encountered an error.",
         4: "The custom command should be handled."
     }
 
