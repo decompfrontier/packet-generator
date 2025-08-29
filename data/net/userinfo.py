@@ -43,6 +43,29 @@ class UserItemDictionaryInfo:
     pass
 '''
 
+@processable
+class GameTargetOs(Enum):
+    """Supported operative systems"""
+    
+    __doc_field__ = {
+        "2": "Android platform",
+        "7": "Windows 8.1 (Windows RT) platform"
+    }
+    
+    Android = "2"
+    WindowsRT = "7"
+    
+@processable
+class GameLanguages(Enum):
+    """Supported game languages"""
+    
+    __doc_field__ = {
+        "en": "English"
+    }
+    
+    English = "en"
+
+
 @keyjson(key_group = "IKqx1Cn9", array=ArrayStep.Single)
 class UserInfoResp:
     "Main object that holds all the player information."
@@ -53,13 +76,13 @@ class UserInfoResp:
     password = { "4WSu1irc": str, "doc": "Password used for account transfering." }
     friend_id = { "98WfKiyA": str, "doc": "Player ID that is used for the friend system." }
     contact_id = { "90LWtVUN": str, "doc": "ID of the player used in the ticketing system for player support." }
-    tutorial_status = { "9sQM2XcN": int, "doc": "Get the current tutorial script to execute." }
+    tutorial_status = { "9sQM2XcN": intstr, "doc": "Get the current tutorial script to execute." }
     tutorial_end_flag = { "sv6BEI8X": strbool, "doc": "Checks if the player has finished the tutorial or not."  }
     user_scenario_info = { "N4XVE1uA": str } # TODO: this is UserScenarioInfoList we just dont have this yet
     user_special_scenario_info = { "9yVsu21R": str } # TODO: this is UserSpecialScenarioInfoList we just dont have this yet
-    model_change_count = { "nrg19RGe": int, "doc": "How many times has the user transferred to a new device. May be used to avoid getting first time playing rewards twice." }
-    code_expire_date = { "iyJH5k6p": int }
-    friend_invitation_flag = { "y2v7Sd01": int }
+    model_change_count = { "nrg19RGe": intstr, "doc": "How many times has the user transferred to a new device. May be used to avoid getting first time playing rewards twice." }
+    code_expire_date = { "iyJH5k6p": intstr }
+    friend_invitation_flag = { "y2v7Sd01": intstr }
     early_bird_end = { "iN7cYU9i": long, "doc": "Time in seconds until the Gem banner sale ends." }
     debug_mode = { "5MPcr0sp": strbool, "doc": "Enables several debug features (like skipping summoning animation) on the account." }
     encrypt_iv = { "8kN1tgYU": str }
@@ -240,18 +263,18 @@ class UserInfoReq(GumiLiveInfo): # TODO: actually support (GumiLiveInfo), as it'
     contact_id = { "90LWtVUN": str }
     model_change_count = { "nrg19RGe": intstr }
     device_name = { "iN7buP0j": str }
-    target_os = { "DFY3k6qp": str }
+    target_os = { "DFY3k6qp": GameTargetOs, "doc": "Operative system which runs the game" }
     build_platform_id = { "j2lk52Be": str }
-    device_id = { "Ma5GnU0H": str }
+    device_id = { "Ma5GnU0H": str, "doc": "Device advertisement ID (the same as vid in the gumi api login" }
     pointer_name = { "fKSzGDFb": str }
     first_desc_mst_req = { "7oV00FeR": str }
     notice_mst_list_req = { "aXf114Oz": str }
     minfo = { "236dItKo": str }
-    # TODO: REMOVE!!!!
+    current_language = { "h7LYasNK": GameLanguages, "doc": "Current game language" }
+    country_code = { "hceYTcAK": str, "doc": "Country code" }
+    # TODO: MOVE TO GUMILIVEINFO !!!!!
     gumi_live_userid = { "iN7buP2h": str, "doc": "Gumi live API User ID. (used for example in IAP)" }
     gumi_live_token = { "iN7buP1i": str, "doc": "User token of the Gumi live API." }
-    current_language = { "h7LYasNK": str, "doc": "Current language" }
-    country_code = { "hceYTcAK": str, "doc": "Country code" }
    
 @processable
 class MstUrlList:

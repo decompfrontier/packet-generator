@@ -16,13 +16,13 @@ class TownLocationLvMst:
 
 @keyjson(key_group = "Lh1I3dGo", array=ArrayStep.Array)
 class TownFacilityMst:
-    id = { "y9ET7Aub": int }
+    id = { "y9ET7Aub": intstr }
     name = { "aAFI6S5w": str }
-    pos_x = { "SnNtTh51": int }
-    pos_y = { "M6C1aXfR": int }
-    width = { "dRhvW13q": int }
-    height = { "FCzW4g6P": int }
-    need_mission_id = { "HSRhkf70": int }
+    pos_x = { "SnNtTh51": intstr }
+    pos_y = { "M6C1aXfR": intstr }
+    width = { "dRhvW13q": intstr }
+    height = { "FCzW4g6P": intstr }
+    need_mission_id = { "HSRhkf70": intstr }
 
 @keyjson(key_group = "1y2JDv79", array=ArrayStep.Array)
 class TownLocationMst:
@@ -32,5 +32,5 @@ class TownLocationMst:
     pos_y = { "M6C1aXfR": intstr }
     width = { "dRhvW13q": intstr }
     height = { "FCzW4g6P": intstr }
-    need_mission_id = { "HSRhkf70": int }
+    need_mission_id = { "HSRhkf70": intstr }
     effect_type = { "jeR2rN3V": intstr }

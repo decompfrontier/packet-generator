@@ -53,7 +53,7 @@ class InitializeResp:
     noticeInfo = { "": NoticeInfo, "doc": "Configuration of notices" }
     # user specific
     signalKey = { "": SignalKey }
-    challengeArenaUserInfo = { "": ChallengeArenaUserInfo }
+    challengeArenaUserInfo = { "": ChallengeArenaUserInfo, "doc": "User current progression in Challenge Arena" }
     dailyTaskBonuses = { "": DailyTaskBonusMst }
     dailyTaskPrizes = { "" : DailyTaskPrizeMst }
     dailyTasks = { "": DailyTaskMst }

@@ -11,11 +11,11 @@ class StatusEnum(Enum):
 
     __doc_field__ = {
         "successful": "Operation completed successfully",
-        "failed": "Operation failed"
+        "error": "Operation failed"
     }
 
     Success = "successful"
-    Error = "failed"
+    Error = "error"
     
 @processable
 class PlatformEnum(Enum):
@@ -26,7 +26,7 @@ class PlatformEnum(Enum):
         "Windows": "Windows platform"
     }
     
-    Android = "Android",
+    Android = "Android"
     Windows = "Windows"
 
 
@@ -46,9 +46,9 @@ class GuestLoginReq:
 
     deviceModel = { "dn": str, "doc": "Device model" }
     devicePlatform = { "dp": PlatformEnum, "doc": "Device platform" }
-    deviceAdId = { "vid": str, "doc": "Device Advertising ID" }
+    deviceAdId = { "vid": str, "doc": "Device Advertising ID (this can be either the Google Play ID or the Microsoft Ad ID)" }
     deviceVersion = { "v": str, "doc": "Device version" }
-    altVid = { "altvid": str }
+    altVid = { "altvid": str, "doc": "A random alternative UUID to identify the device" }
     ak = { "ak": str }
     identifiers = { "identifiers": str }
 

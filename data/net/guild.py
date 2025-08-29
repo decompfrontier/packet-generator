@@ -2,6 +2,6 @@ from schema import *
 
 @keyjson(key_group = "IkdSufj5")
 class GuildInfo:
-    id = { "sD73jd20": int }
+    id = { "sD73jd20": intstr }
     # TODO ...
     
