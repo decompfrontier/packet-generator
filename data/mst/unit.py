@@ -46,7 +46,7 @@ class UnitMst:
     skill_move_type = { "XE7Yi5c3": int }
     ai_id = { "i74vGUFa": int }
     exp_pattern_id = { "5UvTp7q1": int }
-    bad_state_resists = { "CEeqs63b": str }# TODO: strlist[int] with divisor ":"
+    bad_state_resists = { "CEeqs63b": colonlist[int] }
     adjust_exp = { "Gd4NS7H6": int }
     home_img_pos = { "1W9CxaFK": commalist[int] }
     detail_img_pos = { "6z54rgb3": commalist[int] }

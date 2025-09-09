@@ -111,6 +111,7 @@ Available data types to map to the JSON are:
 | list[type] | list of a type | array of a type (example: [ "a", "b" ]) |
 | commalist[type] | list of strings | a string that contains a list of strings separated by a comma (example: "a,b,c" ), remember that the types should be string convertible |
 | atlist[type] | list of types | a string that contains a list of a type separated by an at symbol (example: "a@b@c"), remember that the types should be string convertible |
+| colonlist[type] | list of types | a string that contains a list of a type separated by a colon (example: "a:b:c"), remember that the types should be string convertible |
 
 ### Custom attributes in fields
 In certain situations, a field definition might not be enough, as the brave frontier

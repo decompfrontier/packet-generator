@@ -51,6 +51,14 @@ class GlazeGenerator(Generator):
     }
     """Mapping of Python python to C++ strings."""
 
+
+    LIST_MAPPING: dict[type, str] = {
+        commalist:      ",",
+        atlist:         "@",
+        colonlist:      ":"
+    }
+    """Mapping of Python lists to C++ lists."""
+
     def get_start_mark(self, file_name: str) -> str:
         return """
 /*
@@ -85,7 +93,7 @@ class GlazeGenerator(Generator):
             cpp_type = GlazeGenerator.TYPE_MAPPING[current_type.type_id]
         elif hasattr(current_type.type_id, "__origin__"): # case 2: the type is an annotation like dict[] or list[], this is apython specific internal field
             original_type = current_type.type_id.__origin__
-            if original_type == list or original_type == commalist or original_type == atlist:
+            if original_type in GlazeGenerator.LIST_MAPPING or original_type == list:
                 contained_python_type = current_type.type_id.__args__[0] # argument of the list
                 contained_cpp_type = self._get_genfield_typestring(GeneratorField(type_id = contained_python_type), parent) # call this function again for generating the argument
                 cpp_type = "std::vector<{}>".format(contained_cpp_type)
@@ -168,10 +176,8 @@ class GlazeGenerator(Generator):
             glaze_metadata_type = "glzhlp::datetime<{}, &T::{}>".format(cpp_parent_name, current_field.name)
         elif hasattr(current_field.type_id, "__origin__"):
             original_type = current_field.type_id.__origin__
-            if original_type == commalist:
-                glaze_metadata_type = "glzhlp::stringlist<{}, &T::{}, ','>".format(cpp_parent_name, current_field.name)
-            elif original_type == atlist:
-                glaze_metadata_type = "glzhlp::stringlist<{}, &T::{}, '@'>".format(cpp_parent_name, current_field.name)
+            if original_type in GlazeGenerator.LIST_MAPPING:
+                glaze_metadata_type = "glzhlp::stringlist<{}, &T::{}, '{}'>".format(cpp_parent_name, current_field.name, GlazeGenerator.LIST_MAPPING[original_type])
             else: # any other type that theorically doesn't require a mapping, we just use the default one
                 glaze_metadata_type = "&T::{}".format(current_field.name)
         else: # any other type that doesn't require a mapping

@@ -49,6 +49,10 @@ class atlist(list[_ST]):
     """A list that is separated by at 'a@b@c' """
     pass
 
+class colonlist(list[_ST]):
+    """A list that is separated by colons 'a:b:c' """
+    pass
+
 class ArrayStep(Enum):
     """This enum describes the types of Array that a JSON can contain."""
 
