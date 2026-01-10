@@ -1,0 +1,58 @@
+
+// @keyjson(key_group = "", array=ArrayStep.Array)
+data ReceipeMst {
+    hash "8f0bCciN"
+    doc "TODO"
+
+    field id type=i32 encoding=int {
+        hash "4HqhTf3a"
+        doc "TODO"
+    }
+
+    field item_id type=i32 encoding=int {
+        hash "kixHbe54"
+        doc "TODO"
+    }
+
+    field item_count type=i32 encoding=int {
+        hash "wgV86x1q"
+        doc "TODO"
+    }
+
+    // list[str]
+    field materials type="[str]" {
+        hash "75YV2q1i"
+        doc "TODO"
+    }
+
+    field karma type=i32 encoding=int {
+        hash "HTVh8a65"
+        doc "TODO"
+    }
+
+    // TODO: ???
+    field keyitem_ids type=str {
+        hash "7dEB1Kwj"
+        doc "TODO"
+    }
+
+    field unk type=str {
+        hash "XuJL4pc5"
+        doc "TODO"
+    }
+
+    field unk2 type=i32 encoding=int {
+        hash "H6k1LIxC"
+        doc "TODO"
+    }
+
+    field unk3 type=datetime {
+        hash "qA7M9EjP"
+        doc "TODO"
+    }
+
+    field unk4 type=datetime {
+        hash "SzV0Nps7"
+        doc "TODO"
+    }
+}

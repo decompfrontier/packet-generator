@@ -1,0 +1,15 @@
+[package]
+name = "packet-generator"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+facet = "0.42.0"
+facet-json = "0.42.0"
+facet-pretty = "0.42.0"
+facet-kdl = "0.42.0"
+rootcause = "0.11.1"
+thiserror = "2.0.17"
+miette = { version = "7", features = ["fancy"] } # pretty diagnostics
+winnow = "0.7.14"
+bpaf = { version = "0.9.20", features = ["derive"] }
