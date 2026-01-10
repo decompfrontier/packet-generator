@@ -7,7 +7,7 @@ use rootcause::prelude::*;
 use crate::kdl_parser::ValidationError;
 
 #[derive(Debug, thiserror::Error)]
-enum Error {
+pub enum Error {
     #[error(transparent)]
     ParsingError(#[from] facet_kdl::KdlDeserializeError),
 
@@ -18,11 +18,11 @@ enum Error {
 pub fn parse_kdl<S: AsRef<str>>(
     document: S,
 ) -> Result<intermediate::DefinitionRegistry, Report<Error>> {
-    let document: kdl_parser::schema::RawDocument = facet_kdl::from_str(document.as_ref())
-        .context_transform_nested(|e| Error::ParsingError(e))?;
+    let raw_document: kdl_parser::schema::RawDocument =
+        facet_kdl::from_str(document.as_ref()).context_transform_nested(Error::ParsingError)?;
 
     let document =
-        kdl_parser::validate(document).context_transform_nested(|e| Error::ValidationError(e))?;
+        kdl_parser::validate(raw_document).context_transform_nested(Error::ValidationError)?;
 
     Ok(kdl_parser::document_to_definitions(document))
 }
