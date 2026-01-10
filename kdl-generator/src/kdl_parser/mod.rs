@@ -115,20 +115,25 @@ mod document_to_intermediate {
                 SchemaDataType::Array { inner, separator } => {
                     use crate::kdl_parser::schema;
 
+                    // NOTE(anri):
+                    // Patch the encoding for array types to always be String,
+                    // since the game doesn't support anything else anyway.
+                    let encoding = Some(schema::TypeEncoding::String);
+
                     match separator {
                         schema::ArraySeparator::Comma => intermediate::DataType::Array {
                             separator: intermediate::ArraySeparator::Comma,
-                            inner_type: Arc::new(recursive_matching(&inner, encoding, registry)),
+                            inner_type: Arc::new(recursive_matching(inner, encoding, registry)),
                         },
 
                         schema::ArraySeparator::At => intermediate::DataType::Array {
                             separator: intermediate::ArraySeparator::At,
-                            inner_type: Arc::new(recursive_matching(&inner, encoding, registry)),
+                            inner_type: Arc::new(recursive_matching(inner, encoding, registry)),
                         },
 
                         schema::ArraySeparator::Colon => intermediate::DataType::Array {
                             separator: intermediate::ArraySeparator::Colon,
-                            inner_type: Arc::new(recursive_matching(&inner, encoding, registry)),
+                            inner_type: Arc::new(recursive_matching(inner, encoding, registry)),
                         },
                     }
                 }

@@ -13,7 +13,7 @@ enum RewardType {
 data ArenaRankMst  {
     hash "6kWq78zx"
 
-    field id type=i32 {
+    field id type=i32 encoding=str {
         hash "JmFn3g9t" 
         doc "Ranking ID"
     }
@@ -23,12 +23,12 @@ data ArenaRankMst  {
         doc "Ranking name"
     }
 
-    field rank_point_start type=i32  {
+    field rank_point_start type=i32  encoding=str {
         hash "w0aTd94Y"
         doc "Points when this rank starts (included)"
     }
 
-    field rank_point_end type=i32  {
+    field rank_point_end type=i32  encoding=str {
         hash "1U3eBCyY"
         doc "Points when this rank ends (included)"
     }
