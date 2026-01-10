@@ -20,7 +20,7 @@ fn main() -> Result<(), miette::Report> {
 
             let definitions = packet_generator::kdl_parser::document_to_definitions(doc);
 
-            println!("{:?}", definitions);
+            println!("{:#?}", definitions);
         }
 
         _ => {} // cli::CliArgs::Generate {

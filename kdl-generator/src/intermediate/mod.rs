@@ -3,6 +3,8 @@ use std::{
     sync::{Arc, Weak},
 };
 
+use facet::Facet;
+
 #[derive(Clone, Debug)]
 pub enum Encoding {
     String,
@@ -20,7 +22,6 @@ pub enum Definition {
 #[derive(Clone, Debug)]
 pub struct Json {
     pub name: String,
-    pub key: String,
     pub fields: HashMap<Arc<str>, JsonField>,
 }
 
@@ -29,6 +30,19 @@ pub struct JsonField {
     pub name: Arc<str>,
     pub key: String,
     pub value_type: DataType,
+}
+
+impl Json {
+    pub fn new(name: String) -> Self {
+        Self {
+            name,
+            fields: HashMap::new(),
+        }
+    }
+
+    pub fn add_field(&mut self, field: JsonField) -> Option<JsonField> {
+        self.fields.insert(field.name.clone(), field)
+    }
 }
 
 #[derive(Clone, Debug)]

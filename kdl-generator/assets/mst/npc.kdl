@@ -1,16 +1,16 @@
 // @json
 json NpcPartyInfo {
-    field id  type=int {
+    field id  type=int encoding=int {
         key "P_USER_UNIT_ID"
         doc "TODO"
     }
 
-    field type type=int {
+    field type type=int encoding=int {
         key "P_MEMBER_TYPE"
         doc "TODO"
     }
 
-    field disp_order type=int {
+    field disp_order type=int encoding=int {
         key "P_DISPORDER"
         doc "TODO"
     }
@@ -23,7 +23,7 @@ json NpcTeamInfo {
         doc "TODO"
     }
 
-    field lv type=int {
+    field lv type=int encoding=int {
         key "P_LV"
         doc "TODO"
     }
@@ -96,7 +96,7 @@ json NpcUnitInfo {
 data NpcMst {
     hash "hV5vWu6C"
 
-    field id type=i32 {
+    field id type=i32 encoding=str {
         hash "7zyHb5h9"
         doc "TODO"
     }
@@ -106,7 +106,7 @@ data NpcMst {
         doc "TODO"
     }
 
-    field arena_rank_id type=i32 {
+    field arena_rank_id type=i32 encoding=str {
         hash "JmFn3g9t"
         doc "TODO"
     }
