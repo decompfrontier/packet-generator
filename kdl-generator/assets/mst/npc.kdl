@@ -95,6 +95,7 @@ json NpcUnitInfo {
 // @hashjson(hash_group = , array=ArrayStep.Array)
 data NpcMst {
     hash "hV5vWu6C"
+    doc "TODO"
 
     field id type=i32 encoding=str {
         hash "7zyHb5h9"

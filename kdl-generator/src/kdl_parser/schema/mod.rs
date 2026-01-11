@@ -1,53 +1,42 @@
-use facet::Facet;
-use facet_kdl as kdl;
 use std::{collections::HashMap, fmt::Display, sync::Arc};
 
-use crate::{
-    intermediate::{IntEnumVariant, StringEnumVariant},
-    kdl_parser::type_parser,
-};
+mod validator;
 
-#[derive(Debug, Facet)]
+pub use validator::validate;
+
+use crate::intermediate::{IntEnumVariant, StringEnumVariant};
+
+#[derive(Debug)]
 pub struct RawDocument {
-    #[facet(kdl::children)]
     pub data: Vec<DataDefinition>,
 
-    #[facet(kdl::children)]
     pub json: Vec<JsonDefinition>,
 
-    #[facet(kdl::children)]
     pub enums: Vec<EnumDefinition>,
 }
 
-#[derive(Debug, Facet)]
+#[derive(Debug)]
 #[repr(C)]
 #[allow(dead_code)]
 pub enum EnumDefinition {
-    #[facet(rename = "enum")]
     StringEnum(StringEnumDefinition),
 
-    #[facet(rename = "ienum")]
     IntEnum(IntEnumDefinition),
 }
 
-#[derive(Debug, Facet)]
+#[derive(Debug)]
 pub struct StringEnumDefinition {
-    #[facet(kdl::argument)]
     pub name: String,
 
-    #[facet(kdl::child)]
     pub doc: String,
 
-    #[facet(kdl::children)]
     pub variants: Vec<StringEnumInner>,
 }
 
-#[derive(Debug, Facet)]
+#[derive(Debug)]
 pub struct StringEnumInner {
-    #[facet(kdl::argument)]
     pub name: String,
 
-    #[facet(kdl::child)]
     pub doc: String,
 }
 
@@ -67,27 +56,21 @@ impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
     }
 }
 
-#[derive(Debug, Facet)]
+#[derive(Debug)]
 pub struct IntEnumDefinition {
-    #[facet(kdl::argument)]
     pub name: String,
 
-    #[facet(kdl::property, default = 0)]
     pub start: isize,
 
-    #[facet(kdl::child)]
     pub doc: String,
 
-    #[facet(kdl::children)]
     pub variants: Vec<IntEnumInner>,
 }
 
-#[derive(Debug, Facet)]
+#[derive(Debug)]
 pub struct IntEnumInner {
-    #[facet(kdl::argument)]
     pub name: String,
 
-    #[facet(kdl::child)]
     pub doc: String,
 }
 
@@ -108,49 +91,40 @@ impl From<IntEnumDefinition> for crate::intermediate::IntEnum {
     }
 }
 
-#[derive(Debug, Facet)]
+#[derive(Debug)]
 pub struct JsonDefinition {
-    #[facet(kdl::argument)]
     pub name: String,
 
-    #[facet(kdl::children)]
     pub fields: Vec<JsonProperty>,
 }
 
-#[derive(Debug, Facet)]
+#[derive(Debug)]
 pub struct JsonProperty {
-    #[facet(kdl::argument)]
     pub name: String,
 
-    #[facet(kdl::property, proxy=DataTypeProxy)]
     pub r#type: DataType,
 
-    #[facet(kdl::property)]
     pub r#encoding: Option<TypeEncoding>,
 
-    #[facet(kdl::child)]
     pub key: String,
 
-    #[facet(kdl::child)]
     pub doc: String,
 
-    #[facet(kdl::child, default = false)]
     pub escape: bool,
 }
 
-#[derive(Debug, Facet)]
+#[derive(Debug)]
 pub struct DataDefinition {
-    #[facet(kdl::argument)]
     pub name: String,
 
-    #[facet(kdl::child)]
+    pub doc: String,
+
     pub hash: String,
 
-    #[facet(kdl::children)]
     pub fields: Vec<DataProperty>,
 }
 
-#[derive(Debug, Clone, Copy, Facet)]
+#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 #[allow(dead_code)]
 pub enum ArraySeparator {
@@ -168,11 +142,11 @@ pub enum ArraySeparator {
     /// [i32] = "1@3@4@5@6"
     At,
 
-    /// Array separated by ':'
+    /// Array separated by '|'
     ///
     /// ## Example
     ///
-    /// [i32] = "1:3:4:5:6"
+    /// [i32] = "1|3|4|5|6"
     Colon,
 }
 
@@ -181,22 +155,36 @@ impl Display for ArraySeparator {
         match self {
             ArraySeparator::Comma => write!(f, ","),
             ArraySeparator::At => write!(f, "@"),
-            ArraySeparator::Colon => write!(f, ":"),
+            ArraySeparator::Colon => write!(f, "|"),
         }
     }
 }
 
-#[derive(Debug, Clone, Facet)]
+#[derive(Debug, Clone)]
 #[repr(C)]
 #[allow(dead_code)]
 pub enum DataType {
-    I32,
-    U32,
-    I64,
-    U64,
-    F32,
-    F64,
-    Bool,
+    I32 {
+        encoding: TypeEncoding,
+    },
+    U32 {
+        encoding: TypeEncoding,
+    },
+    I64 {
+        encoding: TypeEncoding,
+    },
+    U64 {
+        encoding: TypeEncoding,
+    },
+    F32 {
+        encoding: TypeEncoding,
+    },
+    F64 {
+        encoding: TypeEncoding,
+    },
+    Bool {
+        encoding: TypeEncoding,
+    },
     Datetime,
     String,
 
@@ -237,13 +225,13 @@ pub enum DataType {
 impl Display for DataType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            DataType::I32 => write!(f, "i32"),
-            DataType::U32 => write!(f, "u32"),
-            DataType::I64 => write!(f, "i64"),
-            DataType::U64 => write!(f, "u64"),
-            DataType::F32 => write!(f, "f32"),
-            DataType::F64 => write!(f, "f64"),
-            DataType::Bool => write!(f, "bool"),
+            DataType::I32 { encoding: _ } => write!(f, "i32"),
+            DataType::U32 { encoding: _ } => write!(f, "u32"),
+            DataType::I64 { encoding: _ } => write!(f, "i64"),
+            DataType::U64 { encoding: _ } => write!(f, "u64"),
+            DataType::F32 { encoding: _ } => write!(f, "f32"),
+            DataType::F64 { encoding: _ } => write!(f, "f64"),
+            DataType::Bool { encoding: _ } => write!(f, "bool"),
             DataType::Datetime => write!(f, "datetime"),
             DataType::String => write!(f, "string"),
             DataType::Json => write!(f, "json"),
@@ -257,57 +245,25 @@ impl Display for DataType {
     }
 }
 
-#[derive(Debug, Facet)]
-#[facet(transparent)]
-struct DataTypeProxy(String);
-
-impl TryFrom<DataTypeProxy> for DataType {
-    type Error = String;
-
-    fn try_from(value: DataTypeProxy) -> std::result::Result<Self, Self::Error> {
-        type_parser::generic_parse(&value.0)
-    }
-}
-
-#[expect(
-    clippy::infallible_try_from,
-    reason = "facet forces us to use `Infallible`."
-)]
-impl TryFrom<&DataType> for DataTypeProxy {
-    type Error = std::convert::Infallible;
-
-    fn try_from(_value: &DataType) -> std::result::Result<Self, Self::Error> {
-        todo!("Needed for serialization, which we don't do at the moment.")
-    }
-}
-
-#[derive(Debug, Clone, Copy, Facet)]
+#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub enum TypeEncoding {
-    #[facet(rename = "str")]
     String,
 
-    #[facet(rename = "int")]
     Int,
 }
 
-#[derive(Debug, Facet)]
+#[derive(Debug)]
 pub struct DataProperty {
-    #[facet(kdl::argument)]
     pub name: String,
 
-    #[facet(kdl::property, proxy=DataTypeProxy)]
+    // pub r#type: DataType,
     pub r#type: DataType,
 
-    #[facet(kdl::property)]
-    pub r#encoding: Option<TypeEncoding>,
-
-    #[facet(kdl::child)]
+    // pub r#encoding: Option<TypeEncoding>,
     pub r#hash: String,
 
-    #[facet(kdl::child)]
     pub doc: String,
 
-    #[facet(kdl::child, default = false)]
     pub escape: bool,
 }

@@ -1,4 +1,3 @@
-use facet_pretty::FacetPretty;
 use std::{fs::File, io::Read};
 
 mod cli;
@@ -14,13 +13,13 @@ fn main() -> Result<(), miette::Report> {
             let _ = file.read_to_string(&mut doc_str);
             let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str)
                 .map_err(miette::Report::new)?;
-            println!("{}", doc.pretty());
+            println!("{:#?}", doc);
 
-            let doc = packet_generator::kdl_parser::validate(doc)?;
+            // let doc = packet_generator::kdl_parser::validate(doc)?;
 
-            let definitions = packet_generator::kdl_parser::document_to_definitions(doc);
+            // let definitions = packet_generator::kdl_parser::document_to_definitions(doc);
 
-            println!("{:#?}", definitions);
+            // println!("{:#?}", definitions);
         }
 
         _ => {} // cli::CliArgs::Generate {

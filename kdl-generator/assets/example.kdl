@@ -1,42 +1,9 @@
 data Foo {
-    prop bar type="Bar" hash=deadbeef {
-        doc "Holds a Bar"
+    hash "test"
+    doc "foo"
+
+    field test type=i32 encoding=int  {
+        hash "foo"
+        doc "fdsa"
     }
-
-    prop vec3 type="(X, Y, Z)" hash=deadbeef {
-        doc "Tuple"
-    }
-
-    prop map type="str => i32 -> i64" hash=deadbeef {
-        doc "Map/Dictionary"
-    }
-
-    prop whatever type="str => [(i64, str)]" hash=deadbeef {
-        doc ""
-    }
-
-    prop funcptr type="[Item] -> (i32, Entity)" hash=deadbeef {
-        doc "Function Pointer"
-    }
-
-    prop items type="[Item]" hash=deadbeef {
-        doc "List of items"
-    }
-}
-
-data Bar {
-    prop x type="Foo" hash=1234 {
-        doc "aaa"
-    }
-}
-
-ienum Bar start=2 {
-    member Flag1
-    member Flag2
-    member Flag3
-}
-
-enum ADT {
-    member Plus
-    member Minus
 }

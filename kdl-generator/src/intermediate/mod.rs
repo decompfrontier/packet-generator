@@ -3,8 +3,6 @@ use std::{
     sync::{Arc, Weak},
 };
 
-use facet::Facet;
-
 #[derive(Clone, Debug)]
 pub enum Encoding {
     String,
