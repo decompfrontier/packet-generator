@@ -4,7 +4,7 @@ use miette::{Severity, SourceSpan};
 
 use crate::kdl_parser::{Diagnostic, ParsingError, schema::TypeEncoding};
 
-use super::schema::{ArraySeparator, DataType};
+use crate::kdl_parser::schema::{ArraySeparator, DataType};
 
 fn make_missing_encoding_err(source_code: Arc<str>, span: SourceSpan) -> ParsingError {
     Diagnostic {
@@ -13,7 +13,7 @@ fn make_missing_encoding_err(source_code: Arc<str>, span: SourceSpan) -> Parsing
         source_code: source_code.clone(),
         span,
         help: Some(
-            "since the field definition has a numeric-like type, you must choose between `encoding=int` or `encoding=str`.".to_owned()
+            "Since the field definition has a numeric-like type, you must choose between `encoding=int` or `encoding=str`.\nOtherwise, consider adding the property `default-encoding=str|int` to the data definition itself.".to_owned()
         ),
         label: None,
         related: vec![],
@@ -29,21 +29,19 @@ pub fn generic_parse(
     let input = input.trim();
 
     match (input, encoding) {
-        ("i32" | "int", Some(encoding)) => Ok(DataType::I32 { encoding }),
-        ("u32" | "uint", Some(encoding)) => Ok(DataType::U32 { encoding }),
-        ("i64" | "long", Some(encoding)) => Ok(DataType::I64 { encoding }),
-        ("u64" | "ulong", Some(encoding)) => Ok(DataType::U64 { encoding }),
-        ("f32" | "float", Some(encoding)) => Ok(DataType::F32 { encoding }),
-        ("f64" | "double", Some(encoding)) => Ok(DataType::F64 { encoding }),
+        ("i32", Some(encoding)) => Ok(DataType::I32 { encoding }),
+        ("u32", Some(encoding)) => Ok(DataType::U32 { encoding }),
+        ("i64", Some(encoding)) => Ok(DataType::I64 { encoding }),
+        ("u64", Some(encoding)) => Ok(DataType::U64 { encoding }),
+        ("f32", Some(encoding)) => Ok(DataType::F32 { encoding }),
+        ("f64", _) => Ok(DataType::F64),
         ("bool", Some(encoding)) => Ok(DataType::Bool { encoding }),
-        (
-            "i32" | "int" | "u32" | "uint" | "i64" | "long" | "u64" | "ulong" | "f32" | "float"
-            | "f64" | "double" | "bool",
-            None,
-        ) => Err(make_missing_encoding_err(source_code.clone(), span)),
+        ("i32" | "u32" | "i64" | "u64" | "f32" | "bool", None) => {
+            Err(make_missing_encoding_err(source_code.clone(), span))
+        }
         ("str", _) => Ok(DataType::String),
         ("datetime", _) => Ok(DataType::Datetime),
-        ("json", _) => Ok(DataType::Json),
+        ("datetime-unix", _) => Ok(DataType::DatetimeUnix),
 
         _ => {
             if let Some(res) = parse_map(input, encoding, source_code.clone(), span) {
@@ -58,49 +56,6 @@ pub fn generic_parse(
         }
     }
 }
-
-// fn parse_function(input: &str) -> Option<Result<DataType, String>> {
-//     const ARROW: &str = " -> ";
-//
-//     let input = input.trim();
-//     if !input.contains(ARROW) {
-//         return None;
-//     }
-//
-//     let parameters: Result<Vec<_>, String> = input
-//         .split(ARROW)
-//         .filter(|c| !c.is_empty())
-//         .map(generic_parse)
-//         .collect();
-//
-//     let Ok(parameters) = parameters else {
-//         return Some(Err(
-//             parameters.expect_err("just checked it contains an error.")
-//         ));
-//     };
-//
-//     if parameters.is_empty() {
-//         return None;
-//     }
-//
-//     if parameters.len() == 1 {
-//         return Some(Err(
-//             "Input or output of function type not provided.".to_owned()
-//         ));
-//     }
-//
-//     if parameters.len() == 3 {
-//         return Some(Err(
-//             "Too many arrows for function type, use `(tuples)` to allow multiple parameters."
-//                 .to_owned(),
-//         ));
-//     }
-//
-//     Some(Ok(DataType::Function {
-//         input: Arc::new(parameters[0].clone()),
-//         output: Arc::new(parameters[1].clone()),
-//     }))
-// }
 
 fn parse_map(
     input: &str,
@@ -237,18 +192,15 @@ fn parse_array(
         _ => (words, None),
     };
 
-    // NOTE(anri):
-    // We override `encoding` with Some(TypeEncoding::String) because numbers
-    // in arrays are serialized as strings anyway.
-    let val = generic_parse(words, Some(TypeEncoding::String), source_code.clone(), span);
+    let val = generic_parse(words, encoding, source_code.clone(), span);
 
     match (val, separator) {
-        (Ok(DataType::Json), _) => Some(Ok(DataType::JsonArray { type_hint: None })),
-        (Ok(val), Some(separator)) => Some(Ok(DataType::Array {
+        (Ok(val), Some(separator)) => Some(Ok(DataType::StringArray {
             inner: Arc::new(val),
             separator,
         })),
-        (Ok(val), None) => Some(Ok(DataType::SingleElementArray(Arc::new(val)))),
+        (Ok(val), None) => Some(Ok(DataType::Array(Arc::new(val)))),
+        // (Ok(val), None) => Some(Ok(DataType::SingleElementArray(Arc::new(val)))),
         (Err(e), _) => Some(Err(e)),
     }
 }

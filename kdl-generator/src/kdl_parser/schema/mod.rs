@@ -1,22 +1,21 @@
-use std::{collections::HashMap, fmt::Display, sync::Arc};
+use std::{collections::HashMap, fmt::Display, str::FromStr, sync::Arc};
 
 mod validator;
 
 pub use validator::validate;
 
-use crate::intermediate::{IntEnumVariant, StringEnumVariant};
+use crate::intermediate::{self, IntEnumVariant, StringEnumVariant};
 
 #[derive(Debug)]
 pub struct RawDocument {
-    pub data: Vec<DataDefinition>,
+    pub json_definitions: Vec<JSONDefinition>,
 
-    pub json: Vec<JsonDefinition>,
+    pub http_definitions: Vec<HTTPDefinition>,
 
-    pub enums: Vec<EnumDefinition>,
+    pub enum_definitions: Vec<EnumDefinition>,
 }
 
 #[derive(Debug)]
-#[repr(C)]
 #[allow(dead_code)]
 pub enum EnumDefinition {
     StringEnum(StringEnumDefinition),
@@ -38,6 +37,8 @@ pub struct StringEnumInner {
     pub name: String,
 
     pub doc: String,
+
+    pub value: String,
 }
 
 impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
@@ -72,6 +73,8 @@ pub struct IntEnumInner {
     pub name: String,
 
     pub doc: String,
+
+    pub value: Option<i128>,
 }
 
 impl From<IntEnumDefinition> for crate::intermediate::IntEnum {
@@ -92,14 +95,14 @@ impl From<IntEnumDefinition> for crate::intermediate::IntEnum {
 }
 
 #[derive(Debug)]
-pub struct JsonDefinition {
+pub struct HTTPDefinition {
     pub name: String,
 
-    pub fields: Vec<JsonProperty>,
+    pub fields: Vec<HTTPProperty>,
 }
 
 #[derive(Debug)]
-pub struct JsonProperty {
+pub struct HTTPProperty {
     pub name: String,
 
     pub r#type: DataType,
@@ -114,18 +117,17 @@ pub struct JsonProperty {
 }
 
 #[derive(Debug)]
-pub struct DataDefinition {
+pub struct JSONDefinition {
     pub name: String,
 
     pub doc: String,
 
-    pub hash: String,
+    pub hash: Option<String>,
 
-    pub fields: Vec<DataProperty>,
+    pub fields: Vec<JSONField>,
 }
 
 #[derive(Debug, Clone, Copy)]
-#[repr(C)]
 #[allow(dead_code)]
 pub enum ArraySeparator {
     /// Array separated by ','
@@ -150,6 +152,21 @@ pub enum ArraySeparator {
     Colon,
 }
 
+impl FromStr for ArraySeparator {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "," => Ok(Self::Comma),
+            "@" => Ok(Self::At),
+            "|" => Ok(Self::Colon),
+            _ => Err(
+                "expected to find one of `,` (comma), `@` (at), or `|` (colon) as array separator",
+            ),
+        }
+    }
+}
+
 impl Display for ArraySeparator {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -161,64 +178,62 @@ impl Display for ArraySeparator {
 }
 
 #[derive(Debug, Clone)]
-#[repr(C)]
 #[allow(dead_code)]
 pub enum DataType {
     I32 {
         encoding: TypeEncoding,
     },
+
     U32 {
         encoding: TypeEncoding,
     },
+
     I64 {
         encoding: TypeEncoding,
     },
+
     U64 {
         encoding: TypeEncoding,
     },
+
     F32 {
         encoding: TypeEncoding,
     },
-    F64 {
-        encoding: TypeEncoding,
-    },
+
+    // NOTE(anri, 2026-01-11): a string-encoded 64-bit float does not exist yet.
+    F64,
+
     Bool {
         encoding: TypeEncoding,
     },
+
+    /// Date time formatted as '2026-11-01 03:43:04'.
     Datetime,
+
+    /// UNIX timestamp.
+    DatetimeUnix,
+
     String,
 
-    /// A JSON object.
-    Json,
-
     /// An array typically represented as a string separated by a separator.
-    Array {
+    StringArray {
         inner: Arc<DataType>,
         separator: ArraySeparator,
     },
 
-    /// An array represented as any arbitrary JSON object.
-    JsonArray {
-        type_hint: Option<Arc<DataType>>,
-    },
+    /// A normal array.
+    Array(Arc<DataType>),
 
-    /// Models the case where there is an array of only one element.
-    ///
-    /// NOTE(anri): Maybe this can be avoided?
+    /// Like `Array` but it only holds a single element.
     SingleElementArray(Arc<DataType>),
 
-    // Function {
-    //     input: Arc<DataType>,
-    //     output: Arc<DataType>,
-    // },
-
-    // Dictionary from one type to another.
+    /// Dictionary from one type to another.
     Map {
         key: Arc<DataType>,
         value: Arc<DataType>,
     },
 
-    Tuple(Vec<DataType>),
+    // Tuple(Vec<DataType>),
     Custom(String),
 }
 
@@ -230,38 +245,60 @@ impl Display for DataType {
             DataType::I64 { encoding: _ } => write!(f, "i64"),
             DataType::U64 { encoding: _ } => write!(f, "u64"),
             DataType::F32 { encoding: _ } => write!(f, "f32"),
-            DataType::F64 { encoding: _ } => write!(f, "f64"),
+            DataType::F64 => write!(f, "f64"),
             DataType::Bool { encoding: _ } => write!(f, "bool"),
             DataType::Datetime => write!(f, "datetime"),
+            DataType::DatetimeUnix => write!(f, "datetime-unix"),
             DataType::String => write!(f, "string"),
-            DataType::Json => write!(f, "json"),
-            DataType::Array { inner, separator } => write!(f, "[{inner}{separator}]"),
-            DataType::JsonArray { type_hint: _ } => write!(f, "[json]"),
+            DataType::Array(inner) => write!(f, "[{inner}]"),
+            DataType::StringArray { inner, separator } => write!(f, "[{inner}{separator}]"),
             DataType::SingleElementArray(data_type) => write!(f, "[{data_type}]"),
             DataType::Map { key, value } => write!(f, "{key} => {value}"),
-            DataType::Tuple(_data_types) => todo!(),
             DataType::Custom(s) => write!(f, "{s}"),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy)]
-#[repr(C)]
 pub enum TypeEncoding {
     String,
-
     Int,
 }
 
+impl FromStr for TypeEncoding {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "str" | "string" => Ok(Self::String),
+            "int" => Ok(Self::Int),
+            _ => Err(format!("unknown encoding type `{s}`")),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum JSONKey {
+    String(String),
+    UseUnderlying,
+}
+
+impl Into<intermediate::JSONKey> for JSONKey {
+    fn into(self) -> intermediate::JSONKey {
+        match self {
+            JSONKey::String(s) => intermediate::JSONKey::String(s),
+            JSONKey::UseUnderlying => intermediate::JSONKey::UseUnderlying,
+        }
+    }
+}
+
 #[derive(Debug)]
-pub struct DataProperty {
+pub struct JSONField {
     pub name: String,
 
-    // pub r#type: DataType,
     pub r#type: DataType,
 
-    // pub r#encoding: Option<TypeEncoding>,
-    pub r#hash: String,
+    pub key: JSONKey,
 
     pub doc: String,
 

@@ -1,9 +1,57 @@
-data Foo {
-    hash "test"
-    doc "foo"
+json Foo {
+    doc "dsadsa"
 
-    field test type=i32 encoding=int  {
-        hash "foo"
-        doc "fdsa"
+    field id type="i32" encoding=int {
+        key "foo"
+        doc "TODO"
     }
 }
+
+json NpcUnitInfo default-encoding=int {
+    doc "test"
+
+    // String Array
+    // field id type="[i32: |]" { }
+    // field id type="[i32: @]" { }
+    // field id type="[i32: ,]" { }
+    //
+    // // Single Element Array
+    // field id type="[i32]" encoding=int { }
+    //
+    // // Array
+    // field id type="[[i32]]" encoding=int { }
+}
+
+http GuestLoginReq { }
+
+xml TestXML { }
+
+plist TestPlist { }
+
+
+json InitializeReq {
+    doc "Initialization command"
+
+    field user-info type=UserInfoReq {
+        key transparent=#false
+        doc "User information request"
+    }
+
+    field mst-requests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST that should be sent"
+    }
+}
+
+data InitializeResp {
+    doc "Response of initialize command"
+
+    field login-campaign type=LoginCampaignMst  {
+        key
+        doc "TODO"
+        hints cachable single-element-array
+    }
+
+    // ...
+}
+

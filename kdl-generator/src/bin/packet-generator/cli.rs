@@ -28,8 +28,6 @@ pub struct CxxOptions {
 pub enum RustSerializer {
     /// Serialize in JSON with Glaze
     Serde,
-
-    Facet,
 }
 
 #[derive(Debug, Clone, Bpaf)]

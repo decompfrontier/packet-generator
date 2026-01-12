@@ -1,5 +1,5 @@
+mod parser;
 pub mod schema;
-mod type_parser;
 
 use std::{fmt::Display, str::FromStr, sync::Arc};
 
@@ -9,13 +9,8 @@ pub use schema::validate;
 use kdl::{KdlDocument, KdlError};
 
 pub struct Document(RawDocument);
-use crate::{
-    intermediate::DefinitionRegistry,
-    kdl_parser::{
-        schema::{DataDefinition, DataProperty, RawDocument, TypeEncoding},
-        type_parser::generic_parse,
-    },
-};
+
+use crate::{intermediate::DefinitionRegistry, kdl_parser::schema::RawDocument};
 
 #[derive(Debug, thiserror::Error)]
 pub struct Diagnostic {
@@ -151,9 +146,9 @@ pub fn raw_parse_kdl<S: AsRef<str>>(document: S) -> Result<schema::RawDocument, 
     let mut all_diagnostics = vec![];
 
     let mut root = RawDocument {
-        data: vec![],
-        json: vec![],
-        enums: vec![],
+        json_definitions: vec![],
+        http_definitions: vec![],
+        enum_definitions: vec![],
     };
 
     let children = raw_document.nodes();
@@ -179,287 +174,40 @@ pub fn raw_parse_kdl<S: AsRef<str>>(document: S) -> Result<schema::RawDocument, 
 
     for definition in children {
         let source_code = source_code.clone();
+
         match definition.name().value() {
-            "data" => {
-                let name = definition
-                    .get(0)
-                    .ok_or_else(|| {
-                        ParsingError::from(Diagnostic {
-                            message: format!("data definition lacks a name as its first argument"),
-                            severity: Severity::Error,
-                            source_code: source_code.clone(),
-                            span: definition.span(),
-                            help: Some("add a name to the definition".to_owned()),
-                            label: None,
-                            related: vec![],
-                        })
-                    })?
-                    .as_string()
-                    .ok_or_else(|| {
-                        ParsingError::from(Diagnostic {
-                            message:
-                                "the name of the data definition (1st argument) is not a string"
-                                    .to_owned(),
-                            severity: Severity::Error,
-                            source_code: source_code.clone(),
-                            span: definition.span(),
-                            help: Some("give it a name as a string".to_owned()),
-                            label: None,
-                            related: vec![],
-                        })
-                    })?;
+            "json" => {
+                match parser::data_parser::parse_data_definition(definition, source_code.clone()) {
+                    Ok(def) => {
+                        root.json_definitions.push(def);
+                    }
 
-                let data_children = definition.children().ok_or_else(|| {
-                    ParsingError::from(Diagnostic {
-                        message: "the data definition has no children".to_owned(),
-                        severity: Severity::Error,
-                        source_code: source_code.clone(),
-                        span: definition.span(),
-                        help: Some("specify children `hash`, `doc` and some `field`s".to_owned()),
-                        label: None,
-                        related: vec![],
-                    })
-                })?;
+                    Err(ParsingError::Diagnostics { diagnostics, .. }) => {
+                        all_diagnostics.extend(diagnostics);
+                    }
 
-                let hash = data_children
-                    .get("hash")
-                    .ok_or_else(|| ParsingError::from(Diagnostic {
-                        message: format!("data definition `{name}` lacks child `hash`"),
-                        severity: Severity::Error,
-                        source_code: source_code.clone(),
-                        span: definition.span(),
-                        help: Some("specify child `hash \"foobar\"`".to_owned()),
-                        label: None,
-                        related: vec![],
-                    }))?
-                    .get(0)
-                    .ok_or_else(|| ParsingError::from(Diagnostic {
-                        message: format!(
-                            "child `hash` in data definition `{name}` does not have any arguments"
-                        ),
-                        severity: Severity::Error,
-                        source_code: source_code.clone(),
-                        span: definition.span(),
-                        help: Some("specify `hash \"foobar\"`".to_owned(),),
-                        label: None,
-                        related: vec![],
-                    }))?
-                    .as_string()
-                    .ok_or_else(|| ParsingError::from(Diagnostic {
-                        message: format!(
-                            "child `hash` in data definition `{name}` does not have a string as its first argument"
-                        ),
-                        severity: Severity::Error,
-                        source_code: source_code.clone(),
-                        span: definition.span(),
-                        help: Some("specify `hash \"foobar\"`".to_owned(),),
-                        label: None,
-                        related: vec![],
-                    }))?;
-
-                let doc = data_children.get("doc").ok_or_else(|| {
-                    ParsingError::from(Diagnostic {
-                        message: format!("data definition `{name}` lacks child `doc`"),
-                        severity: Severity::Error,
-                        source_code: source_code.clone(),
-                        span: definition.span(),
-                        help: Some("specify child `doc \"Example\"`".to_owned()),
-                        label: None,
-                        related: vec![],
-                    })
-                })
-                ?
-                .get(0)
-                    .ok_or_else(|| ParsingError::from(Diagnostic {
-
-                        message: format!(
-                            "child `doc` in data definition `{name}` does not have any arguments"
-                        ),
-                        severity: Severity::Error,
-                        source_code: source_code.clone(),
-                        span: definition.span(),
-                        help: Some("specify `doc \"Example\"`".to_owned(),),
-                        label: None,
-                        related: vec![],
-                    }))?
-                    .as_string()
-                    .ok_or_else(|| ParsingError::from(Diagnostic {
-                        message: format!(
-                            "child `doc` in data definition `{name}` does not have a string as its first argument"
-                        ),
-                        severity: Severity::Error,
-                        source_code: source_code.clone(),
-                        span: definition.span(),
-                        help: Some("specify `hash \"Example\"`".to_owned(),),
-                        label: None,
-                        related: vec![],
-                    }))?;
-
-                let fields: Vec<DataProperty> = data_children
-                    .nodes()
-                    .iter()
-                    .filter(|&node| node.name().value() == "field")
-                    .map(|node| -> Result<_, ParsingError> {
-                        let field_node = node
-                            .get(0)
-                            .ok_or_else(|| ParsingError::from(Diagnostic{
-                                message: format!("field definition in data `{name}` does not have a name as its first argument"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: None,
-                                label: None,
-                                related: vec![],
-                        }))?
-                        .as_string()
-                        .ok_or_else(|| ParsingError::from(Diagnostic {
-                                message: format!("field definition in data `{name}` is not a string"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: None,
-                                label: None,
-                                related: vec![]
-                            }))?;
-
-                        let maybe_encoding = node.get("encoding").and_then(|v| v.as_string())
-                        .and_then(|s| match s {
-                                "str" => Some(TypeEncoding::String),
-                                "int" => Some(TypeEncoding::Int),
-                                _ => None
-                            });
-
-                        let datatype =
-                            node.get("type")
-                            .ok_or_else(|| ParsingError::from(Diagnostic {
-                                message: format!("field definition `{name}::{field_node}` does not have property `type`"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: Some("specify `type=\"...\"` and, possibly, an `encoding=int|str`.".to_owned()),
-                                label: None,
-                                related: vec![],
-                            }))?
-                        .as_string()
-                        .ok_or_else(|| ParsingError::from(Diagnostic {
-                                message: format!("`type` property in field definition `{name}::{field_node}` is not a string"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: Some("specify `type=\"...\"` and, possibly, an `encoding=int|str`.".to_owned()),
-                                label: None,
-                                related: vec![],
-                            }))?;
-
-                        let datatype = generic_parse(datatype, maybe_encoding, source_code.clone(), node.span())?;
-
-
-                        let children = node.children().ok_or_else( || ParsingError::from(Diagnostic {
-                                message: format!("field definition `{name}::{field_node}` does not have any child"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: Some("specify children `hash` and `doc`".to_owned()),
-                                label: None,
-                                related: vec![],
-                            })
-                        )?;
-
-
-
-                        let hash = children
-                            .get("hash")
-                            .ok_or_else(|| ParsingError::from(Diagnostic {
-                                message: format!("field definition `{name}::{field_node}` lacks child `hash`"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: Some("specify child `hash \"foobar\"`".to_owned()),
-                                label: None,
-                                related: vec![],
-                            }))?
-                            .get(0)
-                            .ok_or_else(|| ParsingError::from(Diagnostic {
-                                message: format!("child `hash` in field definition `{name}::{field_node}` does not have a value"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: None,
-                                label: None,
-                                related: vec![],
-                            }))?
-                            .as_string()
-                            .ok_or_else(|| ParsingError::from(Diagnostic {
-                                message: format!("child `hash` in field definition `{name}::{field_node}` is not a string"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: None,
-                                label: None,
-                                related: vec![],
-                            }))?;
-
-                        let doc = children
-                            .get("doc")
-                            .ok_or_else(|| ParsingError::from(Diagnostic {
-                                message: format!("field definition `{name}::{field_node}` lacks child `doc`"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: Some("specify child `doc \"Example\"`".to_owned()),
-                                label: None,
-                                related: vec![],
-                            }))?
-                            .get(0)
-                            .ok_or_else(|| ParsingError::from(Diagnostic {
-                                message: format!("child `doc` in field definition `{name}::{field_node}` does not have a value"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: None,
-                                label: None,
-                                related: vec![],
-                            }))?
-                            .as_string()
-                            .ok_or_else(|| ParsingError::from(Diagnostic {
-                                message: format!("child `doc` in field definition `{name}::{field_node}` is not a string"),
-                                severity: Severity::Error,
-                                source_code: source_code.clone(),
-                                span: node.span(),
-                                help: None,
-                                label: None,
-                                related: vec![],
-                            }))?;
-
-                        Ok(DataProperty {
-                            name: field_node.to_owned(),
-                            r#type: datatype,
-                            hash: hash.to_owned(),
-                            doc: doc.to_owned(),
-                            escape: false,
-                        })
-                    })
-                    .collect::<Result<Vec<DataProperty>, ParsingError>>()?;
-
-                root.data.push(DataDefinition {
-                    name: name.into(),
-                    doc: doc.into(),
-                    hash: hash.into(),
-                    fields,
-                });
+                    Err(e) => return Err(e),
+                }
             }
 
-            "json" => {}
+            "http" => {}
 
-            "enum" => {}
+            "int-enum" => {}
 
-            "ienum" => {}
+            "str-enum" => {}
 
             _ => {}
         }
     }
 
-    Ok(root)
+    if all_diagnostics.is_empty() {
+        Ok(root)
+    } else {
+        Err(ParsingError::Diagnostics {
+            source_code,
+            diagnostics: all_diagnostics,
+        })
+    }
 }
 
 mod document_to_intermediate {
@@ -472,8 +220,8 @@ mod document_to_intermediate {
             JsonField, Struct, StructField,
         },
         kdl_parser::schema::{
-            self, DataDefinition, DataProperty, DataType as SchemaDataType, JsonDefinition,
-            JsonProperty, TypeEncoding,
+            self, DataType as SchemaDataType, HTTPDefinition, HTTPProperty, JSONDefinition,
+            JSONField, TypeEncoding,
         },
     };
 
@@ -528,14 +276,7 @@ mod document_to_intermediate {
                 },
             },
 
-            SchemaDataType::F64 { encoding } => match encoding {
-                TypeEncoding::String => IntermediateDataType::F64 {
-                    encoding: Encoding::String,
-                },
-                TypeEncoding::Int => IntermediateDataType::F64 {
-                    encoding: Encoding::Int,
-                },
-            },
+            SchemaDataType::F64 => IntermediateDataType::F64,
 
             SchemaDataType::Bool { encoding } => match encoding {
                 TypeEncoding::String => IntermediateDataType::Bool {
@@ -547,31 +288,34 @@ mod document_to_intermediate {
             },
 
             SchemaDataType::Datetime => IntermediateDataType::Datetime,
-            SchemaDataType::String => IntermediateDataType::String,
-            SchemaDataType::Json => todo!(),
+            SchemaDataType::DatetimeUnix => IntermediateDataType::DatetimeUnix,
 
-            SchemaDataType::Array { inner, separator } => {
+            SchemaDataType::String => IntermediateDataType::String,
+
+            SchemaDataType::Array(datatype) => IntermediateDataType::Array {
+                inner_type: Arc::new(convert_datatype_recursive(datatype, registry)),
+            },
+
+            SchemaDataType::StringArray { inner, separator } => {
                 use crate::kdl_parser::schema;
 
                 match separator {
-                    schema::ArraySeparator::Comma => intermediate::DataType::Array {
+                    schema::ArraySeparator::Comma => intermediate::DataType::StringArray {
                         separator: intermediate::ArraySeparator::Comma,
                         inner_type: Arc::new(convert_datatype_recursive(inner, registry)),
                     },
 
-                    schema::ArraySeparator::At => intermediate::DataType::Array {
+                    schema::ArraySeparator::At => intermediate::DataType::StringArray {
                         separator: intermediate::ArraySeparator::At,
                         inner_type: Arc::new(convert_datatype_recursive(inner, registry)),
                     },
 
-                    schema::ArraySeparator::Colon => intermediate::DataType::Array {
+                    schema::ArraySeparator::Colon => intermediate::DataType::StringArray {
                         separator: intermediate::ArraySeparator::Colon,
                         inner_type: Arc::new(convert_datatype_recursive(inner, registry)),
                     },
                 }
             }
-
-            SchemaDataType::JsonArray { type_hint: _ } => todo!(),
 
             SchemaDataType::SingleElementArray(data_type) => {
                 intermediate::DataType::SingleElementArray {
@@ -584,8 +328,6 @@ mod document_to_intermediate {
                 value: Arc::new(convert_datatype_recursive(value, registry)),
             },
 
-            SchemaDataType::Tuple(_data_types) => todo!(),
-
             SchemaDataType::Custom(s) => {
                 if let Some(def) = registry.find_weak(s) {
                     intermediate::DataType::Definition(def)
@@ -597,7 +339,7 @@ mod document_to_intermediate {
     }
 
     fn convert_struct_datatype(
-        schema_field: &DataProperty,
+        schema_field: &JSONField,
         registry: &mut DefinitionRegistry,
     ) -> IntermediateDataType {
         // convert_datatype_recursive(&schema_field.r#type, schema_field.encoding, registry)
@@ -605,7 +347,7 @@ mod document_to_intermediate {
     }
 
     fn convert_json_datatype(
-        schema_field: &JsonProperty,
+        schema_field: &HTTPProperty,
         registry: &mut DefinitionRegistry,
     ) -> IntermediateDataType {
         // convert_datatype_recursive(&schema_field.r#type, schema_field.encoding, registry)
@@ -630,14 +372,14 @@ mod document_to_intermediate {
         }
     }
 
-    pub fn add_struct_definitions(registry: &mut DefinitionRegistry, structs: Vec<DataDefinition>) {
+    pub fn add_struct_definitions(registry: &mut DefinitionRegistry, structs: Vec<JSONDefinition>) {
         for struct_ in structs {
             let mut struct_def = Struct::new(struct_.name, struct_.hash);
 
             for field in struct_.fields {
                 struct_def.add_field(StructField {
                     name: field.name.clone().into(),
-                    hash_name: field.hash.clone(),
+                    hash_name: field.key.clone().into(),
                     type_: convert_struct_datatype(&field, registry),
                 });
             }
@@ -646,7 +388,7 @@ mod document_to_intermediate {
         }
     }
 
-    pub fn add_json_definitions(registry: &mut DefinitionRegistry, jsons: Vec<JsonDefinition>) {
+    pub fn add_json_definitions(registry: &mut DefinitionRegistry, jsons: Vec<HTTPDefinition>) {
         for json in jsons {
             let mut json_def = Json::new(json.name);
 
@@ -666,9 +408,9 @@ mod document_to_intermediate {
 pub fn document_to_definitions(document: Document) -> DefinitionRegistry {
     let mut registry = DefinitionRegistry::new();
 
-    document_to_intermediate::add_enum_definitions(&mut registry, document.0.enums);
-    document_to_intermediate::add_json_definitions(&mut registry, document.0.json);
-    document_to_intermediate::add_struct_definitions(&mut registry, document.0.data);
+    document_to_intermediate::add_enum_definitions(&mut registry, document.0.enum_definitions);
+    document_to_intermediate::add_json_definitions(&mut registry, document.0.http_definitions);
+    document_to_intermediate::add_struct_definitions(&mut registry, document.0.json_definitions);
 
     registry
 }

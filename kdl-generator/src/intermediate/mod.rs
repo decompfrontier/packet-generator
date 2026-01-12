@@ -44,21 +44,27 @@ impl Json {
 }
 
 #[derive(Clone, Debug)]
+pub enum JSONKey {
+    String(String),
+    UseUnderlying,
+}
+
+#[derive(Clone, Debug)]
 pub struct Struct {
     pub name: String,
-    pub hash_name: String,
+    pub hash_name: Option<String>,
     pub fields: HashMap<Arc<str>, StructField>,
 }
 
 #[derive(Clone, Debug)]
 pub struct StructField {
     pub name: Arc<str>,
-    pub hash_name: String,
+    pub hash_name: JSONKey,
     pub type_: DataType,
 }
 
 impl Struct {
-    pub fn new(name: String, hash_name: String) -> Self {
+    pub fn new(name: String, hash_name: Option<String>) -> Self {
         Self {
             name,
             hash_name,
@@ -167,25 +173,30 @@ pub enum DataType {
         encoding: Encoding,
     },
 
-    F64 {
-        encoding: Encoding,
-    },
+    F64,
 
     Bool {
         encoding: Encoding,
     },
 
     String,
+
     Datetime,
+
+    DatetimeUnix,
 
     Map {
         key: Arc<DataType>,
         value: Arc<DataType>,
     },
 
-    Array {
+    StringArray {
         inner_type: Arc<DataType>,
         separator: ArraySeparator,
+    },
+
+    Array {
+        inner_type: Arc<DataType>,
     },
 
     SingleElementArray {
