@@ -1,7 +1,7 @@
 json Foo {
     doc "dsadsa"
 
-    field id type="i32::str" {
+    field id type="[i32::{foo, }]::{bar,}" {
         key "foo"
         doc "TODO"
     }
@@ -49,6 +49,7 @@ json InitializeResp {
 
     field login-campaign type=LoginCampaignMst  {
         doc "TODO"
+        key "a"
     }
 
     // ...

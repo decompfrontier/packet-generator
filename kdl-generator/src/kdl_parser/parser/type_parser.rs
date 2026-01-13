@@ -2,7 +2,6 @@ use std::sync::Arc;
 
 use miette::{Severity, SourceSpan};
 use winnow::Parser;
-use winnow::error::{ContextError, ErrMode, ParseError};
 
 use crate::kdl_parser::parser::type_parser::combinator_solution::Error;
 use crate::kdl_parser::{Diagnostic, ParsingError, schema::TypeEncoding};
@@ -24,6 +23,22 @@ pub fn generic_parse(
 
         Err(e) => {
             let inner = e.inner();
+
+            let new_span = {
+                // HACK(anri):
+                // We should probably _know_ when is the byte starting point of
+                // the string, but `kdl-rs` does not appear to expose such span.
+                let type_decl_start_len = "type=\"".len();
+                // let type_decl_end_len = "\"".len();
+
+                let chars = e.char_span();
+                println!("{chars:#?}");
+                let base = span.offset() + type_decl_start_len;
+                let start = base + chars.start;
+                let end = base + chars.end;
+
+                SourceSpan::from(start..end)
+            };
 
             fn convert_error_to_diagnostic(
                 error: &Error,
@@ -70,7 +85,7 @@ pub fn generic_parse(
             Err(ParsingError::from(convert_error_to_diagnostic(
                 inner,
                 source_code.clone(),
-                span,
+                new_span,
             )))
         }
     }
@@ -82,11 +97,13 @@ mod combinator_solution {
     use std::sync::Arc;
 
     use crate::kdl_parser::schema::{ArraySeparator, DataType, TypeEncoding};
+    use miette::SourceSpan;
     use winnow::ascii::{alpha1, alphanumeric1, space0, space1};
     use winnow::combinator::{
         alt, cut_err, delimited, not, opt, peek, preceded, separated, separated_pair,
     };
     use winnow::error::{AddContext, FromExternalError, ParserError};
+    use winnow::stream::{Offset, Stream};
     use winnow::token::literal;
 
     use winnow::prelude::*;
@@ -95,6 +112,7 @@ mod combinator_solution {
     pub struct Error {
         pub cause: Option<MiniDiagnostic>,
         pub context: Vec<MiniDiagnostic>,
+        pub span: Option<SourceSpan>,
     }
 
     impl Display for Error {
@@ -171,6 +189,7 @@ mod combinator_solution {
             Self {
                 cause: Some(e),
                 context: vec![],
+                span: None,
             }
         }
     }
@@ -181,13 +200,14 @@ mod combinator_solution {
         }
     }
 
-    impl<I: winnow::stream::Stream + Clone> ParserError<I> for Error {
+    impl<I: Stream + Clone> ParserError<I> for Error {
         type Inner = Self;
 
         fn from_input(_input: &I) -> Self {
             Self {
                 cause: None,
                 context: vec![],
+                span: None,
             }
         }
 
@@ -196,11 +216,11 @@ mod combinator_solution {
         }
     }
 
-    impl<I: winnow::stream::Stream> AddContext<I, MiniDiagnostic> for Error {
+    impl<I: Stream> AddContext<I, MiniDiagnostic> for Error {
         fn add_context(
             mut self,
             _input: &I,
-            _token_start: &<I as winnow::stream::Stream>::Checkpoint,
+            _token_start: &<I as Stream>::Checkpoint,
             context: MiniDiagnostic,
         ) -> Self {
             match self.cause {
