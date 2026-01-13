@@ -309,11 +309,11 @@ mod tests {
         {
             let field = StructField {
                 name: "bar".into(),
-                hash_name: String::from("bar"),
+                hash_name: JSONKey::String(String::from("bar")),
                 type_: DataType::String,
             };
 
-            let mut s = Struct::new(String::from("Foo"), String::from("avdsfdsf"));
+            let mut s = Struct::new(String::from("Foo"), Some(String::from("avdsfdsf")));
             s.add_field(field);
 
             definitions.insert(Definition::Struct(s));
@@ -326,11 +326,11 @@ mod tests {
 
             let field = StructField {
                 name: "has_foo".into(),
-                hash_name: String::from("bar"),
+                hash_name: JSONKey::String(String::from("bar")),
                 type_: DataType::Definition(foo_struct.clone()),
             };
 
-            let mut s = Struct::new(String::from("Bar"), String::from("avfdsfdsf"));
+            let mut s = Struct::new(String::from("Bar"), Some(String::from("avfdsfdsf")));
             s.add_field(field);
 
             definitions.insert(Definition::Struct(s));

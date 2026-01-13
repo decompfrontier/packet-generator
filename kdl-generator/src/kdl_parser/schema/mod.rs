@@ -283,11 +283,11 @@ pub enum JSONKey {
     UseUnderlying,
 }
 
-impl Into<intermediate::JSONKey> for JSONKey {
-    fn into(self) -> intermediate::JSONKey {
-        match self {
-            JSONKey::String(s) => intermediate::JSONKey::String(s),
-            JSONKey::UseUnderlying => intermediate::JSONKey::UseUnderlying,
+impl From<JSONKey> for intermediate::JSONKey {
+    fn from(value: JSONKey) -> Self {
+        match value {
+            JSONKey::String(s) => Self::String(s),
+            JSONKey::UseUnderlying => Self::UseUnderlying,
         }
     }
 }

@@ -186,6 +186,10 @@ fn parse_field(
     )?;
 
     let key = key_node
+        // TODO(anri):
+        // Generate a warning if `transparent` is used as an argument instead of
+        // a property.
+        // Or make such string reserved, or use another child, like `key-transparent`.
         .extract_argument_string(
             0,
             ErrorContext {

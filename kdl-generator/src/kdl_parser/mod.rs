@@ -12,7 +12,7 @@ pub struct Document(RawDocument);
 
 use crate::{intermediate::DefinitionRegistry, kdl_parser::schema::RawDocument};
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub struct Diagnostic {
     pub message: String,
     pub severity: Severity,
@@ -20,8 +20,7 @@ pub struct Diagnostic {
     pub span: SourceSpan,
     pub help: Option<String>,
     pub label: Option<String>,
-    pub related: Vec<ParsingError>,
-    // pub code: Option<usize>, // TODO(anri): Maybe support an error-code?
+    pub related: Vec<Diagnostic>,
 }
 
 impl Display for Diagnostic {
@@ -53,6 +52,16 @@ impl miette::Diagnostic for Diagnostic {
         let labeled_span = LabeledSpan::new_with_span(Some(label), self.span);
 
         Some(Box::new(std::iter::once(labeled_span)))
+    }
+
+    fn related<'a>(&'a self) -> Option<Box<dyn Iterator<Item = &'a dyn miette::Diagnostic> + 'a>> {
+        if !self.related.is_empty() {
+            Some(Box::new(
+                self.related.iter().map(|d| d as &dyn miette::Diagnostic),
+            ))
+        } else {
+            None
+        }
     }
 }
 
