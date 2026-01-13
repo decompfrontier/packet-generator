@@ -282,6 +282,7 @@ pub fn raw_parse_kdl<S: AsRef<str>>(document: S) -> Result<schema::RawDocument, 
     }
 }
 
+// TODO(anri): move this module somewhere? Possibly try to find a better name.
 mod document_to_intermediate {
     use std::sync::Arc;
 
@@ -289,17 +290,16 @@ mod document_to_intermediate {
     use crate::{
         intermediate::{
             self, DataType as IntermediateDataType, Definition, DefinitionRegistry, Encoding, Json,
-            JsonField, Struct, StructField,
+            JsonField,
         },
         kdl_parser::schema::{
-            self, DataType as SchemaDataType, HTTPDefinition, HTTPProperty, JSONDefinition,
-            JSONField, TypeEncoding,
+            self, DataType as SchemaDataType, JsonDefinition as SchemaJsonDefinition,
+            JsonField as SchemaJsonField, TypeEncoding,
         },
     };
 
     fn convert_datatype_recursive(
         type_: &schema::DataType,
-        // encoding: Option<schema::TypeEncoding>,
         registry: &mut DefinitionRegistry,
     ) -> intermediate::DataType {
         match type_ {
@@ -410,20 +410,11 @@ mod document_to_intermediate {
         }
     }
 
-    fn convert_struct_datatype(
-        schema_field: &JSONField,
-        registry: &mut DefinitionRegistry,
-    ) -> IntermediateDataType {
-        // convert_datatype_recursive(&schema_field.r#type, schema_field.encoding, registry)
-        todo!()
-    }
-
     fn convert_json_datatype(
-        schema_field: &HTTPProperty,
+        schema_field: &SchemaJsonField,
         registry: &mut DefinitionRegistry,
     ) -> IntermediateDataType {
-        // convert_datatype_recursive(&schema_field.r#type, schema_field.encoding, registry)
-        todo!()
+        convert_datatype_recursive(&schema_field.r#type, registry)
     }
 
     pub fn add_enum_definitions(registry: &mut DefinitionRegistry, enums: Vec<EnumDefinition>) {
@@ -444,35 +435,22 @@ mod document_to_intermediate {
         }
     }
 
-    pub fn add_struct_definitions(registry: &mut DefinitionRegistry, structs: Vec<JSONDefinition>) {
+    pub fn add_json_definitions(
+        registry: &mut DefinitionRegistry,
+        structs: Vec<SchemaJsonDefinition>,
+    ) {
         for struct_ in structs {
-            let mut struct_def = Struct::new(struct_.name, struct_.hash);
+            let mut struct_def = Json::new(struct_.name, struct_.hash);
 
             for field in struct_.fields {
-                struct_def.add_field(StructField {
+                struct_def.add_field(JsonField {
                     name: field.name.clone().into(),
-                    hash_name: field.key.clone().into(),
-                    type_: convert_struct_datatype(&field, registry),
+                    key: field.key.clone().into(),
+                    type_: convert_json_datatype(&field, registry),
                 });
             }
 
             registry.insert(Definition::Struct(struct_def));
-        }
-    }
-
-    pub fn add_json_definitions(registry: &mut DefinitionRegistry, jsons: Vec<HTTPDefinition>) {
-        for json in jsons {
-            let mut json_def = Json::new(json.name);
-
-            for field in json.fields {
-                json_def.add_field(JsonField {
-                    name: field.name.clone().into(),
-                    key: field.key.clone(),
-                    value_type: convert_json_datatype(&field, registry),
-                });
-            }
-
-            registry.insert(Definition::Json(json_def));
         }
     }
 }
@@ -481,8 +459,8 @@ pub fn document_to_definitions(document: Document) -> DefinitionRegistry {
     let mut registry = DefinitionRegistry::new();
 
     document_to_intermediate::add_enum_definitions(&mut registry, document.0.enum_definitions);
-    document_to_intermediate::add_json_definitions(&mut registry, document.0.http_definitions);
-    document_to_intermediate::add_struct_definitions(&mut registry, document.0.json_definitions);
+    // document_to_intermediate::add_json_definitions(&mut registry, document.0.http_definitions);
+    document_to_intermediate::add_json_definitions(&mut registry, document.0.json_definitions);
 
     registry
 }

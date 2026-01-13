@@ -12,35 +12,9 @@ pub enum Encoding {
 #[derive(Clone, Debug)]
 pub enum Definition {
     Json(Json),
-    Struct(Struct),
+    Struct(Json),
     IntEnum(IntEnum),
     StringEnum(StringEnum),
-}
-
-#[derive(Clone, Debug)]
-pub struct Json {
-    pub name: String,
-    pub fields: HashMap<Arc<str>, JsonField>,
-}
-
-#[derive(Clone, Debug)]
-pub struct JsonField {
-    pub name: Arc<str>,
-    pub key: String,
-    pub value_type: DataType,
-}
-
-impl Json {
-    pub fn new(name: String) -> Self {
-        Self {
-            name,
-            fields: HashMap::new(),
-        }
-    }
-
-    pub fn add_field(&mut self, field: JsonField) -> Option<JsonField> {
-        self.fields.insert(field.name.clone(), field)
-    }
 }
 
 #[derive(Clone, Debug)]
@@ -50,20 +24,20 @@ pub enum JSONKey {
 }
 
 #[derive(Clone, Debug)]
-pub struct Struct {
+pub struct Json {
     pub name: String,
     pub hash_name: Option<String>,
-    pub fields: HashMap<Arc<str>, StructField>,
+    pub fields: HashMap<Arc<str>, JsonField>,
 }
 
 #[derive(Clone, Debug)]
-pub struct StructField {
+pub struct JsonField {
     pub name: Arc<str>,
-    pub hash_name: JSONKey,
+    pub key: JSONKey,
     pub type_: DataType,
 }
 
-impl Struct {
+impl Json {
     pub fn new(name: String, hash_name: Option<String>) -> Self {
         Self {
             name,
@@ -72,7 +46,7 @@ impl Struct {
         }
     }
 
-    pub fn add_field(&mut self, field: StructField) -> Option<StructField> {
+    pub fn add_field(&mut self, field: JsonField) -> Option<JsonField> {
         self.fields.insert(field.name.clone(), field)
     }
 }
@@ -307,13 +281,13 @@ mod tests {
         let mut definitions = DefinitionRegistry::new();
 
         {
-            let field = StructField {
+            let field = JsonField {
                 name: "bar".into(),
-                hash_name: JSONKey::String(String::from("bar")),
+                key: JSONKey::String(String::from("bar")),
                 type_: DataType::String,
             };
 
-            let mut s = Struct::new(String::from("Foo"), Some(String::from("avdsfdsf")));
+            let mut s = Json::new(String::from("Foo"), Some(String::from("avdsfdsf")));
             s.add_field(field);
 
             definitions.insert(Definition::Struct(s));
@@ -324,13 +298,13 @@ mod tests {
                 .find_weak("Foo")
                 .expect("Foo was inserted above.");
 
-            let field = StructField {
+            let field = JsonField {
                 name: "has_foo".into(),
-                hash_name: JSONKey::String(String::from("bar")),
+                key: JSONKey::String(String::from("bar")),
                 type_: DataType::Definition(foo_struct.clone()),
             };
 
-            let mut s = Struct::new(String::from("Bar"), Some(String::from("avfdsfdsf")));
+            let mut s = Json::new(String::from("Bar"), Some(String::from("avfdsfdsf")));
             s.add_field(field);
 
             definitions.insert(Definition::Struct(s));

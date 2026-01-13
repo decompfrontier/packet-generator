@@ -1,7 +1,7 @@
 json Foo {
     doc "dsadsa"
 
-    field id type="[i32::{foo, }]::{bar,}" {
+    field id type="[i32::{str}]::{bar}" {
         key "foo"
         doc "TODO"
     }

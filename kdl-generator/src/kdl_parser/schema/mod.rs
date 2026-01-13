@@ -8,7 +8,7 @@ use crate::intermediate::{self, IntEnumVariant, StringEnumVariant};
 
 #[derive(Debug)]
 pub struct RawDocument {
-    pub json_definitions: Vec<JSONDefinition>,
+    pub json_definitions: Vec<JsonDefinition>,
 
     pub http_definitions: Vec<HTTPDefinition>,
 
@@ -117,14 +117,14 @@ pub struct HTTPProperty {
 }
 
 #[derive(Debug)]
-pub struct JSONDefinition {
+pub struct JsonDefinition {
     pub name: String,
 
     pub doc: String,
 
     pub hash: Option<String>,
 
-    pub fields: Vec<JSONField>,
+    pub fields: Vec<JsonField>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -293,7 +293,7 @@ impl From<JSONKey> for intermediate::JSONKey {
 }
 
 #[derive(Debug)]
-pub struct JSONField {
+pub struct JsonField {
     pub name: String,
 
     pub r#type: DataType,

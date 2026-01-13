@@ -6,7 +6,7 @@ use miette::Severity;
 use crate::kdl_parser::{
     Diagnostic, ParsingError,
     parser::{ErrorContext, KdlDocumentUtilsExt, KdlNodeUtilsExt, type_parser::generic_parse},
-    schema::{DataType, JSONDefinition, JSONField, JSONKey, TypeEncoding},
+    schema::{DataType, JSONKey, JsonDefinition, JsonField, TypeEncoding},
 };
 
 const DEFAULT_ENCODING_PROPERTY: &str = "default-encoding";
@@ -23,7 +23,7 @@ const TRANSPARENT_PROPERTY_NAME: &str = "transparent";
 pub fn parse_data_definition(
     definition: &KdlNode,
     source_code: Arc<str>,
-) -> Result<JSONDefinition, ParsingError> {
+) -> Result<JsonDefinition, ParsingError> {
     let name = definition.extract_argument_string(
         0,
         ErrorContext {
@@ -114,14 +114,14 @@ pub fn parse_data_definition(
             },
         )?;
 
-    let fields: Vec<JSONField> = data_children
+    let fields: Vec<JsonField> = data_children
         .nodes()
         .iter()
         .filter(|&node| node.name().value() == FIELD_DEFINITOIN)
         .map(|node| parse_field(node, source_code.clone(), name, &maybe_default_encoding))
-        .collect::<Result<Vec<JSONField>, ParsingError>>()?;
+        .collect::<Result<Vec<JsonField>, ParsingError>>()?;
 
-    Ok(JSONDefinition {
+    Ok(JsonDefinition {
         name: name.into(),
         doc: doc.into(),
         hash,
@@ -134,7 +134,7 @@ fn parse_field(
     source_code: Arc<str>,
     data_name: &str,
     maybe_default_encoding: &Option<TypeEncoding>,
-) -> Result<JSONField, ParsingError> {
+) -> Result<JsonField, ParsingError> {
     let field_node = node.extract_argument_string(
         0,
         ErrorContext {
@@ -310,7 +310,7 @@ fn parse_field(
             },
         )?;
 
-    Ok(JSONField {
+    Ok(JsonField {
         name: field_node.to_owned(),
         r#type: datatype,
         key,
