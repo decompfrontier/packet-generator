@@ -38,7 +38,7 @@ pub struct StringEnumInner {
 
     pub doc: String,
 
-    pub value: String,
+    pub value: Option<String>,
 }
 
 impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
@@ -61,7 +61,7 @@ impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
 pub struct IntEnumDefinition {
     pub name: String,
 
-    pub start: isize,
+    pub start: i128,
 
     pub doc: String,
 

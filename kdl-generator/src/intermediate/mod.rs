@@ -105,7 +105,7 @@ impl StringEnum {
 pub struct IntEnum {
     pub name: String,
     pub variants: HashMap<Arc<str>, IntEnumVariant>,
-    pub start: isize,
+    pub start: i128,
 }
 
 #[derive(Clone, Debug)]
@@ -114,7 +114,7 @@ pub struct IntEnumVariant {
 }
 
 impl IntEnum {
-    pub fn new(name: String, start: isize) -> Self {
+    pub fn new(name: String, start: i128) -> Self {
         Self {
             name,
             start,

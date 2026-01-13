@@ -5,7 +5,6 @@ use miette::Severity;
 
 use crate::kdl_parser::{Diagnostic, ParsingError};
 
-pub mod data_parser;
 pub mod enum_parser;
 pub mod json_parser;
 pub mod type_parser;
@@ -85,41 +84,37 @@ impl KdlNodeUtilsExt for KdlNode {
         index: usize,
         error_context: ErrorContext,
     ) -> Result<&str, ParsingError> {
-        let res = self
-            .get(index)
-            .ok_or_else(|| -> ParsingError {
-                ParsingError::from(Diagnostic {
-                    message: format!(
-                        "argument #{} not provided for {}",
-                        index + 1,
-                        error_context.context
-                    ),
-                    severity: Severity::Error,
-                    source_code: error_context.source_code.clone(),
-                    span: self.span(),
-                    help: error_context.not_found_help.map(Cow::into_owned),
-                    label: None,
-                    related: vec![],
-                })
-            })?
-            .as_string()
-            .ok_or_else(|| {
-                ParsingError::from(Diagnostic {
-                    message: format!(
-                        "{} (argument #{}) is not a string",
-                        error_context.context,
-                        index + 1
-                    ),
-                    severity: Severity::Error,
-                    source_code: error_context.source_code.clone(),
-                    span: self.span(),
-                    help: error_context.wrong_type_help.map(Cow::into_owned),
-                    label: None,
-                    related: vec![],
-                })
-            })?;
+        let entry = self.entry(index).ok_or_else(|| -> ParsingError {
+            ParsingError::from(Diagnostic {
+                message: format!(
+                    "argument #{} not provided for {}",
+                    index + 1,
+                    error_context.context
+                ),
+                severity: Severity::Error,
+                source_code: error_context.source_code.clone(),
+                span: self.span(),
+                help: error_context.not_found_help.map(Cow::into_owned),
+                label: None,
+                related: vec![],
+            })
+        })?;
 
-        Ok(res)
+        entry.value().as_string().ok_or_else(|| {
+            ParsingError::from(Diagnostic {
+                message: format!(
+                    "{} (argument #{}) is not a string",
+                    error_context.context,
+                    index + 1
+                ),
+                severity: Severity::Error,
+                source_code: error_context.source_code.clone(),
+                span: entry.span(),
+                help: error_context.wrong_type_help.map(Cow::into_owned),
+                label: None,
+                related: vec![],
+            })
+        })
     }
 
     fn extract_argument_int(
@@ -127,41 +122,37 @@ impl KdlNodeUtilsExt for KdlNode {
         index: usize,
         error_context: ErrorContext,
     ) -> Result<i128, ParsingError> {
-        let res = self
-            .get(index)
-            .ok_or_else(|| -> ParsingError {
-                ParsingError::from(Diagnostic {
-                    message: format!(
-                        "argument #{} not provided for {}",
-                        index + 1,
-                        error_context.context
-                    ),
-                    severity: Severity::Error,
-                    source_code: error_context.source_code.clone(),
-                    span: self.span(),
-                    help: error_context.not_found_help.map(Cow::into_owned),
-                    label: None,
-                    related: vec![],
-                })
-            })?
-            .as_integer()
-            .ok_or_else(|| {
-                ParsingError::from(Diagnostic {
-                    message: format!(
-                        "{} (argument #{}) is not a string",
-                        error_context.context,
-                        index + 1
-                    ),
-                    severity: Severity::Error,
-                    source_code: error_context.source_code.clone(),
-                    span: self.span(),
-                    help: error_context.wrong_type_help.map(Cow::into_owned),
-                    label: None,
-                    related: vec![],
-                })
-            })?;
+        let entry = self.entry(index).ok_or_else(|| -> ParsingError {
+            ParsingError::from(Diagnostic {
+                message: format!(
+                    "argument #{} not provided for {}",
+                    index + 1,
+                    error_context.context
+                ),
+                severity: Severity::Error,
+                source_code: error_context.source_code.clone(),
+                span: self.span(),
+                help: error_context.not_found_help.map(Cow::into_owned),
+                label: None,
+                related: vec![],
+            })
+        })?;
 
-        Ok(res)
+        entry.value().as_integer().ok_or_else(|| {
+            ParsingError::from(Diagnostic {
+                message: format!(
+                    "{} (argument #{}) is not a string",
+                    error_context.context,
+                    index + 1
+                ),
+                severity: Severity::Error,
+                source_code: error_context.source_code.clone(),
+                span: entry.span(),
+                help: error_context.wrong_type_help.map(Cow::into_owned),
+                label: None,
+                related: vec![],
+            })
+        })
     }
 
     fn extract_property_string(
@@ -169,8 +160,8 @@ impl KdlNodeUtilsExt for KdlNode {
         property_name: impl AsRef<str>,
         error_context: ErrorContext,
     ) -> Result<&str, ParsingError> {
-        let res = self
-            .get(property_name.as_ref())
+        let entry = self
+            .entry(property_name.as_ref())
             .ok_or_else(|| -> ParsingError {
                 ParsingError::from(Diagnostic {
                     message: format!(
@@ -185,25 +176,23 @@ impl KdlNodeUtilsExt for KdlNode {
                     label: None,
                     related: vec![],
                 })
-            })?
-            .as_string()
-            .ok_or_else(|| {
-                ParsingError::from(Diagnostic {
-                    message: format!(
-                        "property `{}` for {} does not cointain a string",
-                        property_name.as_ref(),
-                        error_context.context
-                    ),
-                    severity: Severity::Error,
-                    source_code: error_context.source_code.clone(),
-                    span: self.span(),
-                    help: error_context.wrong_type_help.map(Cow::into_owned),
-                    label: None,
-                    related: vec![],
-                })
             })?;
 
-        Ok(res)
+        entry.value().as_string().ok_or_else(|| {
+            ParsingError::from(Diagnostic {
+                message: format!(
+                    "property `{}` for {} does not cointain a string",
+                    property_name.as_ref(),
+                    error_context.context
+                ),
+                severity: Severity::Error,
+                source_code: error_context.source_code.clone(),
+                span: entry.span(),
+                help: error_context.wrong_type_help.map(Cow::into_owned),
+                label: None,
+                related: vec![],
+            })
+        })
     }
 
     fn extract_property_bool(
@@ -211,8 +200,8 @@ impl KdlNodeUtilsExt for KdlNode {
         property_name: impl AsRef<str>,
         error_context: ErrorContext,
     ) -> Result<bool, ParsingError> {
-        let res = self
-            .get(property_name.as_ref())
+        let entry = self
+            .entry(property_name.as_ref())
             .ok_or_else(|| -> ParsingError {
                 ParsingError::from(Diagnostic {
                     message: format!(
@@ -227,25 +216,23 @@ impl KdlNodeUtilsExt for KdlNode {
                     label: None,
                     related: vec![],
                 })
-            })?
-            .as_bool()
-            .ok_or_else(|| {
-                ParsingError::from(Diagnostic {
-                    message: format!(
-                        "property `{}` for {} does not cointain a boolean value (#true or #false)",
-                        property_name.as_ref(),
-                        error_context.context
-                    ),
-                    severity: Severity::Error,
-                    source_code: error_context.source_code.clone(),
-                    span: self.span(),
-                    help: error_context.wrong_type_help.map(Cow::into_owned),
-                    label: None,
-                    related: vec![],
-                })
             })?;
 
-        Ok(res)
+        entry.value().as_bool().ok_or_else(|| {
+            ParsingError::from(Diagnostic {
+                message: format!(
+                    "property `{}` for {} does not cointain a boolean value (#true or #false)",
+                    property_name.as_ref(),
+                    error_context.context
+                ),
+                severity: Severity::Error,
+                source_code: error_context.source_code.clone(),
+                span: self.span(),
+                help: error_context.wrong_type_help.map(Cow::into_owned),
+                label: None,
+                related: vec![],
+            })
+        })
     }
 
     fn extract_property_int(
@@ -253,8 +240,8 @@ impl KdlNodeUtilsExt for KdlNode {
         property_name: impl AsRef<str>,
         error_context: ErrorContext,
     ) -> Result<i128, ParsingError> {
-        let res = self
-            .get(property_name.as_ref())
+        let entry = self
+            .entry(property_name.as_ref())
             .ok_or_else(|| -> ParsingError {
                 ParsingError::from(Diagnostic {
                     message: format!(
@@ -269,25 +256,23 @@ impl KdlNodeUtilsExt for KdlNode {
                     label: None,
                     related: vec![],
                 })
-            })?
-            .as_integer()
-            .ok_or_else(|| {
-                ParsingError::from(Diagnostic {
-                    message: format!(
-                        "property `{}` for {} does not cointain a string",
-                        property_name.as_ref(),
-                        error_context.context
-                    ),
-                    severity: Severity::Error,
-                    source_code: error_context.source_code.clone(),
-                    span: self.span(),
-                    help: error_context.wrong_type_help.map(Cow::into_owned),
-                    label: None,
-                    related: vec![],
-                })
             })?;
 
-        Ok(res)
+        entry.value().as_integer().ok_or_else(|| {
+            ParsingError::from(Diagnostic {
+                message: format!(
+                    "property `{}` for {} does not cointain a string",
+                    property_name.as_ref(),
+                    error_context.context
+                ),
+                severity: Severity::Error,
+                source_code: error_context.source_code.clone(),
+                span: entry.span(),
+                help: error_context.wrong_type_help.map(Cow::into_owned),
+                label: None,
+                related: vec![],
+            })
+        })
     }
 
     fn extract_children(&self, error_context: ErrorContext) -> Result<&KdlDocument, ParsingError> {

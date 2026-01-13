@@ -1,9 +1,25 @@
 json Foo {
     doc "dsadsa"
 
-    field id type="[str]::{sep(comma), sep(at), size(1)}" {
+    field id type="i32::str" {
         key "foo"
         doc "TODO"
+    }
+}
+
+int-enum Bar start=0 {
+    doc "abd"
+
+    variant foo value=1234 {
+        doc "abc"
+    }
+}
+
+str-enum Baz {
+    doc "abd"
+
+    variant foo {
+        doc "abc"
     }
 }
 
@@ -28,13 +44,11 @@ plist TestPlist { }
 //     }
 // }
 
-data InitializeResp {
+json InitializeResp {
     doc "Response of initialize command"
 
     field login-campaign type=LoginCampaignMst  {
-        key
         doc "TODO"
-        hints cachable single-element-array
     }
 
     // ...

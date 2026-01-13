@@ -10,7 +10,20 @@ use kdl::{KdlDocument, KdlError};
 
 pub struct Document(RawDocument);
 
-use crate::{intermediate::DefinitionRegistry, kdl_parser::schema::RawDocument};
+use crate::{
+    intermediate::DefinitionRegistry,
+    kdl_parser::{
+        parser::enum_parser,
+        schema::{EnumDefinition, RawDocument},
+    },
+};
+
+const JSON_DEFINITION_NAME: &str = "json";
+const INT_ENUM_DEFINITION_NAME: &str = "int-enum";
+const STRING_ENUM_DEFINITION_NAME: &str = "str-enum";
+const XML_DEFINITION_NAME: &str = "xml";
+const HTTP_DEFINITION_NAME: &str = "http";
+const PLIST_DEFINITION_NAME: &str = "plist";
 
 #[derive(Debug, Clone, thiserror::Error)]
 pub struct Diagnostic {
@@ -181,12 +194,34 @@ pub fn raw_parse_kdl<S: AsRef<str>>(document: S) -> Result<schema::RawDocument, 
         });
     }
 
+    // TODO(anri):
+    // Parse some meta about versions and stuff?
+    //
+    // meta {
+    //   version 1
+    // }
+    //
+    // let meta = children.iter().filter(|&node| {
+    //     node.name().value() == "meta"
+    // }).last();
+    //
+    // match meta {
+    //     Some(node) => {
+    //
+    //     }
+    //
+    //     None => {
+    //
+    //     }
+    //
+    // }
+
     for definition in children {
         let source_code = source_code.clone();
 
         match definition.name().value() {
-            "json" => {
-                match parser::data_parser::parse_data_definition(definition, source_code.clone()) {
+            JSON_DEFINITION_NAME => {
+                match parser::json_parser::parse_data_definition(definition, source_code.clone()) {
                     Ok(def) => {
                         root.json_definitions.push(def);
                     }
@@ -199,11 +234,39 @@ pub fn raw_parse_kdl<S: AsRef<str>>(document: S) -> Result<schema::RawDocument, 
                 }
             }
 
-            "http" => {}
+            INT_ENUM_DEFINITION_NAME => {
+                match enum_parser::parse_int_enum_definition(definition, source_code.clone()) {
+                    Ok(def) => {
+                        root.enum_definitions.push(EnumDefinition::IntEnum(def));
+                    }
 
-            "int-enum" => {}
+                    Err(ParsingError::Diagnostics { diagnostics, .. }) => {
+                        all_diagnostics.extend(diagnostics);
+                    }
 
-            "str-enum" => {}
+                    Err(e) => return Err(e),
+                }
+            }
+
+            STRING_ENUM_DEFINITION_NAME => {
+                match enum_parser::parse_string_enum_definition(definition, source_code.clone()) {
+                    Ok(def) => {
+                        root.enum_definitions.push(EnumDefinition::StringEnum(def));
+                    }
+
+                    Err(ParsingError::Diagnostics { diagnostics, .. }) => {
+                        all_diagnostics.extend(diagnostics);
+                    }
+
+                    Err(e) => return Err(e),
+                }
+            }
+
+            HTTP_DEFINITION_NAME => {}
+
+            XML_DEFINITION_NAME => {}
+
+            PLIST_DEFINITION_NAME => {}
 
             _ => {}
         }
