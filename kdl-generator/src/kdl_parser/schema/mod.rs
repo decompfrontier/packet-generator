@@ -39,6 +39,8 @@ pub struct StringEnumDefinition {
 
 #[derive(Debug)]
 pub struct StringEnumInner {
+    pub index: usize,
+
     pub name: String,
 
     pub doc: String,
@@ -52,11 +54,14 @@ impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
 
         for variant in value.variants.as_slice() {
             let name: Arc<str> = variant.name.clone().into();
-            members.insert(name.clone(), StringEnumVariant { name });
+            let index = variant.index;
+            let doc = variant.doc.clone();
+            members.insert(name.clone(), StringEnumVariant { name, doc, index });
         }
 
         Self {
             name: value.name,
+            doc: value.doc,
             variants: members,
         }
     }
@@ -91,11 +96,13 @@ impl From<IntEnumDefinition> for crate::intermediate::IntEnum {
         for variant in value.variants {
             let name: Arc<str> = variant.name.clone().into();
             let value = variant.value;
+            let doc = variant.doc;
             members.insert(
                 name.clone(),
                 IntEnumVariant {
                     index: variant.index,
                     name,
+                    doc,
                     value,
                 },
             );
@@ -104,6 +111,7 @@ impl From<IntEnumDefinition> for crate::intermediate::IntEnum {
         Self {
             start: value.start,
             name: value.name,
+            doc: value.doc,
             variants: members,
         }
     }

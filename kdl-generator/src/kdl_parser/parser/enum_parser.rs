@@ -211,7 +211,8 @@ pub fn parse_string_enum_definition(
         .nodes()
         .iter()
         .filter(|&node| node.name().value() == ENUM_VARIANT_FIELD_NAME)
-        .map(|node| parse_string_enum_variant(node, source_code.clone(), name))
+        .enumerate()
+        .map(|(index, node)| parse_string_enum_variant(node, source_code.clone(), name, index))
         .collect::<Result<Vec<_>, ParsingError>>()?;
 
     Ok(StringEnumDefinition {
@@ -225,6 +226,7 @@ fn parse_string_enum_variant(
     node: &KdlNode,
     source_code: Arc<str>,
     enum_name: &str,
+    index: usize,
 ) -> Result<StringEnumInner, ParsingError> {
     // const VALUE_PROPERTY: &str = "value";
 
@@ -287,7 +289,7 @@ fn parse_string_enum_variant(
 
     Ok(StringEnumInner {
         name: name.to_owned(),
-        // TODO(anri): Is the string enum value even useful?
+        index,
         value: None,
         doc: doc.to_owned(),
     })

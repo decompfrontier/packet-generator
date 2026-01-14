@@ -154,7 +154,7 @@ json UnitMst {
         doc "TODO"
     }
 
-    field unknown  type="[int::str]" {
+    field unknown  type="[i32::str]" {
         key "5SUvj4tM"
         doc "TODO"
     }

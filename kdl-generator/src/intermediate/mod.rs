@@ -65,18 +65,22 @@ impl Json {
 #[derive(Clone, Debug)]
 pub struct StringEnum {
     pub name: String,
+    pub doc: String,
     pub variants: BTreeMap<Arc<str>, StringEnumVariant>,
 }
 
 #[derive(Clone, Debug)]
 pub struct StringEnumVariant {
+    pub index: usize,
     pub name: Arc<str>,
+    pub doc: String,
 }
 
 impl StringEnum {
-    pub fn new(name: String) -> Self {
+    pub fn new(name: String, doc: String) -> Self {
         Self {
             name,
+            doc,
             variants: BTreeMap::new(),
         }
     }
@@ -89,14 +93,16 @@ impl StringEnum {
 #[derive(Clone, Debug)]
 pub struct IntEnum {
     pub name: String,
-    pub variants: BTreeMap<Arc<str>, IntEnumVariant>,
     pub start: i128,
+    pub doc: String,
+    pub variants: BTreeMap<Arc<str>, IntEnumVariant>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct IntEnumVariant {
     pub index: usize,
     pub name: Arc<str>,
+    pub doc: String,
     pub value: Option<i128>,
 }
 
@@ -115,10 +121,11 @@ impl PartialOrd for IntEnumVariant {
 }
 
 impl IntEnum {
-    pub fn new(name: String, start: i128) -> Self {
+    pub fn new(name: String, doc: String, start: i128) -> Self {
         Self {
             name,
             start,
+            doc,
             variants: BTreeMap::new(),
         }
     }

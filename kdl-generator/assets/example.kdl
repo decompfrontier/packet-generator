@@ -7,19 +7,19 @@
 //     }
 // }
 
-int-enum Bar start=0 {
-    doc "abd"
+int-enum Bar start=10 {
+    doc "Really important enum"
 
-    variant foo value=1234 {
-        doc "abc"
+    variant foo {
+        doc "A foo."
     }
 
     variant bar {
-        doc "abc"
+        doc "A bar."
     }
 
-    variant vsf {
-        doc "abc"
+    variant quox value=1234 {
+        doc "A quox."
     }
 }
 
@@ -27,6 +27,10 @@ str-enum Baz {
     doc "abd"
 
     variant foo {
+        doc "abc"
+    }
+
+    variant bar {
         doc "abc"
     }
 }

@@ -1,18 +1,35 @@
 use std::{fs::File, io::Read};
 
+use miette::Context;
+use packet_generator::{
+    generators::GenerationError,
+    kdl_parser::{Diagnostic, ParsingError},
+};
+
 mod cli;
+
+#[derive(Debug, thiserror::Error)]
+enum ApplicationError {
+    #[error(transparent)]
+    MietteReport(#[from] ParsingError),
+
+    #[error(transparent)]
+    Diagnostic(#[from] Diagnostic),
+
+    #[error(transparent)]
+    Generation(#[from] GenerationError),
+}
 
 fn main() -> Result<(), miette::Report> {
     let args = cli::parse_args();
 
-    #[expect(clippy::single_match, reason = "::Generate not implemented yet.")]
     match args {
         cli::CliArgs::DumpRepresentation { input } => {
             let mut file = File::open(input).unwrap();
             let mut doc_str = String::new();
             let _ = file.read_to_string(&mut doc_str);
-            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str)
-                .map_err(miette::Report::new)?;
+            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str)?;
+
             println!("Parser: {:#?}", doc);
 
             let doc = packet_generator::kdl_parser::validate(doc)?;
@@ -26,17 +43,21 @@ fn main() -> Result<(), miette::Report> {
             let mut file = File::open(input).unwrap();
             let mut doc_str = String::new();
             let _ = file.read_to_string(&mut doc_str);
-            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str)
-                .map_err(miette::Report::new)?;
+            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str)?;
+
             println!("Parser: {:#?}", doc);
 
             let doc = packet_generator::kdl_parser::validate(doc)?;
 
             let definitions = packet_generator::kdl_parser::document_to_definitions(doc);
 
-            let source = packet_generator::generators::generate_glaze(&definitions);
+            let sources = packet_generator::generators::generate_glaze(&definitions)
+                .map_err(|e| miette::miette!(e))
+                .wrap_err("error in source code generation")?;
 
-            println!("{source:#?}");
+            for source in sources {
+                println!("\n// {}\n{}\n\n", source.filename, source.content);
+            }
         }
     }
 

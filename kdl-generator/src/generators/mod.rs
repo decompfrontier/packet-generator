@@ -1,5 +1,3 @@
-use std::{convert, sync::Arc};
-
 use itertools::Itertools;
 use rootcause::Report;
 use stringcase::Caser;
@@ -10,10 +8,12 @@ const AUTOGENERATION_NOTICE: &str = r#"
 // This file is auto-generated from a KDL specification by `packet-generator`.
 // Please do not modify this, but instead change the original definitions."#;
 
+const TAB: &str = "    ";
+
 #[derive(Debug, Clone, Default)]
 pub struct CxxSourceCode {
-    filename: String,
-    content: String,
+    pub filename: String,
+    pub content: String,
 }
 
 #[derive(Debug, Clone, thiserror::Error)]
@@ -21,10 +21,18 @@ pub enum GenerationError {
     #[error("whatever")]
     Whatever,
 
-    #[error("type definition `{name}` not found")]
+    #[error(
+        "expired dependant type entry from type `{:#?}`; the registry may have been de-allocated",
+        queried_from
+    )]
+    ExpiredRegistry { queried_from: DataType },
+
+    #[error(
+        "datatype `{queried_from:#?}` depended on type definition `{name}`, but the latter was not found"
+    )]
     TypeNotFound {
         name: String,
-        queried_from: Arc<Definition>,
+        queried_from: DataType,
     },
 }
 
@@ -45,80 +53,94 @@ pub fn generate_glaze(
     generated_sources
 }
 
+/// Converts a DataType to types recognized by C++ with Glaze.
+fn convert_datatype(
+    datatype: &DataType,
+    registry: &DefinitionRegistry,
+) -> Result<String, GenerationError> {
+    match datatype {
+        DataType::I32 { .. } => Ok(String::from("int")),
+
+        DataType::U32 { .. } => Ok(String::from("unsigned int")),
+
+        DataType::I64 { .. } => Ok(String::from("long")),
+
+        DataType::U64 { .. } => Ok(String::from("unsigned long")),
+
+        DataType::F32 { .. } => Ok(String::from("float")),
+
+        DataType::F64 => Ok(String::from("double")),
+
+        DataType::Bool { .. } => Ok(String::from("bool")),
+
+        DataType::String => Ok(String::from("std::string")),
+
+        DataType::Datetime => Ok(String::from("glzhlp::chronotime")),
+
+        DataType::DatetimeUnix => Ok(String::from("glzhlp::chronotime")),
+
+        DataType::Map { key, value } => {
+            let key = convert_datatype(key, registry)?;
+            let value = convert_datatype(value, registry)?;
+
+            Ok(format!("std::unordered_map<{key}, {value}>"))
+        }
+
+        DataType::StringArray {
+            inner_type: _,
+            separator: _,
+        } => Ok(String::from("std::string")),
+
+        DataType::Array { inner_type } => {
+            let inner = convert_datatype(inner_type, registry)?;
+
+            Ok(format!("std::vector<{inner}>"))
+        }
+
+        DataType::SingleElementArray { inner_type } => {
+            let inner = convert_datatype(inner_type, registry)?;
+
+            Ok(format!("std::array<{inner}, 1>"))
+        }
+
+        DataType::Definition(weak) => match weak.upgrade() {
+            Some(definition) => Ok(definition.name().clone()),
+            None => Err(GenerationError::ExpiredRegistry {
+                queried_from: datatype.clone(),
+            }),
+        },
+
+        DataType::Unknown(other) => match registry.find(other) {
+            Some(definition) => Ok(definition.name().clone()),
+            None => Err(GenerationError::TypeNotFound {
+                name: other.to_string(),
+                queried_from: datatype.clone(),
+            }),
+        },
+    }
+}
+
 fn generate_json_cxx(
     registry: &DefinitionRegistry,
     json: &Json,
 ) -> Result<CxxSourceCode, Report<GenerationError>> {
-    fn convert_datatype(datatype: &DataType, registry: &DefinitionRegistry) -> String {
-        match datatype {
-            DataType::I32 { .. } => String::from("int"),
-
-            DataType::U32 { .. } => String::from("unsigned int"),
-
-            DataType::I64 { .. } => String::from("long"),
-
-            DataType::U64 { .. } => String::from("unsigned long"),
-
-            DataType::F32 { .. } => String::from("float"),
-
-            DataType::F64 => String::from("double"),
-
-            DataType::Bool { .. } => String::from("bool"),
-
-            DataType::String => String::from("std::string"),
-
-            DataType::Datetime => String::from("std::chrono::idk???"),
-
-            DataType::DatetimeUnix => String::from("std::chrono::idk_unix???"),
-
-            DataType::Map { key, value } => {
-                let key = convert_datatype(key, registry);
-                let value = convert_datatype(value, registry);
-
-                format!("std::hashmap<{key}, {value}>")
-            }
-
-            DataType::StringArray {
-                inner_type: _,
-                separator: _,
-            } => String::from("std::string"),
-
-            DataType::Array { inner_type } => {
-                let inner = convert_datatype(inner_type, registry);
-
-                format!("std::vector<{inner}>")
-            }
-
-            DataType::SingleElementArray { inner_type } => {
-                let inner = convert_datatype(inner_type, registry);
-
-                format!("std::array<{inner}, 1>")
-            }
-
-            DataType::Definition(weak) => match weak.upgrade() {
-                Some(definition) => definition.name().clone(),
-                None => panic!("Expired entry in registry cache for type {datatype:#?}"),
-            },
-
-            DataType::Unknown(other) => match registry.find(other) {
-                Some(definition) => definition.name().clone(),
-                None => panic!("Could not find definition {other}"),
-            },
-        }
-    }
-
     let filename = format!("{}.h", json.name);
 
-    let fields = json
+    // TODO(anri):
+    // Calculate the approximate sizes of the C++ types and re-order the fields
+    //   to pack them more efficiently, from largest to smallest.
+    // We could do this optimization because JSON has no ordering requirement.
+
+    let fields: String = json
         .fields
         .values()
-        .map(|field| {
-            let datatype = convert_datatype(&field.type_, registry);
+        .map(|field| -> Result<String, GenerationError> {
+            let datatype = convert_datatype(&field.type_, registry)?;
             let name = field.name.to_snake_case();
 
-            format!("{datatype} {name};")
+            Ok(format!("{TAB}{datatype} {name};"))
         })
-        .join("\n");
+        .process_results(|mut x| x.join("\n"))?;
 
     let struct_name = json.name.to_pascal_case();
 
@@ -127,9 +149,9 @@ fn generate_json_cxx(
 
 {AUTOGENERATION_NOTICE}
 
-    struct {struct_name} {{
-        {fields}
-    }};"#,
+struct {struct_name} {{
+{fields}
+}};"#,
     );
 
     Ok(CxxSourceCode { filename, content })
@@ -142,13 +164,10 @@ fn generate_int_enum_cxx(
     let filename = format!("{}.h", int_enum.name.to_pascal_case());
     let start = int_enum.start;
 
-    let sorted_variants: Vec<_> = int_enum
+    let mut variants_iter = int_enum
         .variants
         .values()
-        .sorted_unstable_by_key(|a| a.index)
-        .collect();
-
-    let mut variants_iter = sorted_variants.iter();
+        .sorted_unstable_by_key(|a| a.index);
 
     let first_variant = variants_iter
         .next()
@@ -156,28 +175,33 @@ fn generate_int_enum_cxx(
             let name = variant.name.to_pascal_case();
 
             let start = variant.value.unwrap_or(start);
+            let doc = &variant.doc;
 
-            format!("{name} = {start},\n")
+            format!("\n{TAB}/// {doc}\n{TAB}{name} = {start},")
         })
         .unwrap_or_default();
 
     let variants_str = variants_iter
         .map(|variant| {
             let name = variant.name.to_pascal_case();
-            let maybe_val = variant.value.map(|v| format!("= {v}")).unwrap_or_default();
+            let maybe_val = variant.value.map(|v| format!(" = {v}")).unwrap_or_default();
+            let doc = &variant.doc;
 
-            format!("{name} {maybe_val},")
+            format!("\n{TAB}/// {doc}\n{TAB}{name}{maybe_val}")
         })
-        .join("\n");
+        .join(",\n");
+
+    let doc = &int_enum.doc;
 
     let content = format!(
         r#"#pragma once
 
 {AUTOGENERATION_NOTICE}
 
+/// {doc}
 enum class {} {{
-    {first_variant}
-    {variants_str}
+{first_variant}
+{variants_str}
 }};"#,
         int_enum.name.to_pascal_case(),
     );
@@ -191,21 +215,27 @@ fn generate_str_enum_cxx(
 ) -> Result<CxxSourceCode, Report<GenerationError>> {
     let filename = format!("{}.h", str_enum.name.to_pascal_case());
 
-    let variants: Vec<_> = str_enum
+    let variants = str_enum
         .variants
         .values()
-        .map(|variant| variant.name.to_pascal_case())
-        .collect();
+        .sorted_unstable_by_key(|a| a.index)
+        .map(|variant| {
+            let name = variant.name.to_pascal_case();
+            let doc = &variant.doc;
+            format!("\n{TAB}/// {doc}\n{TAB}{name}")
+        })
+        .join(",\n");
 
-    let variants_str = variants.join(", \n");
+    let doc = &str_enum.doc;
 
     let content = format!(
         r#"#pragma once
 
 {AUTOGENERATION_NOTICE}
 
+/// {doc}
 enum class {} {{
-    {variants_str}
+{variants}
 }};"#,
         str_enum.name.to_pascal_case(),
     );
