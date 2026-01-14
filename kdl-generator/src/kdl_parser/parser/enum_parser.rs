@@ -76,7 +76,8 @@ pub fn parse_int_enum_definition(
         .nodes()
         .iter()
         .filter(|&node| node.name().value() == ENUM_VARIANT_FIELD_NAME)
-        .map(|node| parse_int_enum_variant(node, source_code.clone(), name))
+        .enumerate()
+        .map(|(index, node)| parse_int_enum_variant(node, source_code.clone(), name, index))
         .collect::<Result<Vec<_>, ParsingError>>()?;
 
     Ok(IntEnumDefinition {
@@ -91,6 +92,7 @@ fn parse_int_enum_variant(
     node: &KdlNode,
     source_code: Arc<str>,
     enum_name: &str,
+    index: usize,
 ) -> Result<IntEnumInner, ParsingError> {
     const VALUE_PROPERTY: &str = "value";
 
@@ -153,6 +155,7 @@ fn parse_int_enum_variant(
 
     Ok(IntEnumInner {
         name: name.to_owned(),
+        index,
         value,
         doc: doc.to_owned(),
     })

@@ -1,4 +1,9 @@
-use std::{collections::HashMap, fmt::Display, str::FromStr, sync::Arc};
+use std::{
+    collections::{BTreeMap, HashMap},
+    fmt::Display,
+    str::FromStr,
+    sync::Arc,
+};
 
 mod validator;
 
@@ -43,7 +48,7 @@ pub struct StringEnumInner {
 
 impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
     fn from(value: StringEnumDefinition) -> Self {
-        let mut members = HashMap::new();
+        let mut members = BTreeMap::new();
 
         for variant in value.variants.as_slice() {
             let name: Arc<str> = variant.name.clone().into();
@@ -70,6 +75,8 @@ pub struct IntEnumDefinition {
 
 #[derive(Debug)]
 pub struct IntEnumInner {
+    pub index: usize,
+
     pub name: String,
 
     pub doc: String,
@@ -79,11 +86,19 @@ pub struct IntEnumInner {
 
 impl From<IntEnumDefinition> for crate::intermediate::IntEnum {
     fn from(value: IntEnumDefinition) -> Self {
-        let mut members = HashMap::new();
+        let mut members = BTreeMap::new();
 
         for variant in value.variants {
             let name: Arc<str> = variant.name.clone().into();
-            members.insert(name.clone(), IntEnumVariant { name });
+            let value = variant.value;
+            members.insert(
+                name.clone(),
+                IntEnumVariant {
+                    index: variant.index,
+                    name,
+                    value,
+                },
+            );
         }
 
         Self {

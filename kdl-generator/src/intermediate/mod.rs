@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::{BTreeMap, HashMap},
     sync::{Arc, Weak},
 };
 
@@ -15,6 +15,17 @@ pub enum Definition {
     Struct(Json),
     IntEnum(IntEnum),
     StringEnum(StringEnum),
+}
+
+impl Definition {
+    pub fn name(&self) -> &String {
+        match self {
+            Definition::Json(json) => &json.name,
+            Definition::Struct(json) => &json.name,
+            Definition::IntEnum(int_enum) => &int_enum.name,
+            Definition::StringEnum(string_enum) => &string_enum.name,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -54,7 +65,7 @@ impl Json {
 #[derive(Clone, Debug)]
 pub struct StringEnum {
     pub name: String,
-    pub variants: HashMap<Arc<str>, StringEnumVariant>,
+    pub variants: BTreeMap<Arc<str>, StringEnumVariant>,
 }
 
 #[derive(Clone, Debug)]
@@ -66,7 +77,7 @@ impl StringEnum {
     pub fn new(name: String) -> Self {
         Self {
             name,
-            variants: HashMap::new(),
+            variants: BTreeMap::new(),
         }
     }
 
@@ -78,13 +89,29 @@ impl StringEnum {
 #[derive(Clone, Debug)]
 pub struct IntEnum {
     pub name: String,
-    pub variants: HashMap<Arc<str>, IntEnumVariant>,
+    pub variants: BTreeMap<Arc<str>, IntEnumVariant>,
     pub start: i128,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct IntEnumVariant {
+    pub index: usize,
     pub name: Arc<str>,
+    pub value: Option<i128>,
+}
+
+impl PartialOrd for IntEnumVariant {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        match self.index.partial_cmp(&other.index) {
+            Some(core::cmp::Ordering::Equal) => {}
+            ord => return ord,
+        }
+        match self.name.partial_cmp(&other.name) {
+            Some(core::cmp::Ordering::Equal) => {}
+            ord => return ord,
+        }
+        self.value.partial_cmp(&other.value)
+    }
 }
 
 impl IntEnum {
@@ -92,7 +119,7 @@ impl IntEnum {
         Self {
             name,
             start,
-            variants: HashMap::new(),
+            variants: BTreeMap::new(),
         }
     }
 
