@@ -206,6 +206,22 @@ fn parse_field(
         wrong_type_help: None,
     })?;
 
+    let optional_node = children.get("optional")
+        .map(|c| {
+            c.extract_argument_bool(
+                0,
+                ErrorContext {
+                    source_code: source_code.clone(),
+                    context: format!("field definition `{data_name}::{field_node}`").into(),
+                    not_found_help: None,
+                    wrong_type_help: None,
+                },
+            )
+        })
+        .transpose()
+        ?
+        .unwrap_or(false);
+
     let key_node = children.extract_child_node(
         "key",
         ErrorContext {
@@ -316,5 +332,6 @@ fn parse_field(
         key,
         doc: doc.to_owned(),
         escape: false,
+        optional: optional_node,
     })
 }

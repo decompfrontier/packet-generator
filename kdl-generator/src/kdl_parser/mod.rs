@@ -447,6 +447,7 @@ mod document_to_intermediate {
                     name: field.name.clone().into(),
                     key: field.key.clone().into(),
                     type_: convert_json_datatype(&field, registry),
+                    optional: field.optional,
                 });
             }
 

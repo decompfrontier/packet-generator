@@ -326,4 +326,6 @@ pub struct JsonField {
     pub doc: String,
 
     pub escape: bool,
+
+    pub optional: bool,
 }

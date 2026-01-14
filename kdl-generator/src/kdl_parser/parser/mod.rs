@@ -28,6 +28,12 @@ trait KdlNodeUtilsExt {
         index: usize,
         error_context: ErrorContext,
     ) -> Result<i128, ParsingError>;
+	
+    fn extract_argument_bool(
+        &self,
+        index: usize,
+        error_context: ErrorContext,
+    ) -> Result<bool, ParsingError>;
 
     fn extract_property_string(
         &self,
@@ -104,6 +110,44 @@ impl KdlNodeUtilsExt for KdlNode {
             ParsingError::from(Diagnostic {
                 message: format!(
                     "{} (argument #{}) is not a string",
+                    error_context.context,
+                    index + 1
+                ),
+                severity: Severity::Error,
+                source_code: error_context.source_code.clone(),
+                span: entry.span(),
+                help: error_context.wrong_type_help.map(Cow::into_owned),
+                label: None,
+                related: vec![],
+            })
+        })
+    }
+	
+    fn extract_argument_bool(
+        &self,
+        index: usize,
+        error_context: ErrorContext,
+    ) -> Result<bool, ParsingError> {
+        let entry = self.entry(index).ok_or_else(|| -> ParsingError {
+            ParsingError::from(Diagnostic {
+                message: format!(
+                    "argument #{} not provided for {}",
+                    index + 1,
+                    error_context.context
+                ),
+                severity: Severity::Error,
+                source_code: error_context.source_code.clone(),
+                span: self.span(),
+                help: error_context.not_found_help.map(Cow::into_owned),
+                label: None,
+                related: vec![],
+            })
+        })?;
+
+        entry.value().as_bool().ok_or_else(|| {
+            ParsingError::from(Diagnostic {
+                message: format!(
+                    "{} (argument #{}) is not a boolean",
                     error_context.context,
                     index + 1
                 ),

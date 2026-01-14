@@ -46,6 +46,7 @@ pub struct JsonField {
     pub name: Arc<str>,
     pub key: JSONKey,
     pub type_: DataType,
+    pub optional: bool,
 }
 
 impl Json {
@@ -319,6 +320,7 @@ mod tests {
                 name: "bar".into(),
                 key: JSONKey::String(String::from("bar")),
                 type_: DataType::String,
+                optional: false,
             };
 
             let mut s = Json::new(String::from("Foo"), Some(String::from("avdsfdsf")));
@@ -336,6 +338,7 @@ mod tests {
                 name: "has_foo".into(),
                 key: JSONKey::String(String::from("bar")),
                 type_: DataType::Definition(foo_struct.clone()),
+                optional: false,
             };
 
             let mut s = Json::new(String::from("Bar"), Some(String::from("avfdsfdsf")));
