@@ -1,16 +1,24 @@
-json Foo {
-    doc "dsadsa"
-
-    field id type="[i32::{str}]::{bar}" {
-        key "foo"
-        doc "TODO"
-    }
-}
+// json Foo {
+//     doc "dsadsa"
+//
+//     field id type="[i32::{str}]::{bar}" {
+//         key "foo"
+//         doc "TODO"
+//     }
+// }
 
 int-enum Bar start=0 {
     doc "abd"
 
     variant foo value=1234 {
+        doc "abc"
+    }
+
+    variant bar {
+        doc "abc"
+    }
+
+    variant vsf {
         doc "abc"
     }
 }
@@ -29,29 +37,32 @@ xml TestXML { }
 
 plist TestPlist { }
 
-
-// json InitializeReq {
-//     doc "Initialization command"
-//
-//     field user-info type=UserInfoReq {
-//         key transparent=#true
-//         doc "User information request"
-//     }
-//
-//     field mst-requests type="[MstUrlList]" {
-//         key "KeC10fuL"
-//         doc "MST that should be sent"
-//     }
-// }
-
-json InitializeResp {
-    doc "Response of initialize command"
-
-    field login-campaign type=LoginCampaignMst  {
-        doc "TODO"
-        key "a"
-    }
-
-    // ...
+json UserInfoReq {
+    doc "test"
 }
 
+json InitializeReq {
+    doc "Initialization command"
+
+    field user-info type=UserInfoReq {
+        key transparent=#true
+        doc "User information request"
+    }
+
+    field mst-requests type="[i32::str]" {
+        key "KeC10fuL"
+        doc "MST that should be sent"
+    }
+}
+
+// json InitializeResp {
+//     doc "Response of initialize command"
+//
+//     field login-campaign type=LoginCampaignMst  {
+//         doc "TODO"
+//         key "a"
+//     }
+//
+//     // ...
+// }
+//

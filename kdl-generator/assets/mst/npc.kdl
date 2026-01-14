@@ -1,16 +1,18 @@
 // @json
 json NpcPartyInfo {
-    field id  type=int encoding=int {
+    doc "TODO"
+
+    field id  type="i32::int" {
         key "P_USER_UNIT_ID"
         doc "TODO"
     }
 
-    field type type=int encoding=int {
+    field type type="i32::int" {
         key "P_MEMBER_TYPE"
         doc "TODO"
     }
 
-    field disp_order type=int encoding=int {
+    field disp_order type="i32::int" {
         key "P_DISPORDER"
         doc "TODO"
     }
@@ -18,12 +20,14 @@ json NpcPartyInfo {
 
 // @json
 json NpcTeamInfo {
+    doc "TODO"
+
     field user_id type=str {
         key "P_USER_ID"
         doc "TODO"
     }
 
-    field lv type=int encoding=int {
+    field lv type="i32::int" {
         key "P_LV"
         doc "TODO"
     }
@@ -36,96 +40,98 @@ json NpcTeamInfo {
 
 // @json
 json NpcUnitInfo {
-    field id type=int encoding=int {
+    doc "TODO"
+
+    field id type="i32::int" {
         key "P_UNIT_ID"
         doc "TODO"
     }
 
-    field party_id type=int encoding=int {
+    field party_id type="i32::int" {
         key "P_USER_UNIT_ID"
         doc "TODO"
     }
 
-    field type type=int encoding=int {
+    field type type="i32::int" {
         key "P_UNIT_TYPE_ID"
         doc "TODO"
     }
 
-    field lv type=int encoding=int {
+    field lv type="i32::int" {
         key "P_LV"
         doc "TODO"
     }
 
-    field hp type=int encoding=int {
+    field hp type="i32::int" {
         key "P_HP"
         doc "TODO"
     }
 
-    field atk type=int encoding=int {
+    field atk type="i32::int" {
         key "P_ATK"
         doc "TODO"
     }
 
-    field deff type=int encoding=int {
+    field deff type="i32::int" {
         key "P_DEF"
         doc "TODO"
     }
 
-    field hel type=int encoding=int {
+    field hel type="i32::int" {
         key "P_HEL"
         doc "TODO"
     }
 
-    field skill_id type=int encoding=int {
+    field skill_id type="i32::int" {
         key "P_SKILL_LV"
         doc "TODO"
     }
 
-    field skill_lv type=int encoding=int {
+    field skill_lv type="i32::int" {
         key "P_SKILL_ID"
         doc "TODO"
     }
 
-    field equip_item_id type=int encoding=int {
+    field equip_item_id type="i32::int" {
         key "P_EQP_ITEM_ID"
         doc "TODO"
     }
 }
 
 // @hashjson(hash_group = , array=ArrayStep.Array)
-data NpcMst {
+json NpcMst {
     hash "hV5vWu6C"
     doc "TODO"
 
-    field id type=i32 encoding=str {
-        hash "7zyHb5h9"
+    field id type="i32::str" {
+        key "7zyHb5h9"
         doc "TODO"
     }
 
     field handle_name type=str {
-        hash "B5JQyV8j"
+        key "B5JQyV8j"
         doc "TODO"
     }
 
-    field arena_rank_id type=i32 encoding=str {
-        hash "JmFn3g9t"
+    field arena_rank_id type="i32::str" {
+        key "JmFn3g9t"
         doc "TODO"
     }
 
     field team type=NpcTeamInfo {
-        hash "g94bDiaS"
+        key "g94bDiaS"
         doc "TODO"
         // string #true
     }
 
     field parties type=NpcPartyInfo {
-        hash "oPsmRC18"
+        key "oPsmRC18"
         doc "TODO"
         // string #true
     }
 
     field units type=NpcUnitInfo {
-        hash "bS9s4GCp"
+        key "bS9s4GCp"
         doc "TODO"
         // string #true
     }
