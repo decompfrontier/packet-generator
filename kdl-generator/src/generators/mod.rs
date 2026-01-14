@@ -59,25 +59,27 @@ fn convert_datatype(
     registry: &DefinitionRegistry,
 ) -> Result<String, GenerationError> {
     match datatype {
+        // NOTE(arves): Should there be "int32_t" to force type size? Also "long" is not a portable name of 64-bit integers (see MSVC 64-bit)
+
         DataType::I32 { .. } => Ok(String::from("int")),
 
         DataType::U32 { .. } => Ok(String::from("unsigned int")),
 
-        DataType::I64 { .. } => Ok(String::from("long")),
+        DataType::I64 { .. } => Ok(String::from("long long")),
 
-        DataType::U64 { .. } => Ok(String::from("unsigned long")),
+        DataType::U64 { .. } => Ok(String::from("unsigned long long")),
 
-        DataType::F32 { .. } => Ok(String::from("float")),
+        DataType::F32 { .. } => Ok(String::from("pkghlp::float32")), // for supporting C++20 floating point
 
-        DataType::F64 => Ok(String::from("double")),
+        DataType::F64 => Ok(String::from("pkghlp::float64")), // for supporting C++20 floating point
 
         DataType::Bool { .. } => Ok(String::from("bool")),
 
         DataType::String => Ok(String::from("std::string")),
 
-        DataType::Datetime => Ok(String::from("glzhlp::chronotime")),
+        DataType::Datetime => Ok(String::from("pkghlp::chronotime")),
 
-        DataType::DatetimeUnix => Ok(String::from("glzhlp::chronotime")),
+        DataType::DatetimeUnix => Ok(String::from("pkghlp::chronotime")),
 
         DataType::Map { key, value } => {
             let key = convert_datatype(key, registry)?;
@@ -148,6 +150,8 @@ fn generate_json_cxx(
         r#"#pragma once
 
 {AUTOGENERATION_NOTICE}
+
+#include <pkgen_cpp_helpers.hpp> /* C++ helpers */
 
 struct {struct_name} {{
 {fields}
