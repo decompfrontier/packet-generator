@@ -1,3 +1,4 @@
+from datetime import datetime
 from abc import ABC, abstractmethod
 from schema import GeneratorStruct
 
@@ -15,13 +16,12 @@ class Generator(ABC):
         pass
 
     @abstractmethod
-    def add_import(self, imp: str, output_dir: str) -> str:
+    def add_import(self, imp: str) -> str:
         """
         Adds an import to the current file to generate
 
         :param imp: Python module name (ie: data.mst.something)
-        :param output_dir: Output directory
-        :return: String representation of the import
+        :return: String rapresentation of the import
         """
 
     @abstractmethod
@@ -37,7 +37,7 @@ class Generator(ABC):
     @abstractmethod
     def step(self, struct: GeneratorStruct) -> str:
         """
-        Performs one step of the generator and generates the string representation of the
+        Performs one step of the generator and generates the string rapresentation of the
         specified structure.
 
         :param struct: Structure to generate

@@ -1,7 +1,7 @@
 from schema import *
+from datetime import datetime
+from schema import *
 from generator import Generator
-
-'''TODO: THIS IS OLD it should be deleted!!!'''
 
 class DecompGenerator(Generator):
     """This class implements a compatible packet generator for the decompfrontier

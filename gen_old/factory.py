@@ -1,4 +1,4 @@
-from .cplusplus import CppGenerator
+
 from .generator import Generator
 from .glazecpp import GlazeGenerator
 
@@ -7,11 +7,10 @@ class GeneratorFactory:
     @staticmethod
     def get(name: str) -> Generator:
         """Gets the generator based from the specified mapping."""
-        mapping :dict[str, type] = {
-            "c++":          CppGenerator,
-            "glaze":        GlazeGenerator
+        GENERATOR_MAPPING :dict[str, type] = {
+            "c++":          GlazeGenerator
         }        
-        if not name in mapping:
+        if not name in GENERATOR_MAPPING:
             raise Exception("Invalid generator: {}".format(name))
         
-        return mapping[name]()
+        return GENERATOR_MAPPING[name]()
