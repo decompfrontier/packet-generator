@@ -48,7 +48,7 @@ pub struct StringEnumInner {
 
     pub doc: String,
 
-    pub value: Option<String>,
+    pub value: String,
 }
 
 impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
@@ -57,9 +57,14 @@ impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
 
         for variant in value.variants.as_slice() {
             let name: Arc<str> = variant.name.clone().into();
-            let index = variant.index;
             let doc = variant.doc.clone();
-            members.insert(name.clone(), StringEnumVariant { name, doc, index });
+            let val = variant.value.clone();
+            members.insert(name.clone(), StringEnumVariant { 
+                name: name, 
+                doc: doc, 
+                value: val,
+                index: variant.index,
+            });
         }
 
         Self {

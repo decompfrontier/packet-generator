@@ -25,6 +25,7 @@ pub fn parse_int_enum_definition(
         },
     )?;
 
+    // TODO(arves): decide if this should be optional at best or removed entirely?
     let start = definition.extract_property_int(
         "start",
         ErrorContext {
@@ -228,7 +229,7 @@ fn parse_string_enum_variant(
     enum_name: &str,
     index: usize,
 ) -> Result<StringEnumInner, ParsingError> {
-    // const VALUE_PROPERTY: &str = "value";
+    const VALUE_PROPERTY: &str = "value";
 
     let name = node.extract_argument_string(
         0,
@@ -242,21 +243,6 @@ fn parse_string_enum_variant(
         },
     )?;
 
-    // let value = node
-    //     .get(VALUE_PROPERTY)
-    //     .map(|x| {
-    //         x.as_string().ok_or_else(|| ParsingError::from(Diagnostic {
-    //             message: format!("property `{VALUE_PROPERTY}` in string enum variant `{enum_name}::{name}` is not an integer"),
-    //             severity: Severity::Error,
-    //             source_code: source_code.clone(),
-    //             span: node.span(),
-    //             help: Some("the property `value` specifies the string value of the enum variant, it can only be a string.".to_owned()),
-    //             label: None,
-    //             related: vec![],
-    //         }))
-    //     })
-    //     .transpose()?;
-
     let children = node.extract_children(ErrorContext {
         source_info: source_code.clone(),
         context: format!("integer enum variant `{enum_name}::{name}`").into(),
@@ -264,12 +250,35 @@ fn parse_string_enum_variant(
         wrong_type_help: None,
     })?;
 
+    
+    let value = children
+            .extract_child_node(VALUE_PROPERTY,
+            ErrorContext {
+                source_info: source_code.clone(),
+                context: format!("string enum variant definition `{enum_name}::{name}`").into(),
+                not_found_help: Some(format!("specify a child `{VALUE_PROPERTY} \"Example\"`.").into()),
+                wrong_type_help: Some(format!("specify a child `{VALUE_PROPERTY} \"Example\"`.").into()),
+            },
+        )?
+        .extract_argument_string(
+            0,
+            ErrorContext {
+                source_info: source_code.clone(),
+                context: format!(
+                    "child `{VALUE_PROPERTY}` in string enum variant definition `{enum_name}::{name}``"
+                )
+                .into(),
+                not_found_help: Some(format!("specify a child `{VALUE_PROPERTY} \"Example\"`.").into()),
+                wrong_type_help: Some(format!("the child `{VALUE_PROPERTY}` must be a string.").into()),
+            },
+        )?;
+
     let doc = children
         .extract_child_node(
             "doc",
             ErrorContext {
                 source_info: source_code.clone(),
-                context: format!("integer enum variant definition `{enum_name}::{name}`").into(),
+                context: format!("string enum variant definition `{enum_name}::{name}`").into(),
                 not_found_help: Some("specify a child `doc \"Example\"`.".into()),
                 wrong_type_help: Some("specify a child `doc \"Example\"`.".into()),
             },
@@ -290,7 +299,7 @@ fn parse_string_enum_variant(
     Ok(StringEnumInner {
         name: name.to_owned(),
         index,
-        value: None,
+        value: value.to_owned(),
         doc: doc.to_owned(),
     })
 }

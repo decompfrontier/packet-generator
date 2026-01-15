@@ -75,6 +75,7 @@ pub struct StringEnumVariant {
     pub index: usize,
     pub name: Arc<str>,
     pub doc: String,
+    pub value: String,
 }
 
 impl StringEnum {
