@@ -1,27 +1,4 @@
-// json Foo {
-//     doc "dsadsa"
-//
-//     field id type="[i32::{str}]::{bar}" {
-//         key "foo"
-//         doc "TODO"
-//     }
-// }
-
-int-enum Bar start=10 {
-    doc "Really important enum"
-
-    variant foo {
-        doc "A foo."
-    }
-
-    variant bar {
-        doc "A bar."
-    }
-
-    variant quox value=1234 {
-        doc "A quox."
-    }
-}
+import "example-2.kdl"
 
 str-enum Baz {
     doc "abd"
@@ -58,15 +35,3 @@ json InitializeReq {
         doc "MST that should be sent"
     }
 }
-
-// json InitializeResp {
-//     doc "Response of initialize command"
-//
-//     field login-campaign type=LoginCampaignMst  {
-//         doc "TODO"
-//         key "a"
-//     }
-//
-//     // ...
-// }
-//

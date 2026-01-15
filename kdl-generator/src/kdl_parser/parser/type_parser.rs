@@ -3,6 +3,7 @@ use std::sync::Arc;
 use miette::{Severity, SourceSpan};
 use winnow::Parser;
 
+use crate::kdl_parser::SourceInfo;
 use crate::kdl_parser::parser::type_parser::combinator_solution::Error;
 use crate::kdl_parser::{Diagnostic, ParsingError, schema::TypeEncoding};
 
@@ -11,7 +12,7 @@ use crate::kdl_parser::schema::DataType;
 pub fn generic_parse(
     input: &str,
     _encoding: Option<TypeEncoding>,
-    source_code: Arc<str>,
+    source_code: SourceInfo,
     span: SourceSpan,
 ) -> Result<DataType, ParsingError> {
     let input = input.trim();
@@ -42,7 +43,7 @@ pub fn generic_parse(
 
             fn convert_error_to_diagnostic(
                 error: &Error,
-                source_code: Arc<str>,
+                source_code: SourceInfo,
                 span: SourceSpan,
             ) -> Diagnostic {
                 let diagnostics: Vec<_> = error
@@ -51,7 +52,7 @@ pub fn generic_parse(
                     .map(|e| Diagnostic {
                         message: e.message.clone(),
                         severity: e.severity,
-                        source_code: source_code.clone(),
+                        source_info: source_code.clone(),
                         span,
                         help: e.help.clone(),
                         label: None,
@@ -62,7 +63,7 @@ pub fn generic_parse(
                 match &error.cause {
                     Some(diag) => Diagnostic {
                         message: diag.message.clone(),
-                        source_code: source_code.clone(),
+                        source_info: source_code.clone(),
                         span,
                         severity: diag.severity,
                         label: None,
@@ -72,7 +73,7 @@ pub fn generic_parse(
 
                     None => Diagnostic {
                         message: "unknown error when parsing type".to_owned(),
-                        source_code,
+                        source_info: source_code,
                         span,
                         severity: Severity::Error,
                         label: None,

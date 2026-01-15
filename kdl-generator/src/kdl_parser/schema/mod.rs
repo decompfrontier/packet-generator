@@ -1,6 +1,7 @@
 use std::{
     collections::{BTreeMap, HashMap},
     fmt::Display,
+    path::PathBuf,
     str::FromStr,
     sync::Arc,
 };
@@ -13,6 +14,8 @@ use crate::intermediate::{self, IntEnumVariant, StringEnumVariant};
 
 #[derive(Debug)]
 pub struct RawDocument {
+    pub filepath: Option<PathBuf>,
+
     pub json_definitions: Vec<JsonDefinition>,
 
     pub http_definitions: Vec<HTTPDefinition>,

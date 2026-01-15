@@ -1,4 +1,4 @@
-use std::{fs::File, io::Read};
+use std::{fs::File, io::Read, path::PathBuf};
 
 use miette::Context;
 use packet_generator::{
@@ -25,10 +25,11 @@ fn main() -> Result<(), miette::Report> {
 
     match args {
         cli::CliArgs::DumpRepresentation { input } => {
-            let mut file = File::open(input).unwrap();
+            let path = PathBuf::from(input);
+            let mut file = File::open(&path).unwrap();
             let mut doc_str = String::new();
             let _ = file.read_to_string(&mut doc_str);
-            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str)?;
+            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str, &path)?;
 
             println!("Parser: {:#?}", doc);
 
@@ -40,10 +41,11 @@ fn main() -> Result<(), miette::Report> {
         }
 
         cli::CliArgs::Generate { input, .. } => {
-            let mut file = File::open(input).unwrap();
+            let path = PathBuf::from(input);
+            let mut file = File::open(&path).unwrap();
             let mut doc_str = String::new();
             let _ = file.read_to_string(&mut doc_str);
-            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str)?;
+            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str, &path)?;
 
             println!("Parser: {:#?}", doc);
 

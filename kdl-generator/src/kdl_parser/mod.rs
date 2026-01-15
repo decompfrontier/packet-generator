@@ -1,35 +1,64 @@
 mod parser;
 pub mod schema;
 
-use std::{fmt::Display, str::FromStr, sync::Arc};
+use std::{fmt::Display, path::PathBuf, sync::Arc};
 
-use miette::{LabeledSpan, Severity, SourceSpan};
+use miette::{LabeledSpan, MietteSpanContents, Severity, SourceCode, SourceSpan};
 pub use schema::validate;
 
-use kdl::{KdlDocument, KdlError};
+use kdl::KdlError;
 
 pub struct Document(RawDocument);
 
-use crate::{
-    intermediate::DefinitionRegistry,
-    kdl_parser::{
-        parser::enum_parser,
-        schema::{EnumDefinition, RawDocument},
-    },
-};
+use crate::{intermediate::DefinitionRegistry, kdl_parser::schema::RawDocument};
 
-const JSON_DEFINITION_NAME: &str = "json";
-const INT_ENUM_DEFINITION_NAME: &str = "int-enum";
-const STRING_ENUM_DEFINITION_NAME: &str = "str-enum";
-const XML_DEFINITION_NAME: &str = "xml";
-const HTTP_DEFINITION_NAME: &str = "http";
-const PLIST_DEFINITION_NAME: &str = "plist";
+pub use parser::raw_parse_kdl;
+
+#[derive(Debug, Clone)]
+pub struct SourceInfo {
+    name: Arc<str>,
+    source_code: Arc<str>,
+}
+
+impl SourceInfo {
+    pub fn new(name: impl AsRef<str>, source_code: impl AsRef<str>) -> Self {
+        Self {
+            name: name.as_ref().into(),
+            source_code: source_code.as_ref().into(),
+        }
+    }
+}
+
+impl SourceCode for SourceInfo {
+    fn read_span<'a>(
+        &'a self,
+        span: &SourceSpan,
+        context_lines_before: usize,
+        context_lines_after: usize,
+    ) -> Result<Box<dyn miette::SpanContents<'a> + 'a>, miette::MietteError> {
+        let inner_span =
+            self.source_code
+                .read_span(span, context_lines_before, context_lines_after)?;
+
+        Ok(Box::new(
+            MietteSpanContents::new_named(
+                self.name.to_string(),
+                inner_span.data(),
+                *inner_span.span(),
+                inner_span.line(),
+                inner_span.column(),
+                inner_span.line_count(),
+            )
+            .with_language("kdl"),
+        ))
+    }
+}
 
 #[derive(Debug, Clone, thiserror::Error)]
 pub struct Diagnostic {
     pub message: String,
     pub severity: Severity,
-    pub source_code: Arc<str>,
+    pub source_info: SourceInfo,
     pub span: SourceSpan,
     pub help: Option<String>,
     pub label: Option<String>,
@@ -56,7 +85,7 @@ impl miette::Diagnostic for Diagnostic {
     }
 
     fn source_code(&self) -> Option<&dyn miette::SourceCode> {
-        Some(&self.source_code)
+        Some(&self.source_info)
     }
 
     fn labels(&self) -> Option<Box<dyn Iterator<Item = miette::LabeledSpan> + '_>> {
@@ -83,18 +112,28 @@ pub enum ParsingError {
     #[error(transparent)]
     KdlError(#[from] KdlError),
 
-    #[error("failed to parse packet definition")]
+    #[error("problems when parsing packet definition")]
     Diagnostics {
-        source_code: Arc<str>,
+        source_info: SourceInfo,
 
         diagnostics: Vec<Diagnostic>,
     },
+
+    #[error("failed to canonicalize file path \"{path}\"")]
+    NoAbsoluteFilePath {
+        path: PathBuf,
+
+        source: std::io::Error,
+    },
+
+    #[error(transparent)]
+    GenericIoError(#[from] std::io::Error),
 }
 
 impl From<Diagnostic> for ParsingError {
     fn from(diag: Diagnostic) -> Self {
         Self::Diagnostics {
-            source_code: diag.source_code.clone(),
+            source_info: diag.source_info.clone(),
             diagnostics: vec![diag],
         }
     }
@@ -132,7 +171,11 @@ impl miette::Diagnostic for ParsingError {
     fn source_code(&self) -> Option<&dyn miette::SourceCode> {
         match self {
             ParsingError::KdlError(kdl_error) => kdl_error.source_code(),
-            ParsingError::Diagnostics { source_code, .. } => Some(source_code),
+            ParsingError::Diagnostics {
+                source_info: source_code,
+                ..
+            } => Some(source_code),
+            _ => None,
         }
     }
 
@@ -149,6 +192,8 @@ impl miette::Diagnostic for ParsingError {
             ParsingError::Diagnostics { diagnostics, .. } => Some(Box::new(
                 diagnostics.iter().map(|d| d as &dyn miette::Diagnostic),
             )),
+
+            _ => None,
         }
     }
 
@@ -157,128 +202,6 @@ impl miette::Diagnostic for ParsingError {
             ParsingError::KdlError(kdl_error) => kdl_error.diagnostic_source(),
             _ => None,
         }
-    }
-}
-
-pub fn raw_parse_kdl<S: AsRef<str>>(document: S) -> Result<schema::RawDocument, ParsingError> {
-    let raw_document = KdlDocument::from_str(document.as_ref())?;
-
-    let source_code: Arc<str> = document.as_ref().into();
-
-    let mut all_diagnostics = vec![];
-
-    let mut root = RawDocument {
-        json_definitions: vec![],
-        http_definitions: vec![],
-        enum_definitions: vec![],
-    };
-
-    let children = raw_document.nodes();
-
-    if children.is_empty() {
-        let diag = Diagnostic {
-            message: "the file is empty".to_owned(),
-            severity: Severity::Error,
-            source_code: source_code.clone(),
-            span: raw_document.span(),
-            help: Some("where is everyone?".to_owned()),
-            label: None,
-            related: vec![],
-        };
-
-        all_diagnostics.push(diag);
-
-        return Err(ParsingError::Diagnostics {
-            source_code: source_code.clone(),
-            diagnostics: all_diagnostics,
-        });
-    }
-
-    // TODO(anri):
-    // Parse some meta about versions and stuff?
-    //
-    // meta {
-    //   version 1
-    // }
-    //
-    // let meta = children.iter().filter(|&node| {
-    //     node.name().value() == "meta"
-    // }).last();
-    //
-    // match meta {
-    //     Some(node) => {
-    //
-    //     }
-    //
-    //     None => {
-    //
-    //     }
-    //
-    // }
-
-    for definition in children {
-        let source_code = source_code.clone();
-
-        match definition.name().value() {
-            JSON_DEFINITION_NAME => {
-                match parser::json_parser::parse_data_definition(definition, source_code.clone()) {
-                    Ok(def) => {
-                        root.json_definitions.push(def);
-                    }
-
-                    Err(ParsingError::Diagnostics { diagnostics, .. }) => {
-                        all_diagnostics.extend(diagnostics);
-                    }
-
-                    Err(e) => return Err(e),
-                }
-            }
-
-            INT_ENUM_DEFINITION_NAME => {
-                match enum_parser::parse_int_enum_definition(definition, source_code.clone()) {
-                    Ok(def) => {
-                        root.enum_definitions.push(EnumDefinition::IntEnum(def));
-                    }
-
-                    Err(ParsingError::Diagnostics { diagnostics, .. }) => {
-                        all_diagnostics.extend(diagnostics);
-                    }
-
-                    Err(e) => return Err(e),
-                }
-            }
-
-            STRING_ENUM_DEFINITION_NAME => {
-                match enum_parser::parse_string_enum_definition(definition, source_code.clone()) {
-                    Ok(def) => {
-                        root.enum_definitions.push(EnumDefinition::StringEnum(def));
-                    }
-
-                    Err(ParsingError::Diagnostics { diagnostics, .. }) => {
-                        all_diagnostics.extend(diagnostics);
-                    }
-
-                    Err(e) => return Err(e),
-                }
-            }
-
-            HTTP_DEFINITION_NAME => {}
-
-            XML_DEFINITION_NAME => {}
-
-            PLIST_DEFINITION_NAME => {}
-
-            _ => {}
-        }
-    }
-
-    if all_diagnostics.is_empty() {
-        Ok(root)
-    } else {
-        Err(ParsingError::Diagnostics {
-            source_code,
-            diagnostics: all_diagnostics,
-        })
     }
 }
 

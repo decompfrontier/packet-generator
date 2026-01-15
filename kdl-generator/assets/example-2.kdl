@@ -1,0 +1,16 @@
+int-enum Bar start=10 {
+    doc "Really important enum"
+
+    variant foo {
+        doc "A foo."
+    }
+
+    variant bar {
+        doc "A bar."
+    }
+
+    variant quox value=1234 {
+        doc "A quox."
+    }
+}
+

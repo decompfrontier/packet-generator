@@ -4,7 +4,7 @@ use kdl::KdlNode;
 use miette::Severity;
 
 use crate::kdl_parser::{
-    Diagnostic, ParsingError,
+    Diagnostic, ParsingError, SourceInfo,
     parser::{ErrorContext, KdlDocumentUtilsExt, KdlNodeUtilsExt, type_parser::generic_parse},
     schema::{DataType, JSONKey, JsonDefinition, JsonField, TypeEncoding},
 };
@@ -22,12 +22,12 @@ const TRANSPARENT_PROPERTY_NAME: &str = "transparent";
 
 pub fn parse_data_definition(
     definition: &KdlNode,
-    source_code: Arc<str>,
+    source_code: SourceInfo,
 ) -> Result<JsonDefinition, ParsingError> {
     let name = definition.extract_argument_string(
         0,
         ErrorContext {
-            source_code: source_code.clone(),
+            source_info: source_code.clone(),
             context: "definition".into(),
             not_found_help: Some("add a name to the definition".into()),
             wrong_type_help: Some("give it a name as a string".into()),
@@ -41,7 +41,7 @@ pub fn parse_data_definition(
                 ParsingError::from(Diagnostic {
                     message: format!("property `{DEFAULT_ENCODING_PROPERTY}` in JSON definition `Foo` is not a string"),
                     severity: Severity::Error,
-                    source_code: source_code.clone(),
+                    source_info: source_code.clone(),
                     span: definition.span(),
                     help: Some("provide one of `str` or `int`".to_owned()),
                     label: None,
@@ -56,7 +56,7 @@ pub fn parse_data_definition(
             ParsingError::from(Diagnostic {
                 message: e,
                 severity: Severity::Warning,
-                source_code: source_code.clone(),
+                source_info: source_code.clone(),
                 span: definition.span(),
                 help: None,
                 label: None,
@@ -68,7 +68,7 @@ pub fn parse_data_definition(
         ParsingError::from(Diagnostic {
             message: "JSON definition has no children".to_owned(),
             severity: Severity::Error,
-            source_code: source_code.clone(),
+            source_info: source_code.clone(),
             span: definition.span(),
             help: Some(format!(
                 "specify children `{HASH_CHILD}`, `{DOC_CHILD}` and some `{FIELD_DEFINITOIN}`s"
@@ -84,7 +84,7 @@ pub fn parse_data_definition(
             node.extract_argument_string(
                 0,
                 ErrorContext {
-                    source_code: source_code.clone(),
+                    source_info: source_code.clone(),
                     context: "JSON definition `{name}`".into(),
                     not_found_help: None,
                     wrong_type_help: None,
@@ -98,7 +98,7 @@ pub fn parse_data_definition(
         .extract_child_node(
             DOC_CHILD,
             ErrorContext {
-                source_code: source_code.clone(),
+                source_info: source_code.clone(),
                 context: format!("JSON definition `{name}`").into(),
                 not_found_help: Some(format!("specify child `{DOC_CHILD} \"Example\"`").into()),
                 wrong_type_help: None,
@@ -107,7 +107,7 @@ pub fn parse_data_definition(
         .extract_argument_string(
             0,
             ErrorContext {
-                source_code: source_code.clone(),
+                source_info: source_code.clone(),
                 context: format!("JSON definition `{name}`").into(),
                 not_found_help: Some(format!("specify child `{DOC_CHILD} \"Example\"`").into()),
                 wrong_type_help: None,
@@ -131,14 +131,14 @@ pub fn parse_data_definition(
 
 fn parse_field(
     node: &KdlNode,
-    source_code: Arc<str>,
+    source_code: SourceInfo,
     data_name: &str,
     maybe_default_encoding: &Option<TypeEncoding>,
 ) -> Result<JsonField, ParsingError> {
     let field_node = node.extract_argument_string(
         0,
         ErrorContext {
-            source_code: source_code.clone(),
+            source_info: source_code.clone(),
             context: format!("field definition in JSON {data_name}").into(),
             not_found_help: Some("add a name to the field".into()),
             wrong_type_help: None,
@@ -154,7 +154,7 @@ fn parse_field(
             ParsingError::from(Diagnostic {
                 message: e,
                 severity: Severity::Warning,
-                source_code: source_code.clone(),
+                source_info: source_code.clone(),
                 span: node.span(),
                 help: None,
                 label: None,
@@ -171,7 +171,7 @@ fn parse_field(
                             "property `{TYPE_PROPERTY}` not provided for JSON field definition `{data_name}::{field_node}`",
                         ),
                         severity: Severity::Error,
-                        source_code: source_code.clone(),
+                        source_info: source_code.clone(),
                         span: node.span(),
                         help: Some(format!("specify `{TYPE_PROPERTY}=\"...\"`.")),
                         label: None,
@@ -184,7 +184,7 @@ fn parse_field(
                     "property `{TYPE_PROPERTY}`, of JSON field definition `{data_name}::{field_node}`, is not a string",
                 ),
                 severity: Severity::Error,
-                source_code: source_code.clone(),
+                source_info: source_code.clone(),
                 span: datatype_entry.span(),
                 help: Some(format!("specify `{TYPE_PROPERTY}=\"...\"`.")),
                 label: None,
@@ -200,32 +200,32 @@ fn parse_field(
     }?;
 
     let children = node.extract_children(ErrorContext {
-        source_code: source_code.clone(),
+        source_info: source_code.clone(),
         context: "field definition".into(),
         not_found_help: Some(format!("specify children `{KEY_CHILD}`, `{DOC_CHILD}`").into()),
         wrong_type_help: None,
     })?;
 
-    let optional_node = children.get("optional")
+    let optional_node = children
+        .get("optional")
         .map(|c| {
             c.extract_argument_bool(
                 0,
                 ErrorContext {
-                    source_code: source_code.clone(),
+                    source_info: source_code.clone(),
                     context: format!("field definition `{data_name}::{field_node}`").into(),
                     not_found_help: None,
                     wrong_type_help: None,
                 },
             )
         })
-        .transpose()
-        ?
+        .transpose()?
         .unwrap_or(false);
 
     let key_node = children.extract_child_node(
         "key",
         ErrorContext {
-            source_code: source_code.clone(),
+            source_info: source_code.clone(),
             context: format!("field definition `{data_name}::{field_node}`").into(),
             not_found_help: Some(
                 format!(
@@ -245,7 +245,7 @@ fn parse_field(
         .extract_argument_string(
             0,
             ErrorContext {
-                source_code: source_code.clone(),
+                source_info: source_code.clone(),
                 context: format!("field definition `{data_name}::{field_node}`").into(),
                 not_found_help: None,
                 wrong_type_help: None,
@@ -257,7 +257,7 @@ fn parse_field(
                 .extract_property_bool(
                     TRANSPARENT_PROPERTY_NAME,
                     ErrorContext {
-                        source_code: source_code.clone(),
+                        source_info: source_code.clone(),
                         context: format!("field definition `{data_name}::{field_node}`").into(),
                         not_found_help: None,
                         wrong_type_help: None,
@@ -274,7 +274,7 @@ fn parse_field(
                         return Err(ParsingError::from(Diagnostic {
                             message: format!("in field definition `{data_name}::{field_node}`, key `{TRANSPARENT_PROPERTY_NAME}` cannot be used for primitive types since they lack any underlying pre-defined key."),
                             severity: Severity::Error,
-                            source_code: source_code.clone(),
+                            source_info: source_code.clone(),
                             span: key_node.span(),
                             help: Some(format!("provide an actual string for the key, for example: `{KEY_CHILD} \"foobar\"`")),
                             label: None,
@@ -298,7 +298,7 @@ fn parse_field(
         ParsingError::from(Diagnostic {
                 message: format!("field `{KEY_CHILD}` in JSON definition `{data_name}::{field_node}` is ambigous; either specify a string for the key or `{TRANSPARENT_PROPERTY_NAME}=#true` to use the underlying key defined in `{underlying_datatype}::{HASH_CHILD}`."),
                 severity: Severity::Error,
-                source_code: source_code.clone(),
+                source_info: source_code.clone(),
                 span: key_node.span(),
                 help: Some(format!("the child `{KEY_CHILD}` needs to be either a string or it must have the property `{TRANSPARENT_PROPERTY_NAME}=#true`, otherwise there is no way to know which key this field should use.")),
                 label: None,
@@ -310,7 +310,7 @@ fn parse_field(
         .extract_child_node(
             DOC_CHILD,
             ErrorContext {
-                source_code: source_code.clone(),
+                source_info: source_code.clone(),
                 context: format!("field definition `{data_name}::{field_node}`").into(),
                 not_found_help: Some(format!("specify child `{DOC_CHILD} \"Example\"`").into()),
                 wrong_type_help: None,
@@ -319,7 +319,7 @@ fn parse_field(
         .extract_argument_string(
             0,
             ErrorContext {
-                source_code: source_code.clone(),
+                source_info: source_code.clone(),
                 context: format!("field definition `{data_name}::{field_node}`").into(),
                 not_found_help: None,
                 wrong_type_help: None,
