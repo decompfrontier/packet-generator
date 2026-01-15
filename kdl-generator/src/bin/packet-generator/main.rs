@@ -53,13 +53,15 @@ fn main() -> Result<(), miette::Report> {
 
             let definitions = packet_generator::kdl_parser::document_to_definitions(doc);
 
-            let sources = packet_generator::generators::generate_glaze(&definitions)
+            // TODO(arves): Fix cli
+            //let source = packet_generator::generators::generate_cxx(&definitions)
+            let source = packet_generator::generators::generate_glaze(&definitions)
                 .map_err(|e| miette::miette!(e))
                 .wrap_err("error in source code generation")?;
 
-            for source in sources {
+            //for source in sources {
                 println!("\n// {}\n{}\n\n", source.filename, source.content);
-            }
+            //}
         }
     }
 
