@@ -24,7 +24,6 @@ fn convert_datatype(
     registry: &DefinitionRegistry,
 ) -> Result<String, GenerationError> {
     match datatype {
-
         DataType::I32 { .. } => Ok(String::from("int32_t")),
 
         DataType::U32 { .. } => Ok(String::from("uint32_t")),
@@ -85,7 +84,6 @@ fn convert_datatype(
         },
     }
 }
-
 
 fn generate_json_cxx(
     registry: &DefinitionRegistry,
@@ -196,17 +194,14 @@ namespace {} {{
     Ok(content)
 }
 
-
 pub fn generate_cxx(
     registry: &DefinitionRegistry,
 ) -> Result<CxxSourceCode, Report<GenerationError>> {
-    
     let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
         .definitions
         .values()
         .map(|def| match **def {
             Definition::Json(ref json) => generate_json_cxx(registry, json),
-            Definition::Struct(ref json) => generate_json_cxx(registry, json),
             Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
             Definition::StringEnum(ref string_enum) => generate_str_enum_cxx(registry, string_enum),
         })
@@ -214,14 +209,15 @@ pub fn generate_cxx(
 
     let content = generated_sources?.join("\n\n");
 
-    
     Ok(CxxSourceCode {
         filename: "test.hpp".to_owned(), // TODO(arves): test -> registry.name?
-        content: format!(r#"#pragma once
+        content: format!(
+            r#"#pragma once
 #include <pkgen_helpers.hpp>
 
 {AUTOGENERATION_NOTICE}
 
-{content}"#)
+{content}"#
+        ),
     })
 }

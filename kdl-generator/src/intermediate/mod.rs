@@ -12,7 +12,6 @@ pub enum Encoding {
 #[derive(Clone, Debug)]
 pub enum Definition {
     Json(Json),
-    Struct(Json),
     IntEnum(IntEnum),
     StringEnum(StringEnum),
 }
@@ -21,7 +20,6 @@ impl Definition {
     pub fn name(&self) -> &String {
         match self {
             Definition::Json(json) => &json.name,
-            Definition::Struct(json) => &json.name,
             Definition::IntEnum(int_enum) => &int_enum.name,
             Definition::StringEnum(string_enum) => &string_enum.name,
         }
@@ -238,10 +236,6 @@ impl DefinitionRegistry {
                 .definitions
                 .insert(json.name.clone(), Arc::new(definition)),
 
-            Definition::Struct(ref struct_) => self
-                .definitions
-                .insert(struct_.name.clone(), Arc::new(definition)),
-
             Definition::IntEnum(ref int_enum) => self
                 .definitions
                 .insert(int_enum.name.clone(), Arc::new(definition)),
@@ -259,16 +253,6 @@ impl DefinitionRegistry {
         match definition {
             Definition::Json(ref json) => {
                 let name = json.name.clone();
-                let new_entry = Arc::new(definition);
-
-                (
-                    Arc::downgrade(&new_entry),
-                    self.definitions.insert(name, new_entry),
-                )
-            }
-
-            Definition::Struct(ref struct_) => {
-                let name = struct_.name.clone();
                 let new_entry = Arc::new(definition);
 
                 (
@@ -327,7 +311,7 @@ mod tests {
             let mut s = Json::new(String::from("Foo"), Some(String::from("avdsfdsf")));
             s.add_field(field);
 
-            definitions.insert(Definition::Struct(s));
+            definitions.insert(Definition::Json(s));
         };
 
         {
@@ -345,7 +329,7 @@ mod tests {
             let mut s = Json::new(String::from("Bar"), Some(String::from("avfdsfdsf")));
             s.add_field(field);
 
-            definitions.insert(Definition::Struct(s));
+            definitions.insert(Definition::Json(s));
         };
 
         definitions.find("Bar").expect("Bar was inserted above.");

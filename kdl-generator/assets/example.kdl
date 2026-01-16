@@ -5,10 +5,12 @@ str-enum Baz {
 
     variant foo {
         doc "abc"
+        value "a"
     }
 
     variant bar {
         doc "abc"
+        value "a"
     }
 }
 
@@ -20,6 +22,7 @@ plist TestPlist { }
 
 json UserInfoReq {
     doc "test"
+    hash "Foo"
 }
 
 json InitializeReq {

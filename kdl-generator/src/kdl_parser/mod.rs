@@ -374,7 +374,7 @@ mod document_to_intermediate {
                 });
             }
 
-            registry.insert(Definition::Struct(struct_def));
+            registry.insert(Definition::Json(struct_def));
         }
     }
 }
@@ -383,7 +383,6 @@ pub fn document_to_definitions(document: Document) -> DefinitionRegistry {
     let mut registry = DefinitionRegistry::new();
 
     document_to_intermediate::add_enum_definitions(&mut registry, document.0.enum_definitions);
-    // document_to_intermediate::add_json_definitions(&mut registry, document.0.http_definitions);
     document_to_intermediate::add_json_definitions(&mut registry, document.0.json_definitions);
 
     registry

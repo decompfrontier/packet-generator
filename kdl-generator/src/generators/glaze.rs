@@ -4,7 +4,9 @@ use stringcase::Caser;
 
 use crate::generators::GenerationError;
 
-use crate::intermediate::{DataType, Definition, DefinitionRegistry, IntEnum, Json, StringEnum, Encoding, JSONKey};
+use crate::intermediate::{
+    DataType, Definition, DefinitionRegistry, Encoding, IntEnum, JSONKey, Json, StringEnum,
+};
 
 const TAB: &str = "    ";
 
@@ -22,18 +24,32 @@ fn get_glz_mapper(
     datatype: &DataType,
     registry: &DefinitionRegistry,
 ) -> Result<String, GenerationError> {
+    let name = name.to_snake_case();
+
     match datatype {
+        DataType::I32 {
+            encoding: Encoding::String,
+        }
+        | DataType::U32 {
+            encoding: Encoding::String,
+        }
+        | DataType::F32 {
+            encoding: Encoding::String,
+        }
+        | DataType::F64 => Ok(format!("glz::quoted_num<&T::{name}")),
 
-        DataType::I32 { Encoding::String } |
-        DataType::U32 { Encoding::String } |
-        DataType::F32 { Encoding::String } |
-        DataType::F64 { Encoding::String }
-            => Ok(format!("glz::quoted_num<&T::{name}")),
-
-        DataType::F32 { Encoding::Int } => Ok(format!("glzhlp::write_float32(&T::{name})")),
-        DataType::I64 { Encoding::Int } => Ok(format!("glzhlp::write_float64(&T::{name})")),
-        DataType::Bool { Encoding::String } => Ok(format!("glzhlp::strbool<{parent_name}, {name}>")),
-        DataType::Bool { Encoding::Int } => Ok(format!("glz::bools_as_numbers<&T::{name}>")),
+        DataType::F32 {
+            encoding: Encoding::Int,
+        } => Ok(format!("glzhlp::write_float32(&T::{name})")),
+        DataType::I64 {
+            encoding: Encoding::Int,
+        } => Ok(format!("glzhlp::write_float64(&T::{name})")),
+        DataType::Bool {
+            encoding: Encoding::String,
+        } => Ok(format!("glzhlp::strbool<{parent_name}, {name}>")),
+        DataType::Bool {
+            encoding: Encoding::Int,
+        } => Ok(format!("glz::bools_as_numbers<&T::{name}>")),
         DataType::Datetime => Ok(format!("glzhlp::datetime<{parent_name}, &T::{name}>")),
         DataType::DatetimeUnix => Ok(format!("glzhlp::datetimeunix<{parent_name}, &T::{name}>")),
 
@@ -42,11 +58,9 @@ fn get_glz_mapper(
         // TODO(arves): Maps..
         // TODO(arves): String arrays (glzhlp::stringlist<{parent_name}, &T::{name}, '{character}'})
         // TODO(arves): Should single element array have a special mapping ??
-
         _ => Ok(format!("&T::{name}")),
     }
 }
-
 
 fn generate_json_cxx(
     registry: &DefinitionRegistry,
@@ -60,18 +74,37 @@ fn generate_json_cxx(
         .map(|field| -> Result<String, GenerationError> {
             // TODO(arves): Fix parent name...
             let mapper = get_glz_mapper(&struct_name, &field.name, &field.type_, registry)?;
-            let key: &str;
-            match &field.key {
-                JSONKey::String(v) => key = &v,
-                _ => return Err(GenerationError::ExpiredRegistry {
-                queried_from: field.type_.clone(),
-            })
-            }
+            let key: &str = match &field.key {
+                JSONKey::String(v) => v,
+
+                JSONKey::UseUnderlying => {
+
+                    // TODO(anri):
+                    // Add validation in transformation between RawDocument -> Document,
+                    // then restructure all these assertions/panics as errors.
+                    match &field.type_ {
+                        DataType::Definition(def) => {
+                            let Some(def) = def.upgrade() else {
+                                return Err(GenerationError::ExpiredRegistry { queried_from: field.type_.clone() });
+                            };
+
+                            match *def {
+                                Definition::Json(ref json) => {
+                                    &json.hash_name.clone().unwrap_or_else(|| panic!("the parser should've checked that {} contains a `hash`", json.name))
+                                }
+
+                                _ => todo!(),
+                            }
+                        }
+
+                        _ => todo!("In glaze.rs generation, recursively handle `JSONKey::UseUnderlying` for types which are not directly a definition. Should be an error.")
+                    }
+                }
+            };
 
             Ok(format!("{TAB}{TAB}\"{key}\", {mapper}"))
         })
         .process_results(|mut x| x.join(",\n"))?;
-
 
     let content = format!(
         r#"template <>
@@ -101,17 +134,14 @@ fn generate_str_enum_cxx(
     Ok(String::new())
 }
 
-
 pub fn generate_glaze(
     registry: &DefinitionRegistry,
 ) -> Result<CxxSourceCode, Report<GenerationError>> {
-    
     let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
         .definitions
         .values()
         .map(|def| match **def {
             Definition::Json(ref json) => generate_json_cxx(registry, json),
-            Definition::Struct(ref json) => generate_json_cxx(registry, json),
             Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
             Definition::StringEnum(ref string_enum) => generate_str_enum_cxx(registry, string_enum),
         })
@@ -119,12 +149,13 @@ pub fn generate_glaze(
 
     let content = generated_sources?.join("\n\n");
 
-    
     Ok(CxxSourceCode {
         filename: "test.hpp".to_owned(), // TODO(arves): test -> registry.name?
-        content: format!(r#"#pragma once
+        content: format!(
+            r#"#pragma once
 #include <pkgen_glaze_helpers.hpp>
 
-{content}"#)
+{content}"#
+        ),
     })
 }
