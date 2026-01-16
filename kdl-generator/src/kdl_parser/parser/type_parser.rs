@@ -12,7 +12,7 @@ use crate::kdl_parser::schema::DataType;
 pub fn generic_parse(
     input: &str,
     _encoding: Option<TypeEncoding>,
-    source_code: SourceInfo,
+    source_code: Arc<SourceInfo>,
     span: SourceSpan,
 ) -> Result<DataType, ParsingError> {
     let input = input.trim();
@@ -43,7 +43,7 @@ pub fn generic_parse(
 
             fn convert_error_to_diagnostic(
                 error: &Error,
-                source_code: SourceInfo,
+                source_code: Arc<SourceInfo>,
                 span: SourceSpan,
             ) -> Diagnostic {
                 let diagnostics: Vec<_> = error

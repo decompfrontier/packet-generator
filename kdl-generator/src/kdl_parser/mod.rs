@@ -16,8 +16,8 @@ pub use parser::raw_parse_kdl;
 
 #[derive(Debug, Clone)]
 pub struct SourceInfo {
-    name: Arc<str>,
-    source_code: Arc<str>,
+    name: String,
+    source_code: String,
 }
 
 impl SourceInfo {
@@ -58,7 +58,7 @@ impl SourceCode for SourceInfo {
 pub struct Diagnostic {
     pub message: String,
     pub severity: Severity,
-    pub source_info: SourceInfo,
+    pub source_info: Arc<SourceInfo>,
     pub span: SourceSpan,
     pub help: Option<String>,
     pub label: Option<String>,
@@ -114,7 +114,7 @@ pub enum ParsingError {
 
     #[error("problems when parsing packet definition")]
     Diagnostics {
-        source_info: SourceInfo,
+        source_info: Arc<SourceInfo>,
 
         diagnostics: Vec<Diagnostic>,
     },

@@ -31,7 +31,7 @@ const HTTP_DEFINITION_NAME: &str = "http";
 const PLIST_DEFINITION_NAME: &str = "plist";
 
 struct ErrorContext<'a> {
-    source_info: SourceInfo,
+    source_info: Arc<SourceInfo>,
     context: Cow<'a, str>,
     not_found_help: Option<Cow<'a, str>>,
     wrong_type_help: Option<Cow<'a, str>>,
@@ -359,16 +359,16 @@ impl KdlNodeUtilsExt for KdlNode {
 fn parse_all_definitions(
     raw_document: &mut RawDocument,
     definitions: &[KdlNode],
-    source_info: SourceInfo,
+    source_info: Arc<SourceInfo>,
 ) -> Result<Vec<Diagnostic>, ParsingError> {
     let mut all_diagnostics = vec![];
 
     for definition in definitions {
-        let source_code = source_info.clone();
+        let source_info = source_info.clone();
 
         match definition.name().value() {
             JSON_DEFINITION_NAME => {
-                match json_parser::parse_data_definition(definition, source_code.clone()) {
+                match json_parser::parse_data_definition(definition, source_info.clone()) {
                     Ok(def) => {
                         raw_document.json_definitions.push(def);
                     }
@@ -382,7 +382,7 @@ fn parse_all_definitions(
             }
 
             INT_ENUM_DEFINITION_NAME => {
-                match enum_parser::parse_int_enum_definition(definition, source_code.clone()) {
+                match enum_parser::parse_int_enum_definition(definition, source_info.clone()) {
                     Ok(def) => {
                         raw_document
                             .enum_definitions
@@ -398,7 +398,7 @@ fn parse_all_definitions(
             }
 
             STRING_ENUM_DEFINITION_NAME => {
-                match enum_parser::parse_string_enum_definition(definition, source_code.clone()) {
+                match enum_parser::parse_string_enum_definition(definition, source_info.clone()) {
                     Ok(def) => {
                         raw_document
                             .enum_definitions
@@ -426,7 +426,7 @@ fn parse_all_definitions(
                 all_diagnostics.push(Diagnostic {
                     message: format!("unrecognized node `{other}`"),
                     severity: Severity::Warning,
-                    source_info: source_code,
+                    source_info,
                     span: definition.span(),
                     help: None,
                     label: None,
@@ -441,7 +441,7 @@ fn parse_all_definitions(
 
 fn extract_unvisited_filepath(
     node: &KdlNode,
-    callee_source_info: SourceInfo,
+    callee_source_info: Arc<SourceInfo>,
     visited_documents: &HashSet<PathBuf>,
     current_directory: impl AsRef<Path>,
 ) -> Option<Result<(PathBuf, PathBuf), ParsingError>> {
@@ -500,7 +500,7 @@ fn parse_single_document<S: AsRef<str>>(
 ) -> Result<RawDocument, ParsingError> {
     let kdl_document = KdlDocument::parse_v2(document.as_ref())?;
 
-    let source_info = SourceInfo::new(filepath.to_string_lossy(), document);
+    let source_info = Arc::new(SourceInfo::new(filepath.to_string_lossy(), document));
 
     let mut all_diagnostics = vec![];
 

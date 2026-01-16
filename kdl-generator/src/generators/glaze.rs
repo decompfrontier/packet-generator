@@ -138,8 +138,7 @@ pub fn generate_glaze(
     registry: &DefinitionRegistry,
 ) -> Result<CxxSourceCode, Report<GenerationError>> {
     let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
-        .definitions
-        .values()
+        .all_definitions()
         .map(|def| match **def {
             Definition::Json(ref json) => generate_json_cxx(registry, json),
             Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),

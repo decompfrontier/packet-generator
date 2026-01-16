@@ -22,7 +22,7 @@ const TRANSPARENT_PROPERTY_NAME: &str = "transparent";
 
 pub fn parse_data_definition(
     definition: &KdlNode,
-    source_code: SourceInfo,
+    source_code: Arc<SourceInfo>,
 ) -> Result<JsonDefinition, ParsingError> {
     let name = definition.extract_argument_string(
         0,
@@ -131,7 +131,7 @@ pub fn parse_data_definition(
 
 fn parse_field(
     node: &KdlNode,
-    source_code: SourceInfo,
+    source_code: Arc<SourceInfo>,
     data_name: &str,
     maybe_default_encoding: &Option<TypeEncoding>,
 ) -> Result<JsonField, ParsingError> {

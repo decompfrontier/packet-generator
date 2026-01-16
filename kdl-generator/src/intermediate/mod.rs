@@ -1,5 +1,5 @@
 use std::{
-    collections::{BTreeMap, HashMap},
+    collections::{BTreeMap, HashMap, hash_map::Values},
     sync::{Arc, Weak},
 };
 
@@ -218,7 +218,8 @@ pub enum DataType {
 
 #[derive(Debug, Clone, Default)]
 pub struct DefinitionRegistry {
-    pub definitions: HashMap<String, Arc<Definition>>,
+    definitions: HashMap<String, Arc<Definition>>,
+
     _private: std::marker::PhantomData<()>,
 }
 
@@ -289,6 +290,10 @@ impl DefinitionRegistry {
 
     pub fn find_weak<S: AsRef<str>>(&self, name: S) -> Option<Weak<Definition>> {
         self.definitions.get(name.as_ref()).map(Arc::downgrade)
+    }
+
+    pub fn all_definitions(&self) -> Values<'_, String, Arc<Definition>> {
+        self.definitions.values()
     }
 }
 
