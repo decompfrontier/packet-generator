@@ -6,7 +6,7 @@ use crate::generators::GenerationError;
 
 use crate::intermediate::{
     BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, IntEnum, JSONKey, Json,
-    StringEnum,
+    StringEnum, ArraySeparator
 };
 
 const TAB: &str = "    ";
@@ -16,6 +16,16 @@ const TAB: &str = "    ";
 pub struct CxxSourceCode {
     pub filename: String,
     pub content: String,
+}
+
+fn get_glz_array_separator(
+    sep: ArraySeparator
+) -> char {
+    match sep {
+        ArraySeparator::Comma => ',',
+        ArraySeparator::At => '@',
+        ArraySeparator::Colon => ':'
+    }
 }
 
 /// Converts a DataType to types recognized by C++ with Glaze.
@@ -37,7 +47,7 @@ fn get_glz_mapper(
         | DataType::F32 {
             encoding: Encoding::String,
         }
-        | DataType::F64 => Ok(format!("glz::quoted_num<&T::{name}")),
+        | DataType::F64 => Ok(format!("glz::quoted_num<&T::{name}>")),
 
         DataType::F32 {
             encoding: Encoding::Int,
@@ -51,17 +61,21 @@ fn get_glz_mapper(
         DataType::Bool {
             encoding: BoolEncoding::Int,
         } => Ok(format!("glz::bools_as_numbers<&T::{name}>")),
-        DataType::Bool {
-            encoding: BoolEncoding::Bool,
-        } => todo!("handle default `bool` encoding"),
         DataType::Datetime => Ok(format!("glzhlp::datetime<{parent_name}, &T::{name}>")),
         DataType::DatetimeUnix => Ok(format!("glzhlp::datetimeunix<{parent_name}, &T::{name}>")),
+        DataType::String => Ok(format!("glz::quoted<&T::{name}>")),
+        DataType::StringArray {
+            inner_type: _,
+            separator
+        } => {
+            let glz_sep = get_glz_array_separator(*separator);
+            Ok(format!("glzhlp::stringlist<{parent_name}, &T::{name}, '{glz_sep}'>"))
+        }
 
-        // TODO(arves): Boolean encoding without being int or string ??
-        // TODO(arves): Quoted strings ?? (glz::quoted<&T::{name}>)
-        // TODO(arves): Maps..
-        // TODO(arves): String arrays (glzhlp::stringlist<{parent_name}, &T::{name}, '{character}'})
-        // TODO(arves): Should single element array have a special mapping ??
+        // NOTE(arves): Investigate if single array needs a custom mapping if we do not explicitally declare them as "std::array"
+
+        // TODO(arves): Using custom encoding on vector or maps WILL NOT WORK! Find a way to fix it in glaze (if it's possible)
+
         _ => Ok(format!("&T::{name}")),
     }
 }
@@ -70,7 +84,7 @@ fn generate_json_cxx(
     registry: &DefinitionRegistry,
     json: &Json,
 ) -> Result<String, Report<GenerationError>> {
-    let struct_name = json.name.to_pascal_case();
+    let struct_name = json.name.to_pascal_case(); // TODO(arves): Does not handle the array type blaaah
 
     let fields: String = json
         .fields
@@ -114,7 +128,8 @@ fn generate_json_cxx(
         r#"template <>
 struct glz::meta<{struct_name}> {{
 {TAB}using T = {struct_name};
-{TAB}static constexpr auto value = object({fields}
+{TAB}static constexpr auto value = object(
+{fields}
 {TAB});
 }};"#,
     );
@@ -122,31 +137,14 @@ struct glz::meta<{struct_name}> {{
     Ok(content)
 }
 
-fn generate_int_enum_cxx(
-    _registry: &DefinitionRegistry,
-    int_enum: &IntEnum,
-) -> Result<String, Report<GenerationError>> {
-    // TODO(arves): implement
-    Ok(String::new())
-}
-
-fn generate_str_enum_cxx(
-    _registry: &DefinitionRegistry,
-    str_enum: &StringEnum,
-) -> Result<String, Report<GenerationError>> {
-    // TODO(arves): implement
-    Ok(String::new())
-}
-
 pub fn generate_glaze(
     registry: &DefinitionRegistry,
 ) -> Result<CxxSourceCode, Report<GenerationError>> {
     let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
         .all_definitions()
-        .map(|def| match **def {
-            Definition::Json(ref json) => generate_json_cxx(registry, json),
-            Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
-            Definition::StringEnum(ref string_enum) => generate_str_enum_cxx(registry, string_enum),
+        .filter_map(|def| match **def {
+            Definition::Json(ref json) => Some(generate_json_cxx(registry, json)),
+            _ => None,
         })
         .collect();
 
