@@ -33,7 +33,6 @@ pub fn generic_parse(
                 // let type_decl_end_len = "\"".len();
 
                 let chars = e.char_span();
-                println!("{chars:#?}");
                 let base = span.offset() + type_decl_start_len;
                 let start = base + chars.start;
                 let end = base + chars.end;
@@ -395,7 +394,11 @@ mod combinator_solution {
             (
                 separated_pair(
                     parse_datatype,
-                    (space1, literal("=>"), space1),
+                    cut_err((space1, literal("=>"), space1).context(MiniDiagnostic {
+                        message: "expected separator ` => ` in map".to_owned(),
+                        severity: miette::Severity::Error,
+                        help: Some("a map is defined as `%{foo => bar}`.".to_owned()),
+                    })),
                     parse_datatype,
                 ),
                 opt(parse_modifier),

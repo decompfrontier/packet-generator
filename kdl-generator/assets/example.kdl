@@ -33,7 +33,7 @@ json InitializeReq {
         doc "User information request"
     }
 
-    field mst-requests type="[i32::str]" {
+    field mst-requests type="%{str, str}" {
         key "KeC10fuL"
         doc "MST that should be sent"
     }
