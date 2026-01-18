@@ -109,21 +109,6 @@ fn parse_int_enum_variant(
         },
     )?;
 
-    let value = node
-        .entry(VALUE_PROPERTY)
-        .map(|entry| {
-            entry.value().as_integer().ok_or_else(|| ParsingError::from(Diagnostic {
-                message: format!("property `{VALUE_PROPERTY}` in integer enum variant `{enum_name}::{name}` is not an integer"),
-                severity: Severity::Error,
-                source_info: source_code.clone(),
-                span: entry.span(),
-                help: Some("the property `value` specifies the integer value of the enum variant, it can only be an integer.".to_owned()),
-                label: None,
-                related: vec![],
-            }))
-        })
-        .transpose()?;
-
     let children = node.extract_children(ErrorContext {
         source_info: source_code.clone(),
         context: format!("integer enum variant `{enum_name}::{name}`").into(),
@@ -144,7 +129,7 @@ fn parse_int_enum_variant(
         .extract_argument_string(
             0,
             ErrorContext {
-                source_info: source_code,
+                source_info: source_code.clone(),
                 context: format!(
                     "child `doc` in integer enum variant definition `{enum_name}::{name}``"
                 )
@@ -153,6 +138,24 @@ fn parse_int_enum_variant(
                 wrong_type_help: Some("the child `doc` must be a string.".into()),
             },
         )?;
+
+    let value = children
+            .get(VALUE_PROPERTY)
+            .and_then(|node| {
+                node.entry(0)
+            })
+            .map(|entry| {
+                entry.value().as_integer().ok_or_else(|| ParsingError::from(Diagnostic {
+                    message: format!("first argument of child `value` in integer enum variant definition `{enum_name}::{name}` is not an integer"),
+                    severity: Severity::Error,
+                    source_info: source_code,
+                    span: entry.span(),
+                    help: None,
+                    label: None,
+                    related: vec![],
+                }))
+            })
+            .transpose()?;
 
     Ok(IntEnumInner {
         name: name.to_owned(),
