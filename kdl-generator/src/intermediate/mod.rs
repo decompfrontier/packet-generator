@@ -1,6 +1,6 @@
 use std::{
     borrow::Borrow,
-    collections::{BTreeSet, HashMap, hash_map::Values},
+    collections::{BTreeMap, BTreeSet, btree_map::Values},
     sync::{Arc, Weak},
 };
 
@@ -42,6 +42,7 @@ pub enum JSONKey {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Json {
+    pub index: usize,
     pub name: String,
     pub hash_name: Option<String>,
     pub fields: BTreeSet<JsonField>,
@@ -81,19 +82,7 @@ impl Eq for JsonField {}
 
 impl PartialOrd for JsonField {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self.index.partial_cmp(&other.index) {
-            Some(core::cmp::Ordering::Equal) => {}
-            ord => return ord,
-        }
-        match self.name.partial_cmp(&other.name) {
-            Some(core::cmp::Ordering::Equal) => {}
-            ord => return ord,
-        }
-        match self.key.partial_cmp(&other.key) {
-            Some(core::cmp::Ordering::Equal) => {}
-            ord => return ord,
-        }
-        self.optional.partial_cmp(&other.optional)
+        Some(self.cmp(other))
     }
 }
 
@@ -116,8 +105,9 @@ impl Ord for JsonField {
 }
 
 impl Json {
-    pub fn new(name: String, hash_name: Option<String>) -> Self {
+    pub fn new(name: String, index: usize, hash_name: Option<String>) -> Self {
         Self {
+            index,
             name,
             hash_name,
             fields: BTreeSet::new(),
@@ -131,6 +121,7 @@ impl Json {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct StringEnum {
+    pub index: usize,
     pub name: String,
     pub doc: String,
     pub variants: BTreeSet<StringEnumVariant>,
@@ -157,8 +148,9 @@ impl PartialEq for StringEnumVariant {
 }
 
 impl StringEnum {
-    pub fn new(name: String, doc: String) -> Self {
+    pub fn new(name: String, index: usize, doc: String) -> Self {
         Self {
+            index,
             name,
             doc,
             variants: BTreeSet::new(),
@@ -172,6 +164,7 @@ impl StringEnum {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct IntEnum {
+    pub index: usize,
     pub name: String,
     pub start: i128,
     pub doc: String,
@@ -193,8 +186,9 @@ impl Borrow<str> for IntEnumVariant {
 }
 
 impl IntEnum {
-    pub fn new(name: String, doc: String, start: i128) -> Self {
+    pub fn new(name: String, index: usize, doc: String, start: i128) -> Self {
         Self {
+            index,
             name,
             start,
             doc,
@@ -290,7 +284,7 @@ pub enum DataType {
 
 #[derive(Debug, Clone, Default)]
 pub struct DefinitionRegistry {
-    definitions: HashMap<String, Arc<Definition>>,
+    definitions: BTreeMap<String, Arc<Definition>>,
 
     _private: std::marker::PhantomData<()>,
 }
@@ -298,7 +292,7 @@ pub struct DefinitionRegistry {
 impl DefinitionRegistry {
     pub fn new() -> Self {
         Self {
-            definitions: HashMap::new(),
+            definitions: BTreeMap::new(),
             _private: std::marker::PhantomData {},
         }
     }
@@ -386,7 +380,7 @@ mod tests {
                 optional: false,
             };
 
-            let mut s = Json::new(String::from("Foo"), Some(String::from("avdsfdsf")));
+            let mut s = Json::new(String::from("Foo"), 0, Some(String::from("avdsfdsf")));
             s.add_field(field);
 
             definitions.insert(Definition::Json(s));
@@ -405,7 +399,7 @@ mod tests {
                 optional: false,
             };
 
-            let mut s = Json::new(String::from("Bar"), Some(String::from("avfdsfdsf")));
+            let mut s = Json::new(String::from("Bar"), 1, Some(String::from("avfdsfdsf")));
             s.add_field(field);
 
             definitions.insert(Definition::Json(s));

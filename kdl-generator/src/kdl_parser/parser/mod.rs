@@ -363,12 +363,12 @@ fn parse_all_definitions(
 ) -> Result<Vec<Diagnostic>, ParsingError> {
     let mut all_diagnostics = vec![];
 
-    for definition in definitions {
+    for (index, definition) in definitions.iter().enumerate() {
         let source_info = source_info.clone();
 
         match definition.name().value() {
             JSON_DEFINITION_NAME => {
-                match json_parser::parse_data_definition(definition, source_info.clone()) {
+                match json_parser::parse_data_definition(definition, source_info.clone(), index) {
                     Ok(def) => {
                         raw_document.json_definitions.push(def);
                     }
@@ -382,7 +382,8 @@ fn parse_all_definitions(
             }
 
             INT_ENUM_DEFINITION_NAME => {
-                match enum_parser::parse_int_enum_definition(definition, source_info.clone()) {
+                match enum_parser::parse_int_enum_definition(definition, source_info.clone(), index)
+                {
                     Ok(def) => {
                         raw_document
                             .enum_definitions
@@ -398,7 +399,11 @@ fn parse_all_definitions(
             }
 
             STRING_ENUM_DEFINITION_NAME => {
-                match enum_parser::parse_string_enum_definition(definition, source_info.clone()) {
+                match enum_parser::parse_string_enum_definition(
+                    definition,
+                    source_info.clone(),
+                    index,
+                ) {
                     Ok(def) => {
                         raw_document
                             .enum_definitions

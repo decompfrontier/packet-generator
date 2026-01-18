@@ -1,10 +1,4 @@
-use std::{
-    collections::{BTreeMap, BTreeSet, HashMap},
-    fmt::Display,
-    path::PathBuf,
-    str::FromStr,
-    sync::Arc,
-};
+use std::{collections::BTreeSet, fmt::Display, path::PathBuf, str::FromStr, sync::Arc};
 
 mod validator;
 
@@ -33,6 +27,8 @@ pub enum EnumDefinition {
 
 #[derive(Debug)]
 pub struct StringEnumDefinition {
+    pub index: usize,
+
     pub name: String,
 
     pub doc: String,
@@ -68,6 +64,7 @@ impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
         }
 
         Self {
+            index: value.index,
             name: value.name,
             doc: value.doc,
             variants: members,
@@ -77,6 +74,8 @@ impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
 
 #[derive(Debug)]
 pub struct IntEnumDefinition {
+    pub index: usize,
+
     pub name: String,
 
     pub start: i128,
@@ -114,6 +113,7 @@ impl From<IntEnumDefinition> for crate::intermediate::IntEnum {
         }
 
         Self {
+            index: value.index,
             start: value.start,
             name: value.name,
             doc: value.doc,
@@ -146,6 +146,8 @@ pub struct HTTPProperty {
 
 #[derive(Debug)]
 pub struct JsonDefinition {
+    pub index: usize,
+
     pub name: String,
 
     pub doc: String,
