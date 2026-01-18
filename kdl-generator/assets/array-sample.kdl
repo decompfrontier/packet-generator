@@ -1,0 +1,28 @@
+json A {
+    doc "Un json"
+    field p type="%{i32::int => i32::str}" {
+        doc "aaa"
+        key "helo"
+    }
+
+    field k type="[i32::int]::sep(at)" {
+        doc "R"
+        key "R"
+    }
+}
+
+json B {
+    doc "q"
+    field a type="i32::str" {
+        doc "a"
+        key "mm"
+    }
+}
+
+json C {
+    doc "e"
+    field a type="[B]" {
+        doc "p"
+        key "o"
+    }
+}
