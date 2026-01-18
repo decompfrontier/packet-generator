@@ -5,7 +5,8 @@ use stringcase::Caser;
 use crate::generators::GenerationError;
 
 use crate::intermediate::{
-    DataType, Definition, DefinitionRegistry, Encoding, IntEnum, JSONKey, Json, StringEnum,
+    BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, IntEnum, JSONKey, Json,
+    StringEnum,
 };
 
 const TAB: &str = "    ";
@@ -45,11 +46,14 @@ fn get_glz_mapper(
             encoding: Encoding::Int,
         } => Ok(format!("glzhlp::write_float64(&T::{name})")),
         DataType::Bool {
-            encoding: Encoding::String,
+            encoding: BoolEncoding::String,
         } => Ok(format!("glzhlp::strbool<{parent_name}, {name}>")),
         DataType::Bool {
-            encoding: Encoding::Int,
+            encoding: BoolEncoding::Int,
         } => Ok(format!("glz::bools_as_numbers<&T::{name}>")),
+        DataType::Bool {
+            encoding: BoolEncoding::Bool,
+        } => todo!("handle default `bool` encoding"),
         DataType::Datetime => Ok(format!("glzhlp::datetime<{parent_name}, &T::{name}>")),
         DataType::DatetimeUnix => Ok(format!("glzhlp::datetimeunix<{parent_name}, &T::{name}>")),
 
@@ -70,7 +74,7 @@ fn generate_json_cxx(
 
     let fields: String = json
         .fields
-        .values()
+        .iter()
         .map(|field| -> Result<String, GenerationError> {
             // TODO(arves): Fix parent name...
             let mapper = get_glz_mapper(&struct_name, &field.name, &field.type_, registry)?;

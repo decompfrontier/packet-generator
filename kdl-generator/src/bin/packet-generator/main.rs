@@ -60,7 +60,7 @@ fn main() -> Result<(), miette::Report> {
                 .wrap_err("error in source code generation")?;
 
             //for source in sources {
-                println!("\n// {}\n{}\n\n", source.filename, source.content);
+            println!("\n// {}\n{}\n\n", source.filename, source.content);
             //}
         }
     }

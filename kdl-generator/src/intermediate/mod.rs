@@ -1,15 +1,23 @@
 use std::{
-    collections::{BTreeMap, HashMap, hash_map::Values},
+    borrow::Borrow,
+    collections::{BTreeSet, HashMap, hash_map::Values},
     sync::{Arc, Weak},
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Encoding {
     String,
     Int,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum BoolEncoding {
+    String,
+    Int,
+    Bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Definition {
     Json(Json),
     IntEnum(IntEnum),
@@ -26,87 +34,52 @@ impl Definition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum JSONKey {
     String(String),
     UseUnderlying,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Json {
     pub name: String,
     pub hash_name: Option<String>,
-    pub fields: HashMap<Arc<str>, JsonField>,
+    pub fields: BTreeSet<JsonField>,
+}
+
+impl Borrow<str> for Json {
+    fn borrow(&self) -> &str {
+        &self.name
+    }
 }
 
 #[derive(Clone, Debug)]
 pub struct JsonField {
+    pub index: usize,
     pub name: Arc<str>,
     pub key: JSONKey,
     pub type_: DataType,
     pub optional: bool,
 }
 
-impl Json {
-    pub fn new(name: String, hash_name: Option<String>) -> Self {
-        Self {
-            name,
-            hash_name,
-            fields: HashMap::new(),
-        }
-    }
-
-    pub fn add_field(&mut self, field: JsonField) -> Option<JsonField> {
-        self.fields.insert(field.name.clone(), field)
+impl Borrow<str> for JsonField {
+    fn borrow(&self) -> &str {
+        &self.name
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct StringEnum {
-    pub name: String,
-    pub doc: String,
-    pub variants: BTreeMap<Arc<str>, StringEnumVariant>,
-}
-
-#[derive(Clone, Debug)]
-pub struct StringEnumVariant {
-    pub index: usize,
-    pub name: Arc<str>,
-    pub doc: String,
-    pub value: String,
-}
-
-impl StringEnum {
-    pub fn new(name: String, doc: String) -> Self {
-        Self {
-            name,
-            doc,
-            variants: BTreeMap::new(),
-        }
-    }
-
-    pub fn add_variant(&mut self, field: StringEnumVariant) -> Option<StringEnumVariant> {
-        self.variants.insert(field.name.clone(), field)
+impl PartialEq for JsonField {
+    fn eq(&self, other: &Self) -> bool {
+        self.index == other.index
+            && self.name == other.name
+            && self.key == other.key
+            && self.optional == other.optional
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct IntEnum {
-    pub name: String,
-    pub start: i128,
-    pub doc: String,
-    pub variants: BTreeMap<Arc<str>, IntEnumVariant>,
-}
+impl Eq for JsonField {}
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct IntEnumVariant {
-    pub index: usize,
-    pub name: Arc<str>,
-    pub doc: String,
-    pub value: Option<i128>,
-}
-
-impl PartialOrd for IntEnumVariant {
+impl PartialOrd for JsonField {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         match self.index.partial_cmp(&other.index) {
             Some(core::cmp::Ordering::Equal) => {}
@@ -116,7 +89,106 @@ impl PartialOrd for IntEnumVariant {
             Some(core::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
-        self.value.partial_cmp(&other.value)
+        match self.key.partial_cmp(&other.key) {
+            Some(core::cmp::Ordering::Equal) => {}
+            ord => return ord,
+        }
+        self.optional.partial_cmp(&other.optional)
+    }
+}
+
+impl Ord for JsonField {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match self.index.cmp(&other.index) {
+            core::cmp::Ordering::Equal => {}
+            ord => return ord,
+        }
+        match self.name.cmp(&other.name) {
+            core::cmp::Ordering::Equal => {}
+            ord => return ord,
+        }
+        match self.key.cmp(&other.key) {
+            core::cmp::Ordering::Equal => {}
+            ord => return ord,
+        }
+        self.optional.cmp(&other.optional)
+    }
+}
+
+impl Json {
+    pub fn new(name: String, hash_name: Option<String>) -> Self {
+        Self {
+            name,
+            hash_name,
+            fields: BTreeSet::new(),
+        }
+    }
+
+    pub fn add_field(&mut self, field: JsonField) -> bool {
+        self.fields.insert(field)
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct StringEnum {
+    pub name: String,
+    pub doc: String,
+    pub variants: BTreeSet<StringEnumVariant>,
+}
+
+#[derive(Clone, Debug, Eq, PartialOrd, Ord)]
+pub struct StringEnumVariant {
+    pub index: usize,
+    pub name: Arc<str>,
+    pub doc: String,
+    pub value: String,
+}
+
+impl Borrow<str> for StringEnumVariant {
+    fn borrow(&self) -> &str {
+        &self.name
+    }
+}
+
+impl PartialEq for StringEnumVariant {
+    fn eq(&self, other: &Self) -> bool {
+        self.index == other.index
+    }
+}
+
+impl StringEnum {
+    pub fn new(name: String, doc: String) -> Self {
+        Self {
+            name,
+            doc,
+            variants: BTreeSet::new(),
+        }
+    }
+
+    pub fn add_variant(&mut self, field: StringEnumVariant) -> bool {
+        self.variants.insert(field)
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct IntEnum {
+    pub name: String,
+    pub start: i128,
+    pub doc: String,
+    pub variants: BTreeSet<IntEnumVariant>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct IntEnumVariant {
+    pub index: usize,
+    pub name: Arc<str>,
+    pub doc: String,
+    pub value: Option<i128>,
+}
+
+impl Borrow<str> for IntEnumVariant {
+    fn borrow(&self) -> &str {
+        &self.name
     }
 }
 
@@ -126,16 +198,16 @@ impl IntEnum {
             name,
             start,
             doc,
-            variants: BTreeMap::new(),
+            variants: BTreeSet::new(),
         }
     }
 
-    pub fn add_variant(&mut self, field: IntEnumVariant) -> Option<IntEnumVariant> {
-        self.variants.insert(field.name.clone(), field)
+    pub fn add_variant(&mut self, field: IntEnumVariant) -> bool {
+        self.variants.insert(field)
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ArraySeparator {
     /// Array separated by ','
     ///
@@ -184,7 +256,7 @@ pub enum DataType {
     F64,
 
     Bool {
-        encoding: Encoding,
+        encoding: BoolEncoding,
     },
 
     String,
@@ -307,6 +379,7 @@ mod tests {
 
         {
             let field = JsonField {
+                index: 0,
                 name: "bar".into(),
                 key: JSONKey::String(String::from("bar")),
                 type_: DataType::String,
@@ -325,6 +398,7 @@ mod tests {
                 .expect("Foo was inserted above.");
 
             let field = JsonField {
+                index: 0,
                 name: "has_foo".into(),
                 key: JSONKey::String(String::from("bar")),
                 type_: DataType::Definition(foo_struct.clone()),

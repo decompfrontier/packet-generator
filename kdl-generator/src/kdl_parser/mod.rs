@@ -212,11 +212,11 @@ mod document_to_intermediate {
     use super::schema::EnumDefinition;
     use crate::{
         intermediate::{
-            self, DataType as IntermediateDataType, Definition, DefinitionRegistry, Encoding, Json,
-            JsonField,
+            self, BoolEncoding as IntermediateBoolEncoding, DataType as IntermediateDataType,
+            Definition, DefinitionRegistry, Encoding, Json, JsonField,
         },
         kdl_parser::schema::{
-            self, DataType as SchemaDataType, JsonDefinition as SchemaJsonDefinition,
+            self, BoolEncoding, DataType as SchemaDataType, JsonDefinition as SchemaJsonDefinition,
             JsonField as SchemaJsonField, TypeEncoding,
         },
     };
@@ -274,11 +274,16 @@ mod document_to_intermediate {
             SchemaDataType::F64 => IntermediateDataType::F64,
 
             SchemaDataType::Bool { encoding } => match encoding {
-                TypeEncoding::String => IntermediateDataType::Bool {
-                    encoding: Encoding::String,
+                BoolEncoding::String => IntermediateDataType::Bool {
+                    encoding: IntermediateBoolEncoding::String,
                 },
-                TypeEncoding::Int => IntermediateDataType::Bool {
-                    encoding: Encoding::Int,
+
+                BoolEncoding::Int => IntermediateDataType::Bool {
+                    encoding: IntermediateBoolEncoding::Int,
+                },
+
+                BoolEncoding::Bool => IntermediateDataType::Bool {
+                    encoding: IntermediateBoolEncoding::Bool,
                 },
             },
 
@@ -367,6 +372,7 @@ mod document_to_intermediate {
 
             for field in struct_.fields {
                 struct_def.add_field(JsonField {
+                    index: field.index,
                     name: field.name.clone().into(),
                     key: field.key.clone().into(),
                     type_: convert_json_datatype(&field, registry),

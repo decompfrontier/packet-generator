@@ -118,7 +118,16 @@ pub fn parse_data_definition(
         .nodes()
         .iter()
         .filter(|&node| node.name().value() == FIELD_DEFINITOIN)
-        .map(|node| parse_field(node, source_code.clone(), name, &maybe_default_encoding))
+        .enumerate()
+        .map(|(index, node)| {
+            parse_field(
+                node,
+                source_code.clone(),
+                name,
+                &maybe_default_encoding,
+                index,
+            )
+        })
         .collect::<Result<Vec<JsonField>, ParsingError>>()?;
 
     Ok(JsonDefinition {
@@ -134,6 +143,7 @@ fn parse_field(
     source_code: Arc<SourceInfo>,
     data_name: &str,
     maybe_default_encoding: &Option<TypeEncoding>,
+    index: usize,
 ) -> Result<JsonField, ParsingError> {
     let field_node = node.extract_argument_string(
         0,
@@ -327,6 +337,7 @@ fn parse_field(
         )?;
 
     Ok(JsonField {
+        index,
         name: field_node.to_owned(),
         r#type: datatype,
         key,

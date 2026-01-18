@@ -96,7 +96,7 @@ fn generate_json_cxx(
 
     let fields: String = json
         .fields
-        .values()
+        .iter()
         .map(|field| -> Result<String, GenerationError> {
             let datatype = convert_datatype(&field.type_, registry)?;
             let name = field.name.to_snake_case();
@@ -123,10 +123,7 @@ fn generate_int_enum_cxx(
     let filename = format!("{}.h", int_enum.name.to_pascal_case());
     let start = int_enum.start;
 
-    let mut variants_iter = int_enum
-        .variants
-        .values()
-        .sorted_unstable_by_key(|a| a.index);
+    let mut variants_iter = int_enum.variants.iter().sorted_unstable_by_key(|a| a.index);
 
     let first_variant = variants_iter
         .next()
@@ -170,7 +167,7 @@ fn generate_str_enum_cxx(
 ) -> Result<String, Report<GenerationError>> {
     let variants = str_enum
         .variants
-        .values()
+        .iter()
         .sorted_unstable_by_key(|a| a.index)
         .map(|variant| {
             let name = variant.name.to_pascal_case();

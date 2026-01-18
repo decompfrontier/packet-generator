@@ -97,14 +97,14 @@ mod combinator_solution {
     use std::fmt::Display;
     use std::sync::Arc;
 
-    use crate::kdl_parser::schema::{ArraySeparator, DataType, TypeEncoding};
+    use crate::kdl_parser::schema::{ArraySeparator, BoolEncoding, DataType, TypeEncoding};
     use miette::SourceSpan;
     use winnow::ascii::{alpha1, alphanumeric1, space0, space1};
     use winnow::combinator::{
         alt, cut_err, delimited, not, opt, peek, preceded, separated, separated_pair,
     };
     use winnow::error::{AddContext, FromExternalError, ParserError};
-    use winnow::stream::{Offset, Stream};
+    use winnow::stream::Stream;
     use winnow::token::literal;
 
     use winnow::prelude::*;
@@ -327,7 +327,37 @@ mod combinator_solution {
     generate_intlike!(parse_i64, i64, I64);
     generate_intlike!(parse_u64, u64, U64);
     generate_intlike!(parse_f32, f32, F32);
-    generate_intlike!(parse_bool, bool, Bool);
+
+    fn parse_bool(input: &mut &str) -> PResult {
+        preceded(
+            ("bool", not(peek(alpha1))),
+            cut_err(opt(parse_modifier).map(|modifiers| match modifiers {
+                None => DataType::Bool {
+                    encoding: BoolEncoding::Bool,
+                },
+
+                Some(modifiers) => {
+                    let valid_modifiers = modifiers
+                        .iter()
+                        .filter(|modifier| matches!(modifier.name, "str" | "int"))
+                        .next_back();
+
+                    let last_encoding = valid_modifiers
+                        .and_then(|s| match s.name {
+                            "int" => Some(BoolEncoding::Int),
+                            "str" => Some(BoolEncoding::String),
+                            _ => None,
+                        })
+                        .unwrap_or(BoolEncoding::Bool);
+
+                    DataType::Bool {
+                        encoding: last_encoding,
+                    }
+                }
+            })),
+        )
+        .parse_next(input)
+    }
 
     fn parse_f64(input: &mut &str) -> PResult {
         preceded("f64", (not(alphanumeric1), opt(parse_modifier)))

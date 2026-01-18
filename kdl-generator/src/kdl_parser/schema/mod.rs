@@ -1,5 +1,5 @@
 use std::{
-    collections::{BTreeMap, HashMap},
+    collections::{BTreeMap, BTreeSet, HashMap},
     fmt::Display,
     path::PathBuf,
     str::FromStr,
@@ -53,15 +53,15 @@ pub struct StringEnumInner {
 
 impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
     fn from(value: StringEnumDefinition) -> Self {
-        let mut members = BTreeMap::new();
+        let mut members = BTreeSet::new();
 
         for variant in value.variants.as_slice() {
             let name: Arc<str> = variant.name.clone().into();
             let doc = variant.doc.clone();
             let val = variant.value.clone();
-            members.insert(name.clone(), StringEnumVariant { 
-                name: name, 
-                doc: doc, 
+            members.insert(StringEnumVariant {
+                name,
+                doc,
                 value: val,
                 index: variant.index,
             });
@@ -99,21 +99,18 @@ pub struct IntEnumInner {
 
 impl From<IntEnumDefinition> for crate::intermediate::IntEnum {
     fn from(value: IntEnumDefinition) -> Self {
-        let mut members = BTreeMap::new();
+        let mut members = BTreeSet::new();
 
         for variant in value.variants {
             let name: Arc<str> = variant.name.clone().into();
             let value = variant.value;
             let doc = variant.doc;
-            members.insert(
-                name.clone(),
-                IntEnumVariant {
-                    index: variant.index,
-                    name,
-                    doc,
-                    value,
-                },
-            );
+            members.insert(IntEnumVariant {
+                index: variant.index,
+                name,
+                doc,
+                value,
+            });
         }
 
         Self {
@@ -235,7 +232,7 @@ pub enum DataType {
     F64,
 
     Bool {
-        encoding: TypeEncoding,
+        encoding: BoolEncoding,
     },
 
     /// Date time formatted as '2026-11-01 03:43:04'.
@@ -308,6 +305,25 @@ impl FromStr for TypeEncoding {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum BoolEncoding {
+    String,
+    Int,
+    Bool,
+}
+
+impl FromStr for BoolEncoding {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "str" => Ok(Self::String),
+            "int" => Ok(Self::Int),
+            _ => Err(format!("unknown encoding type `{s}`")),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum JSONKey {
     String(String),
@@ -325,6 +341,8 @@ impl From<JSONKey> for intermediate::JSONKey {
 
 #[derive(Debug)]
 pub struct JsonField {
+    pub index: usize,
+
     pub name: String,
 
     pub r#type: DataType,
