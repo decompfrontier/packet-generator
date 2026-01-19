@@ -13,8 +13,18 @@ kdl = "6.5.0"
 itertools = "0.14.0"
 stringcase = "0.4.0"
 
+[profile.release]
+lto = true
+strip = true
+
+# [lints.rust]
+# missing-docs = "warn"
+# missing-crate-level-docs = "warn"
 
 [lints.clippy]
+unwrap-used = "forbid"
+unwrap-in-result = "forbid"
+unwrap-or-default = "forbid"
 missing-errors-doc = "deny"
 explicit-iter-loop = "deny"
 items-after-statements = "deny"
