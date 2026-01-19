@@ -6,7 +6,7 @@ use miette::Severity;
 use crate::kdl_parser::{
     Diagnostic, ParsingError, SourceInfo,
     parser::{ErrorContext, KdlDocumentUtilsExt, KdlNodeUtilsExt, type_parser::generic_parse},
-    schema::{DataType, JSONKey, JsonDefinition, JsonField, TypeEncoding},
+    schema::{JsonDefinition, JsonField, TypeEncoding},
 };
 
 const DEFAULT_ENCODING_PROPERTY: &str = "default-encoding";
@@ -263,59 +263,7 @@ fn parse_field(
                 wrong_type_help: None,
             },
         )
-        .map(|s| Some(JSONKey::String(s.to_owned())))
-        .or_else(|_| {
-            key_node
-                .extract_property_bool(
-                    TRANSPARENT_PROPERTY_NAME,
-                    ErrorContext {
-                        source_info: source_code.clone(),
-                        context: format!("field definition `{data_name}::{field_node}`").into(),
-                        not_found_help: None,
-                        wrong_type_help: None,
-                    },
-                )
-                // NOTE(anri):
-                // Be _extremely_ careful when refactoring this code because after this method chain there
-                // is a fancy and really cute ✨ unreachable! ✨ on `DataType` being `DataType::Custom`
-                //
-                // The check is done exactly here, but one may accidentally forget
-                // about when refactoring and accidentally cause a `panic` later on.
-                .and_then(|v| {
-                    if !matches!(datatype, DataType::Custom(..)) {
-                        return Err(ParsingError::from(Diagnostic {
-                            message: format!("in field definition `{data_name}::{field_node}`, key `{TRANSPARENT_PROPERTY_NAME}` cannot be used for primitive types since they lack any underlying pre-defined key."),
-                            severity: Severity::Error,
-                            source_info: source_code.clone(),
-                            span: key_node.span(),
-                            help: Some(format!("provide an actual string for the key, for example: `{KEY_CHILD} \"foobar\"`")),
-                            label: None,
-                            related: vec![],
-                        }));
-                    }
-
-                    if v {
-                        Ok(Some(JSONKey::UseUnderlying))
-                    } else {
-                        Ok(None)
-                    }
-                })
-        })?
-        .ok_or_else(|| {
-            let DataType::Custom(underlying_datatype) = &datatype else {
-                unreachable!("currently looking at `{KEY_CHILD} {TRANSPARENT_PROPERTY_NAME}` in a JSON definition; in particular if the pointeed datatype is _not_ `Custom`, then this error condition should never be triggered since the same check was done before");
-            };
-
-        ParsingError::from(Diagnostic {
-                message: format!("field `{KEY_CHILD}` in JSON definition `{data_name}::{field_node}` is ambigous; either specify a string for the key or `{TRANSPARENT_PROPERTY_NAME}=#true` to use the underlying key defined in `{underlying_datatype}::{HASH_CHILD}`."),
-                severity: Severity::Error,
-                source_info: source_code.clone(),
-                span: key_node.span(),
-                help: Some(format!("the child `{KEY_CHILD}` needs to be either a string or it must have the property `{TRANSPARENT_PROPERTY_NAME}=#true`, otherwise there is no way to know which key this field should use.")),
-                label: None,
-                related: vec![],
-            })
-        })?;
+        .map(ToOwned::to_owned)?;
 
     let doc = children
         .extract_child_node(

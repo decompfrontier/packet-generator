@@ -4,7 +4,7 @@ mod validator;
 
 pub use validator::validate;
 
-use crate::intermediate::{self, IntEnumVariant, StringEnumVariant};
+use crate::intermediate::{IntEnumVariant, StringEnumVariant};
 
 #[derive(Debug)]
 pub struct RawDocument {
@@ -326,21 +326,6 @@ impl FromStr for BoolEncoding {
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum JSONKey {
-    String(String),
-    UseUnderlying,
-}
-
-impl From<JSONKey> for intermediate::JSONKey {
-    fn from(value: JSONKey) -> Self {
-        match value {
-            JSONKey::String(s) => Self::String(s),
-            JSONKey::UseUnderlying => Self::UseUnderlying,
-        }
-    }
-}
-
 #[derive(Debug)]
 pub struct JsonField {
     pub index: usize,
@@ -349,7 +334,7 @@ pub struct JsonField {
 
     pub r#type: DataType,
 
-    pub key: JSONKey,
+    pub key: String,
 
     pub doc: String,
 

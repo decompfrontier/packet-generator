@@ -5,7 +5,7 @@ use stringcase::Caser;
 use crate::generators::GenerationError;
 
 use crate::intermediate::{
-    ArraySeparator, BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, JSONKey, Json,
+    ArraySeparator, BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, Json,
 };
 
 const TAB: &str = "    ";
@@ -90,33 +90,7 @@ fn generate_json_cxx(
         .map(|field| -> Result<String, GenerationError> {
             // TODO(arves): Fix parent name...
             let mapper = get_glz_mapper(&struct_name, &field.name, &field.type_, registry)?;
-            let key: &str = match &field.key {
-                JSONKey::String(v) => v,
-
-                JSONKey::UseUnderlying => {
-
-                    // TODO(anri):
-                    // Add validation in transformation between RawDocument -> Document,
-                    // then restructure all these assertions/panics as errors.
-                    match &field.type_ {
-                        DataType::Definition(def) => {
-                            let Some(def) = def.upgrade() else {
-                                return Err(GenerationError::ExpiredRegistry { queried_from: field.type_.clone() });
-                            };
-
-                            match *def {
-                                Definition::Json(ref json) => {
-                                    &json.hash_name.clone().unwrap_or_else(|| panic!("the parser should've checked that {} contains a `hash`", json.name))
-                                }
-
-                                _ => todo!(),
-                            }
-                        }
-
-                        _ => todo!("In glaze.rs generation, recursively handle `JSONKey::UseUnderlying` for types which are not directly a definition. Should be an error.")
-                    }
-                }
-            };
+            let key: &str = &field.key;
 
             Ok(format!("{TAB}{TAB}\"{key}\", {mapper}"))
         })

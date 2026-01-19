@@ -36,12 +36,6 @@ impl Definition {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub enum JSONKey {
-    String(String),
-    UseUnderlying,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Json {
     pub index: usize,
     pub name: String,
@@ -59,7 +53,7 @@ impl Borrow<str> for Json {
 pub struct JsonField {
     pub index: usize,
     pub name: Arc<str>,
-    pub key: JSONKey,
+    pub key: String,
     pub type_: DataType,
     pub optional: bool,
 }
@@ -380,7 +374,7 @@ mod tests {
             let field = JsonField {
                 index: 0,
                 name: "bar".into(),
-                key: JSONKey::String(String::from("bar")),
+                key: String::from("bar"),
                 type_: DataType::String,
                 optional: false,
             };
@@ -399,7 +393,7 @@ mod tests {
             let field = JsonField {
                 index: 0,
                 name: "has_foo".into(),
-                key: JSONKey::String(String::from("bar")),
+                key: String::from("bar"),
                 type_: DataType::Definition(foo_struct),
                 optional: false,
             };
