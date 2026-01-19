@@ -13,7 +13,7 @@ const ENUM_VARIANT_FIELD_NAME: &str = "variant";
 
 pub fn parse_int_enum_definition(
     definition: &KdlNode,
-    source_code: Arc<SourceInfo>,
+    source_code: &Arc<SourceInfo>,
     index: usize,
 ) -> Result<IntEnumDefinition, ParsingError> {
     let name = definition.extract_argument_string(
@@ -169,7 +169,7 @@ fn parse_int_enum_variant(
 
 pub fn parse_string_enum_definition(
     definition: &KdlNode,
-    source_code: Arc<SourceInfo>,
+    source_code: &Arc<SourceInfo>,
     index: usize,
 ) -> Result<StringEnumDefinition, ParsingError> {
     let name = definition.extract_argument_string(

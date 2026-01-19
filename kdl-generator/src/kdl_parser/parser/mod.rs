@@ -1,10 +1,9 @@
 use std::{
     borrow::Cow,
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     fs::File,
     io::Read,
     path::{Path, PathBuf},
-    str::FromStr,
     sync::Arc,
 };
 
@@ -359,16 +358,14 @@ impl KdlNodeUtilsExt for KdlNode {
 fn parse_all_definitions(
     raw_document: &mut RawDocument,
     definitions: &[KdlNode],
-    source_info: Arc<SourceInfo>,
+    source_info: &Arc<SourceInfo>,
 ) -> Result<Vec<Diagnostic>, ParsingError> {
     let mut all_diagnostics = vec![];
 
     for (index, definition) in definitions.iter().enumerate() {
-        let source_info = source_info.clone();
-
         match definition.name().value() {
             JSON_DEFINITION_NAME => {
-                match json_parser::parse_data_definition(definition, source_info.clone(), index) {
+                match json_parser::parse_data_definition(definition, source_info, index) {
                     Ok(def) => {
                         raw_document.json_definitions.push(def);
                     }
@@ -382,8 +379,7 @@ fn parse_all_definitions(
             }
 
             INT_ENUM_DEFINITION_NAME => {
-                match enum_parser::parse_int_enum_definition(definition, source_info.clone(), index)
-                {
+                match enum_parser::parse_int_enum_definition(definition, source_info, index) {
                     Ok(def) => {
                         raw_document
                             .enum_definitions
@@ -399,11 +395,7 @@ fn parse_all_definitions(
             }
 
             STRING_ENUM_DEFINITION_NAME => {
-                match enum_parser::parse_string_enum_definition(
-                    definition,
-                    source_info.clone(),
-                    index,
-                ) {
+                match enum_parser::parse_string_enum_definition(definition, source_info, index) {
                     Ok(def) => {
                         raw_document
                             .enum_definitions
@@ -418,20 +410,20 @@ fn parse_all_definitions(
                 }
             }
 
-            HTTP_DEFINITION_NAME => {}
-
-            XML_DEFINITION_NAME => {}
-
-            PLIST_DEFINITION_NAME => {}
+            HTTP_DEFINITION_NAME | XML_DEFINITION_NAME | PLIST_DEFINITION_NAME => {}
 
             // Ignore the "import" node.
+            #[allow(
+                clippy::match_same_arms,
+                reason = "ignore the `import` node since it is not a definition"
+            )]
             IMPORT_NODE_NAME => {}
 
             other => {
                 all_diagnostics.push(Diagnostic {
                     message: format!("unrecognized node `{other}`"),
                     severity: Severity::Warning,
-                    source_info,
+                    source_info: source_info.clone(),
                     span: definition.span(),
                     help: None,
                     label: None,
@@ -458,7 +450,7 @@ fn extract_unvisited_filepath(
         .extract_argument_string(
             0,
             ErrorContext {
-                source_info: callee_source_info.clone(),
+                source_info: callee_source_info,
                 context: "document definition".into(),
                 not_found_help: Some("".into()),
                 wrong_type_help: Some("".into()),
@@ -532,15 +524,14 @@ fn parse_single_document<S: AsRef<str>>(
         all_diagnostics.push(diag);
 
         return Err(ParsingError::Diagnostics {
-            source_info: source_info.clone(),
+            source_info,
             diagnostics: all_diagnostics,
         });
     }
 
     let current_directory = filepath
         .parent()
-        .map(ToOwned::to_owned)
-        .unwrap_or_else(|| PathBuf::from(""));
+        .map_or_else(|| PathBuf::from(""), ToOwned::to_owned);
 
     let unvisited_includes = children
         .iter()
@@ -571,7 +562,7 @@ fn parse_single_document<S: AsRef<str>>(
     }
 
     {
-        let diagnostics = parse_all_definitions(&mut raw_document, children, source_info.clone())?;
+        let diagnostics = parse_all_definitions(&mut raw_document, children, &source_info)?;
         all_diagnostics.extend(diagnostics);
     }
 

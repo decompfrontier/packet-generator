@@ -25,11 +25,12 @@ pub enum Definition {
 }
 
 impl Definition {
-    pub fn name(&self) -> &String {
+    #[must_use]
+    pub const fn name(&self) -> &String {
         match self {
-            Definition::Json(json) => &json.name,
-            Definition::IntEnum(int_enum) => &int_enum.name,
-            Definition::StringEnum(string_enum) => &string_enum.name,
+            Self::Json(json) => &json.name,
+            Self::IntEnum(int_enum) => &int_enum.name,
+            Self::StringEnum(string_enum) => &string_enum.name,
         }
     }
 }
@@ -105,7 +106,8 @@ impl Ord for JsonField {
 }
 
 impl Json {
-    pub fn new(name: String, index: usize, hash_name: Option<String>) -> Self {
+    #[must_use]
+    pub const fn new(name: String, index: usize, hash_name: Option<String>) -> Self {
         Self {
             index,
             name,
@@ -148,7 +150,8 @@ impl PartialEq for StringEnumVariant {
 }
 
 impl StringEnum {
-    pub fn new(name: String, index: usize, doc: String) -> Self {
+    #[must_use]
+    pub const fn new(name: String, index: usize, doc: String) -> Self {
         Self {
             index,
             name,
@@ -186,7 +189,8 @@ impl Borrow<str> for IntEnumVariant {
 }
 
 impl IntEnum {
-    pub fn new(name: String, index: usize, doc: String, start: i128) -> Self {
+    #[must_use]
+    pub const fn new(name: String, index: usize, doc: String, start: i128) -> Self {
         Self {
             index,
             name,
@@ -290,7 +294,8 @@ pub struct DefinitionRegistry {
 }
 
 impl DefinitionRegistry {
-    pub fn new() -> Self {
+    #[must_use]
+    pub const fn new() -> Self {
         Self {
             definitions: BTreeMap::new(),
             _private: std::marker::PhantomData {},
@@ -395,7 +400,7 @@ mod tests {
                 index: 0,
                 name: "has_foo".into(),
                 key: JSONKey::String(String::from("bar")),
-                type_: DataType::Definition(foo_struct.clone()),
+                type_: DataType::Definition(foo_struct),
                 optional: false,
             };
 

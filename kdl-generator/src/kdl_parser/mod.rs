@@ -97,12 +97,12 @@ impl miette::Diagnostic for Diagnostic {
     }
 
     fn related<'a>(&'a self) -> Option<Box<dyn Iterator<Item = &'a dyn miette::Diagnostic> + 'a>> {
-        if !self.related.is_empty() {
+        if self.related.is_empty() {
+            None
+        } else {
             Some(Box::new(
                 self.related.iter().map(|d| d as &dyn miette::Diagnostic),
             ))
-        } else {
-            None
         }
     }
 }
@@ -142,36 +142,36 @@ impl From<Diagnostic> for ParsingError {
 impl miette::Diagnostic for ParsingError {
     fn code<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
         match self {
-            ParsingError::KdlError(kdl_error) => kdl_error.code(),
+            Self::KdlError(kdl_error) => kdl_error.code(),
             _ => None,
         }
     }
 
     fn severity(&self) -> Option<miette::Severity> {
         match self {
-            ParsingError::KdlError(kdl_error) => kdl_error.severity(),
+            Self::KdlError(kdl_error) => kdl_error.severity(),
             _ => None,
         }
     }
 
     fn help<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
         match self {
-            ParsingError::KdlError(kdl_error) => kdl_error.help(),
+            Self::KdlError(kdl_error) => kdl_error.help(),
             _ => None,
         }
     }
 
     fn url<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
         match self {
-            ParsingError::KdlError(kdl_error) => kdl_error.url(),
+            Self::KdlError(kdl_error) => kdl_error.url(),
             _ => None,
         }
     }
 
     fn source_code(&self) -> Option<&dyn miette::SourceCode> {
         match self {
-            ParsingError::KdlError(kdl_error) => kdl_error.source_code(),
-            ParsingError::Diagnostics {
+            Self::KdlError(kdl_error) => kdl_error.source_code(),
+            Self::Diagnostics {
                 source_info: source_code,
                 ..
             } => Some(source_code),
@@ -181,15 +181,15 @@ impl miette::Diagnostic for ParsingError {
 
     fn labels(&self) -> Option<Box<dyn Iterator<Item = miette::LabeledSpan> + '_>> {
         match self {
-            ParsingError::KdlError(kdl_error) => kdl_error.labels(),
+            Self::KdlError(kdl_error) => kdl_error.labels(),
             _ => None,
         }
     }
 
     fn related<'a>(&'a self) -> Option<Box<dyn Iterator<Item = &'a dyn miette::Diagnostic> + 'a>> {
         match self {
-            ParsingError::KdlError(kdl_error) => kdl_error.related(),
-            ParsingError::Diagnostics { diagnostics, .. } => Some(Box::new(
+            Self::KdlError(kdl_error) => kdl_error.related(),
+            Self::Diagnostics { diagnostics, .. } => Some(Box::new(
                 diagnostics.iter().map(|d| d as &dyn miette::Diagnostic),
             )),
 
@@ -199,7 +199,7 @@ impl miette::Diagnostic for ParsingError {
 
     fn diagnostic_source(&self) -> Option<&dyn miette::Diagnostic> {
         match self {
-            ParsingError::KdlError(kdl_error) => kdl_error.diagnostic_source(),
+            Self::KdlError(kdl_error) => kdl_error.diagnostic_source(),
             _ => None,
         }
     }
@@ -359,7 +359,7 @@ mod document_to_intermediate {
                     let def = Definition::IntEnum(IntEnum::from(enum_def));
                     registry.insert(def);
                 }
-            };
+            }
         }
     }
 
@@ -385,6 +385,7 @@ mod document_to_intermediate {
     }
 }
 
+#[must_use = "Converting a `Document` to the IR representation implies that you want to use the resulting registry."]
 pub fn document_to_definitions(document: Document) -> DefinitionRegistry {
     let mut registry = DefinitionRegistry::new();
 

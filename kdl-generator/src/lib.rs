@@ -6,6 +6,13 @@ use std::path::Path;
 
 use crate::kdl_parser::ParsingError;
 
+/// Parses a KDL file into a registry of definitions that can be used for
+/// generating source code.
+///
+/// # Errors
+///
+/// Will return `Err` if it was not possible to parse the file in `document`
+/// and its includes.
 pub fn parse_kdl<S: AsRef<str>>(
     document: S,
     filepath: &Path,

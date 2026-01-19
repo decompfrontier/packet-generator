@@ -6,9 +6,9 @@ use crate::generators::GenerationError;
 
 use crate::intermediate::{DataType, Definition, DefinitionRegistry, IntEnum, Json, StringEnum};
 
-const AUTOGENERATION_NOTICE: &str = r#"
+const AUTOGENERATION_NOTICE: &str = "
 // This file is auto-generated from a KDL specification by `packet-generator`.
-// Please do not modify this, but instead change the original definitions."#;
+// Please do not modify this, but instead change the original definitions.";
 
 const TAB: &str = "    ";
 
@@ -18,7 +18,7 @@ pub struct CxxSourceCode {
     pub content: String,
 }
 
-/// Converts a DataType to types recognized by C++ with Glaze.
+/// Converts a `DataType` to types recognized by C++ with Glaze.
 fn convert_datatype(
     datatype: &DataType,
     registry: &DefinitionRegistry,
@@ -38,11 +38,13 @@ fn convert_datatype(
 
         DataType::Bool { .. } => Ok(String::from("bool")),
 
-        DataType::String => Ok(String::from("std::string")),
+        DataType::String
+        | DataType::StringArray {
+            inner_type: _,
+            separator: _,
+        } => Ok(String::from("std::string")),
 
-        DataType::Datetime => Ok(String::from("pkghlp::chronotime")),
-
-        DataType::DatetimeUnix => Ok(String::from("pkghlp::chronotime")),
+        DataType::Datetime | DataType::DatetimeUnix => Ok(String::from("pkghlp::chronotime")),
 
         DataType::Map { key, value } => {
             let key = convert_datatype(key, registry)?;
@@ -50,11 +52,6 @@ fn convert_datatype(
 
             Ok(format!("std::unordered_map<{key}, {value}>"))
         }
-
-        DataType::StringArray {
-            inner_type: _,
-            separator: _,
-        } => Ok(String::from("std::string")),
 
         DataType::Array { inner_type } => {
             let inner = convert_datatype(inner_type, registry)?;
@@ -108,9 +105,9 @@ fn generate_json_cxx(
     let struct_name = json.name.to_pascal_case();
 
     let content = format!(
-        r#"struct {struct_name} {{
+        "struct {struct_name} {{
 {fields}
-}};"#,
+}};"
     );
 
     Ok(content)
@@ -180,11 +177,11 @@ fn generate_str_enum_cxx(
     let doc = &str_enum.doc;
 
     let content = format!(
-        r#"/// {doc}
+        "/// {doc}
 namespace {} {{
 {TAB}using Type = std::string;
 {variants}
-}};"#,
+}};",
         str_enum.name.to_pascal_case(),
     );
 
@@ -208,12 +205,12 @@ pub fn generate_cxx(
     Ok(CxxSourceCode {
         filename: "test.hpp".to_owned(), // TODO(arves): test -> registry.name?
         content: format!(
-            r#"#pragma once
+            "#pragma once
 #include <pkgen_helpers.hpp>
 
 {AUTOGENERATION_NOTICE}
 
-{content}"#
+{content}"
         ),
     })
 }

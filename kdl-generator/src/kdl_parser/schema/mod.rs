@@ -200,9 +200,9 @@ impl FromStr for ArraySeparator {
 impl Display for ArraySeparator {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ArraySeparator::Comma => write!(f, ","),
-            ArraySeparator::At => write!(f, "@"),
-            ArraySeparator::Colon => write!(f, "|"),
+            Self::Comma => write!(f, ","),
+            Self::At => write!(f, "@"),
+            Self::Colon => write!(f, "|"),
         }
     }
 }
@@ -270,21 +270,21 @@ pub enum DataType {
 impl Display for DataType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            DataType::I32 { encoding: _ } => write!(f, "i32"),
-            DataType::U32 { encoding: _ } => write!(f, "u32"),
-            DataType::I64 { encoding: _ } => write!(f, "i64"),
-            DataType::U64 { encoding: _ } => write!(f, "u64"),
-            DataType::F32 { encoding: _ } => write!(f, "f32"),
-            DataType::F64 => write!(f, "f64"),
-            DataType::Bool { encoding: _ } => write!(f, "bool"),
-            DataType::Datetime => write!(f, "datetime"),
-            DataType::DatetimeUnix => write!(f, "datetime-unix"),
-            DataType::String => write!(f, "string"),
-            DataType::Array(inner) => write!(f, "[{inner}]"),
-            DataType::StringArray { inner, separator } => write!(f, "[{inner}{separator}]"),
-            DataType::SingleElementArray(data_type) => write!(f, "[{data_type}]"),
-            DataType::Map { key, value } => write!(f, "{key} => {value}"),
-            DataType::Custom(s) => write!(f, "{s}"),
+            Self::I32 { encoding: _ } => write!(f, "i32"),
+            Self::U32 { encoding: _ } => write!(f, "u32"),
+            Self::I64 { encoding: _ } => write!(f, "i64"),
+            Self::U64 { encoding: _ } => write!(f, "u64"),
+            Self::F32 { encoding: _ } => write!(f, "f32"),
+            Self::F64 => write!(f, "f64"),
+            Self::Bool { encoding: _ } => write!(f, "bool"),
+            Self::Datetime => write!(f, "datetime"),
+            Self::DatetimeUnix => write!(f, "datetime-unix"),
+            Self::String => write!(f, "string"),
+            Self::Array(inner) => write!(f, "[{inner}]"),
+            Self::StringArray { inner, separator } => write!(f, "[{inner}{separator}]"),
+            Self::SingleElementArray(data_type) => write!(f, "[{data_type}]"),
+            Self::Map { key, value } => write!(f, "{key} => {value}"),
+            Self::Custom(s) => write!(f, "{s}"),
         }
     }
 }

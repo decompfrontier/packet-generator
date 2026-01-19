@@ -12,7 +12,7 @@ use crate::kdl_parser::schema::DataType;
 pub fn generic_parse(
     input: &str,
     _encoding: Option<TypeEncoding>,
-    source_code: Arc<SourceInfo>,
+    source_code: &Arc<SourceInfo>,
     span: SourceSpan,
 ) -> Result<DataType, ParsingError> {
     let input = input.trim();
@@ -40,54 +40,54 @@ pub fn generic_parse(
                 SourceSpan::from(start..end)
             };
 
-            fn convert_error_to_diagnostic(
-                error: &Error,
-                source_code: Arc<SourceInfo>,
-                span: SourceSpan,
-            ) -> Diagnostic {
-                let diagnostics: Vec<_> = error
-                    .context
-                    .iter()
-                    .map(|e| Diagnostic {
-                        message: e.message.clone(),
-                        severity: e.severity,
-                        source_info: source_code.clone(),
-                        span,
-                        help: e.help.clone(),
-                        label: None,
-                        related: vec![],
-                    })
-                    .collect();
-
-                match &error.cause {
-                    Some(diag) => Diagnostic {
-                        message: diag.message.clone(),
-                        source_info: source_code.clone(),
-                        span,
-                        severity: diag.severity,
-                        label: None,
-                        help: diag.help.clone(),
-                        related: diagnostics,
-                    },
-
-                    None => Diagnostic {
-                        message: "unknown error when parsing type".to_owned(),
-                        source_info: source_code,
-                        span,
-                        severity: Severity::Error,
-                        label: None,
-                        help: None,
-                        related: diagnostics,
-                    },
-                }
-            }
-
             Err(ParsingError::from(convert_error_to_diagnostic(
                 inner,
                 source_code.clone(),
                 new_span,
             )))
         }
+    }
+}
+
+fn convert_error_to_diagnostic(
+    error: &Error,
+    source_code: Arc<SourceInfo>,
+    span: SourceSpan,
+) -> Diagnostic {
+    let diagnostics: Vec<_> = error
+        .context
+        .iter()
+        .map(|e| Diagnostic {
+            message: e.message.clone(),
+            severity: e.severity,
+            source_info: source_code.clone(),
+            span,
+            help: e.help.clone(),
+            label: None,
+            related: vec![],
+        })
+        .collect();
+
+    match &error.cause {
+        Some(diag) => Diagnostic {
+            message: diag.message.clone(),
+            source_info: source_code,
+            span,
+            severity: diag.severity,
+            label: None,
+            help: diag.help.clone(),
+            related: diagnostics,
+        },
+
+        None => Diagnostic {
+            message: "unknown error when parsing type".to_owned(),
+            source_info: source_code,
+            span,
+            severity: Severity::Error,
+            label: None,
+            help: None,
+            related: diagnostics,
+        },
     }
 }
 
@@ -149,12 +149,12 @@ mod combinator_solution {
         fn related<'a>(
             &'a self,
         ) -> Option<Box<dyn Iterator<Item = &'a dyn miette::Diagnostic> + 'a>> {
-            if !self.context.is_empty() {
+            if self.context.is_empty() {
+                None
+            } else {
                 Some(Box::new(
                     self.context.iter().map(|d| d as &dyn miette::Diagnostic),
                 ))
-            } else {
-                None
             }
         }
 
@@ -194,8 +194,8 @@ mod combinator_solution {
         }
     }
 
-    impl<I> FromExternalError<I, Error> for Error {
-        fn from_external_error(_input: &I, e: Error) -> Self {
+    impl<I> FromExternalError<I, Self> for Error {
+        fn from_external_error(_input: &I, e: Self) -> Self {
             e
         }
     }
@@ -360,31 +360,31 @@ mod combinator_solution {
 
     fn parse_f64(input: &mut &str) -> PResult {
         preceded("f64", (not(alphanumeric1), opt(parse_modifier)))
-            .map(|(_, _maybe_modifiers)| DataType::F64)
+            .map(|((), _maybe_modifiers)| DataType::F64)
             .parse_next(input)
     }
 
     fn parse_str(input: &mut &str) -> PResult {
         preceded("str", (not(alphanumeric1), opt(parse_modifier)))
-            .map(|(_, _maybe_modifiers)| DataType::String)
+            .map(|((), _maybe_modifiers)| DataType::String)
             .parse_next(input)
     }
 
     fn parse_datetime(input: &mut &str) -> PResult {
         preceded("datetime", (not(alphanumeric1), opt(parse_modifier)))
-            .map(|(_, _maybe_modifiers)| DataType::Datetime)
+            .map(|((), _maybe_modifiers)| DataType::Datetime)
             .parse_next(input)
     }
 
     fn parse_datetime_unix(input: &mut &str) -> PResult {
         preceded("datetime-unix", (not(alphanumeric1), opt(parse_modifier)))
-            .map(|(_, _maybe_modifiers)| DataType::DatetimeUnix)
+            .map(|((), _maybe_modifiers)| DataType::DatetimeUnix)
             .parse_next(input)
     }
 
     fn parse_custom_type(input: &mut &str) -> PResult {
         (alphanumeric1, (not(alphanumeric1), opt(parse_modifier)))
-            .map(|(name, (_, _maybe_modifiers))| DataType::Custom(name.to_owned()))
+            .map(|(name, ((), _maybe_modifiers))| DataType::Custom(name.to_owned()))
             .parse_next(input)
     }
 
@@ -578,7 +578,7 @@ mod combinator_solution {
             let mut s = "i32";
             let val = parse_datatype(&mut s);
             println!("{val:?}");
-            assert!(val.is_err())
+            assert!(val.is_err());
         }
 
         #[test]
@@ -590,7 +590,7 @@ mod combinator_solution {
                 DataType::I32 {
                     encoding: TypeEncoding::String
                 }
-            ))
+            ));
         }
 
         #[test]
@@ -602,7 +602,7 @@ mod combinator_solution {
                 DataType::I32 {
                     encoding: TypeEncoding::String
                 }
-            ))
+            ));
         }
 
         #[test]
@@ -614,21 +614,21 @@ mod combinator_solution {
                 DataType::I32 {
                     encoding: TypeEncoding::Int
                 }
-            ))
+            ));
         }
 
         #[test]
         fn arrays_of_primitive_require_encoding() {
             let mut s = "[i32]";
             let val = parse_datatype(&mut s);
-            assert!(matches!(val, Err(..)))
+            assert!(matches!(val, Err(..)));
         }
 
         #[test]
         fn can_parse_normal_arrays() {
             let mut s = "[i32::int]";
             let val = parse_datatype(&mut s).unwrap();
-            assert!(matches!(val, DataType::Array { .. }))
+            assert!(matches!(val, DataType::Array { .. }));
         }
 
         #[test]
@@ -641,7 +641,7 @@ mod combinator_solution {
                     separator: ArraySeparator::At,
                     ..
                 })
-            ))
+            ));
         }
 
         #[test]
@@ -654,7 +654,7 @@ mod combinator_solution {
                     separator: ArraySeparator::Comma,
                     ..
                 })
-            ))
+            ));
         }
 
         #[test]
@@ -667,35 +667,35 @@ mod combinator_solution {
                     separator: ArraySeparator::Colon,
                     ..
                 })
-            ))
+            ));
         }
 
         #[test]
         fn can_parse_sized_arrays() {
             let mut s = "[i32::int]::size(1)";
             let val = parse_datatype(&mut s);
-            assert!(matches!(val, Ok(DataType::SingleElementArray { .. })))
+            assert!(matches!(val, Ok(DataType::SingleElementArray { .. })));
         }
 
         #[test]
         fn can_parse_datetime() {
             let mut s = "datetime";
             let val = parse_datatype(&mut s).unwrap();
-            assert!(matches!(val, DataType::Datetime))
+            assert!(matches!(val, DataType::Datetime));
         }
 
         #[test]
         fn can_parse_datetime_unix() {
             let mut s = "datetime-unix";
             let val = parse_datatype(&mut s);
-            assert!(matches!(val, Ok(DataType::DatetimeUnix)))
+            assert!(matches!(val, Ok(DataType::DatetimeUnix)));
         }
 
         #[test]
         fn can_parse_custom_type() {
             let mut s = "Foo";
             let val = parse_datatype(&mut s).unwrap();
-            assert!(matches!(val, DataType::Custom(..)))
+            assert!(matches!(val, DataType::Custom(..)));
         }
 
         #[test]
@@ -717,21 +717,21 @@ mod combinator_solution {
         fn can_parse_maps() {
             let mut s = "%{i32::str => i64::str}";
             let val = parse_datatype(&mut s);
-            assert!(matches!(val, Ok(DataType::Map { .. })))
+            assert!(matches!(val, Ok(DataType::Map { .. })));
         }
 
         #[test]
         fn can_parse_nested_maps() {
             let mut s = "%{i32::str => %{i64::str => f32::int}}";
             let val = parse_datatype(&mut s);
-            assert!(matches!(val, Ok(DataType::Map { .. })))
+            assert!(matches!(val, Ok(DataType::Map { .. })));
         }
 
         #[test]
         fn way_too_many_parenthesis() {
             let mut s = "[[[%{i32::{str} => %{i64::{str, foo(x, y, z)} => f32::{int, bar(x)}}}]::size(1)]::sep(comma)]";
             let val = parse_datatype(&mut s);
-            assert!(matches!(val, Ok(DataType::Array { .. })))
+            assert!(matches!(val, Ok(DataType::Array { .. })));
         }
     }
 }

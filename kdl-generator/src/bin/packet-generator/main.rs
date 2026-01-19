@@ -9,6 +9,7 @@ use packet_generator::{
 mod cli;
 
 #[derive(Debug, thiserror::Error)]
+#[expect(dead_code)]
 enum ApplicationError {
     #[error(transparent)]
     MietteReport(#[from] ParsingError),

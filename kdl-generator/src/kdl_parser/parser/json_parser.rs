@@ -22,7 +22,7 @@ const TRANSPARENT_PROPERTY_NAME: &str = "transparent";
 
 pub fn parse_data_definition(
     definition: &KdlNode,
-    source_code: Arc<SourceInfo>,
+    source_code: &Arc<SourceInfo>,
     index: usize,
 ) -> Result<JsonDefinition, ParsingError> {
     let name = definition.extract_argument_string(
@@ -93,7 +93,7 @@ pub fn parse_data_definition(
             )
         })
         .transpose()?
-        .map(|s| s.to_owned());
+        .map(ToOwned::to_owned);
 
     let doc = data_children
         .extract_child_node(
@@ -125,7 +125,7 @@ pub fn parse_data_definition(
                 node,
                 source_code.clone(),
                 name,
-                &maybe_default_encoding,
+                maybe_default_encoding,
                 index,
             )
         })
@@ -144,7 +144,7 @@ fn parse_field(
     node: &KdlNode,
     source_code: Arc<SourceInfo>,
     data_name: &str,
-    maybe_default_encoding: &Option<TypeEncoding>,
+    maybe_default_encoding: Option<TypeEncoding>,
     index: usize,
 ) -> Result<JsonField, ParsingError> {
     let field_node = node.extract_argument_string(
@@ -173,7 +173,7 @@ fn parse_field(
                 related: vec![],
             })
         })?
-        .or(*maybe_default_encoding);
+        .or(maybe_default_encoding);
 
     let datatype = {
         let datatype_entry =
@@ -206,7 +206,7 @@ fn parse_field(
         generic_parse(
             datatype_str,
             maybe_encoding,
-            source_code.clone(),
+            &source_code,
             datatype_entry.span(),
         )
     }?;
@@ -302,9 +302,8 @@ fn parse_field(
                 })
         })?
         .ok_or_else(|| {
-            let underlying_datatype = match &datatype {
-                DataType::Custom(s) => s,
-                _ => unreachable!("currently looking at `{KEY_CHILD} {TRANSPARENT_PROPERTY_NAME}` in a JSON definition; in particular if the pointeed datatype is _not_ `Custom`, then this error condition should never be triggered since the same check was done before"),
+            let DataType::Custom(underlying_datatype) = &datatype else {
+                unreachable!("currently looking at `{KEY_CHILD} {TRANSPARENT_PROPERTY_NAME}` in a JSON definition; in particular if the pointeed datatype is _not_ `Custom`, then this error condition should never be triggered since the same check was done before");
             };
 
         ParsingError::from(Diagnostic {
@@ -331,7 +330,7 @@ fn parse_field(
         .extract_argument_string(
             0,
             ErrorContext {
-                source_info: source_code.clone(),
+                source_info: source_code,
                 context: format!("field definition `{data_name}::{field_node}`").into(),
                 not_found_help: None,
                 wrong_type_help: None,

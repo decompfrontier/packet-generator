@@ -5,8 +5,7 @@ use stringcase::Caser;
 use crate::generators::GenerationError;
 
 use crate::intermediate::{
-    BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, IntEnum, JSONKey, Json,
-    StringEnum, ArraySeparator
+    ArraySeparator, BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, JSONKey, Json,
 };
 
 const TAB: &str = "    ";
@@ -18,22 +17,20 @@ pub struct CxxSourceCode {
     pub content: String,
 }
 
-fn get_glz_array_separator(
-    sep: ArraySeparator
-) -> char {
+const fn get_glz_array_separator(sep: ArraySeparator) -> char {
     match sep {
         ArraySeparator::Comma => ',',
         ArraySeparator::At => '@',
-        ArraySeparator::Colon => ':'
+        ArraySeparator::Colon => ':',
     }
 }
 
-/// Converts a DataType to types recognized by C++ with Glaze.
+/// Converts a `DataType` to types recognized by C++ with Glaze.
 fn get_glz_mapper(
     parent_name: &str,
     name: &str,
     datatype: &DataType,
-    registry: &DefinitionRegistry,
+    _registry: &DefinitionRegistry,
 ) -> Result<String, GenerationError> {
     let name = name.to_snake_case();
 
@@ -66,16 +63,17 @@ fn get_glz_mapper(
         DataType::String => Ok(format!("glz::quoted<&T::{name}>")),
         DataType::StringArray {
             inner_type: _,
-            separator
+            separator,
         } => {
             let glz_sep = get_glz_array_separator(*separator);
-            Ok(format!("glzhlp::stringlist<{parent_name}, &T::{name}, '{glz_sep}'>"))
+            Ok(format!(
+                "glzhlp::stringlist<{parent_name}, &T::{name}, '{glz_sep}'>"
+            ))
         }
 
         // NOTE(arves): Investigate if single array needs a custom mapping if we do not explicitally declare them as "std::array"
 
         // TODO(arves): Using custom encoding on vector or maps WILL NOT WORK! Find a way to fix it in glaze (if it's possible)
-
         _ => Ok(format!("&T::{name}")),
     }
 }
@@ -125,13 +123,13 @@ fn generate_json_cxx(
         .process_results(|mut x| x.join(",\n"))?;
 
     let content = format!(
-        r#"template <>
+        "template <>
 struct glz::meta<{struct_name}> {{
 {TAB}using T = {struct_name};
 {TAB}static constexpr auto value = object(
 {fields}
 {TAB});
-}};"#,
+}};"
     );
 
     Ok(content)
@@ -153,10 +151,10 @@ pub fn generate_glaze(
     Ok(CxxSourceCode {
         filename: "test.hpp".to_owned(), // TODO(arves): test -> registry.name?
         content: format!(
-            r#"#pragma once
+            "#pragma once
 #include <pkgen_glaze_helpers.hpp>
 
-{content}"#
+{content}"
         ),
     })
 }

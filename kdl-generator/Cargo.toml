@@ -12,3 +12,27 @@ bpaf = { version = "0.9.20", features = ["derive"] }
 kdl = "6.5.0"
 itertools = "0.14.0"
 stringcase = "0.4.0"
+
+
+[lints.clippy]
+missing-errors-doc = "deny"
+explicit-iter-loop = "deny"
+items-after-statements = "deny"
+ref-option-ref = "deny"
+cast-lossless = "deny"
+semicolon-if-nothing-returned = "deny"
+ignored-unit-patterns = "deny"
+if-not-else = "deny"
+redundant-closure-for-method-calls = "deny"
+single-char-pattern = "deny"
+use-self = "deny"
+redundant-pub-crate = "deny"
+option-if-let-else = "allow"
+unnecessary-wraps = "warn"
+future-not-send = "warn"
+# cognitive-complexity = "warn"
+uninlined-format-args = "allow"
+wildcard-imports = "allow"
+too-many-lines = "allow"
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
