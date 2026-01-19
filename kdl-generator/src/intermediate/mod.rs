@@ -1,3 +1,5 @@
+//! Intermediate
+
 use std::{
     borrow::Borrow,
     collections::{BTreeMap, BTreeSet, btree_map::Values},

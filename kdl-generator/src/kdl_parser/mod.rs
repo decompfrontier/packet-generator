@@ -1,3 +1,8 @@
+//! Module for parsing the definitions (in KDL).
+//!
+// TODO(anri): rename the module.
+//! Continued
+
 mod parser;
 pub mod schema;
 
@@ -8,19 +13,30 @@ pub use schema::validate;
 
 use kdl::KdlError;
 
+/// A valid KDL document.
+///
+/// This is the only type that can be converted to the IR, later used by
+/// the generator, by calling [`document_to_definitions`].
 pub struct Document(RawDocument);
 
 use crate::{intermediate::DefinitionRegistry, kdl_parser::schema::RawDocument};
 
 pub use parser::raw_parse_kdl;
 
+/// Informations about the origin of a KDL document.
+///
+/// Used for generating correct [`Diagnostic`]s.
 #[derive(Debug, Clone)]
 pub struct SourceInfo {
+    /// Simple name (relative path) of the source code.
     name: String,
+
+    /// The actual source code.
     source_code: String,
 }
 
 impl SourceInfo {
+    /// Returns a new [`SourceInfo`].
     pub fn new(name: impl AsRef<str>, source_code: impl AsRef<str>) -> Self {
         Self {
             name: name.as_ref().into(),
@@ -54,14 +70,45 @@ impl SourceCode for SourceInfo {
     }
 }
 
+/// Main diagnostic type for the parser.
+///
+/// This type contains every information needed to resolve one
+/// Error/Warning/Advice (see [`Severity`]) and related diagnostics.
 #[derive(Debug, Clone, thiserror::Error)]
 pub struct Diagnostic {
+    /// The message to display to the end-user.
     pub message: String,
+
+    /// The [`Severity`] of the diagnostic.
     pub severity: Severity,
+
+    /// The original [information](SourceInfo) about the source code.
     pub source_info: Arc<SourceInfo>,
+
+    /// The byte span where the diagnostic must apply.
     pub span: SourceSpan,
+
+    /// Optional help string to display to the end-user.
     pub help: Option<String>,
+
+    /// Optional label that will be display to the end-user.
+    ///
+    /// If `None` then by default `"here"` will be used.
+    ///
+    /// # Example
+    ///
+    /// Setting `label` to `Some(String::from("foo"))` will display the following:
+    ///
+    /// ```
+    /// some error here
+    ///            ^^^^
+    ///            foo
+    /// ```
+    ///
+    /// Where the `foo` is the `label`.
     pub label: Option<String>,
+
+    /// Related diagnostics.
     pub related: Vec<Diagnostic>,
 }
 

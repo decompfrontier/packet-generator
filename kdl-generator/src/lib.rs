@@ -1,3 +1,10 @@
+//! Brave Frontier packet generator library.
+//!
+//! The end-goal of this library is to generate C++ source code for parsing
+//! Brave Frontier's network packets.
+//! The structure of the packets are defined over custom KDL files defined by
+//! this library.
+
 pub mod generators;
 pub mod intermediate;
 pub mod kdl_parser;
@@ -13,6 +20,7 @@ use crate::kdl_parser::ParsingError;
 ///
 /// Will return `Err` if it was not possible to parse the file in `document`
 /// and its includes.
+/// See [`ParsingError`].
 pub fn parse_kdl<S: AsRef<str>>(
     document: S,
     filepath: &Path,

@@ -576,8 +576,17 @@ fn parse_single_document<S: AsRef<str>>(
     }
 }
 
-/// This function returns a `RawDocument` that can be inspected.
-/// A `RawDocument` can be later converted to a `Document` used for generating the IR.
+/// Parses a `document` (as string) to obtain [`RawDocument`] that can be
+/// inspected for further analysis.
+///
+/// The [`RawDocument`] can be later converted to a [`Document`](super::Document) used for
+/// generating the IR by calling [`schema::validate`](super::validate).
+///
+/// # Errors
+///
+/// Returns `Err` with [`ParsingError`] if there were any errors when parsing
+/// the file.
+/// Currently the
 pub fn raw_parse_kdl<S: AsRef<str>>(
     document: S,
     filepath: &Path,

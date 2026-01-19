@@ -19,6 +19,8 @@ strip = true
 
 # [lints.rust]
 # missing-docs = "warn"
+
+# [lints.rustdoc]
 # missing-crate-level-docs = "warn"
 
 [lints.clippy]
