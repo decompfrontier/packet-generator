@@ -374,7 +374,7 @@ mod document_to_intermediate {
                 struct_def.add_field(JsonField {
                     index: field.index,
                     name: field.name.clone().into(),
-                    key: field.key.clone().into(),
+                    key: field.key.clone(),
                     type_: convert_json_datatype(&field, registry),
                     optional: field.optional,
                 });

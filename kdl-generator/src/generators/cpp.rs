@@ -147,11 +147,11 @@ fn generate_int_enum_cxx(
     let doc = &int_enum.doc;
 
     let content = format!(
-        r#"/// {doc}
+        "/// {doc}
 enum class {} {{
 {first_variant}
 {variants_str}
-}};"#,
+}};",
         int_enum.name.to_pascal_case(),
     );
 
