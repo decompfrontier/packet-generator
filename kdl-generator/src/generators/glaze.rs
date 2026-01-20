@@ -22,7 +22,7 @@ const fn get_glz_array_separator(sep: ArraySeparator) -> char {
 
 /// Converts a `DataType` to types recognized by C++ with Glaze.
 fn get_glz_mapper(
-    parent_name: &str,
+    //parent_name: &str,
     name: &str,
     datatype: &DataType,
     _registry: &DefinitionRegistry,
@@ -43,26 +43,25 @@ fn get_glz_mapper(
 
         DataType::F32 {
             encoding: Encoding::Int,
-        } => Ok(format!("glzhlp::write_float32(&T::{name})")),
+        } => Ok(format!("glz::write_float32_t(&T::{name})")),
         DataType::I64 {
             encoding: Encoding::Int,
-        } => Ok(format!("glzhlp::write_float64(&T::{name})")),
+        } => Ok(format!("glz::write_float64_t(&T::{name})")),
         DataType::Bool {
             encoding: BoolEncoding::String,
-        } => Ok(format!("glzhlp::strbool<{parent_name}, {name}>")),
+        } => Ok(format!("pkg::glaze::bool_as_string<T, {name}>()")),
         DataType::Bool {
             encoding: BoolEncoding::Int,
         } => Ok(format!("glz::bools_as_numbers<&T::{name}>")),
-        DataType::Datetime => Ok(format!("glzhlp::datetime<{parent_name}, &T::{name}>")),
-        DataType::DatetimeUnix => Ok(format!("glzhlp::datetimeunix<{parent_name}, &T::{name}>")),
-        DataType::String => Ok(format!("glz::quoted<&T::{name}>")),
+        DataType::Datetime => Ok(format!("pkg::glaze::datetime<T, &T::{name}>()")),
+        DataType::DatetimeUnix => Ok(format!("pkg::glaze::datetime_unix<T, &T::{name}>()")),
         DataType::StringArray {
             inner_type: _,
             separator,
         } => {
             let glz_sep = get_glz_array_separator(*separator);
             Ok(format!(
-                "glzhlp::stringlist<{parent_name}, &T::{name}, '{glz_sep}'>"
+                "pkg::glaze::array_as_string_list<T, &T::{name}, '{glz_sep}'>"
             ))
         }
 
@@ -77,14 +76,13 @@ fn generate_json_cxx(
     registry: &DefinitionRegistry,
     json: &Json,
 ) -> Result<String, Report<GenerationError>> {
-    let struct_name = json.name.to_pascal_case(); // TODO(arves): Does not handle the array type blaaah
+    let struct_name = json.name.to_pascal_case();
 
     let fields: String = json
         .fields
         .iter()
         .map(|field| -> Result<String, GenerationError> {
-            // TODO(arves): Fix parent name...
-            let mapper = get_glz_mapper(&struct_name, &field.name, &field.type_, registry)?;
+            let mapper = get_glz_mapper(/*&struct_name,*/ &field.name, &field.type_, registry)?;
             let key: &str = &field.key;
 
             Ok(format!("{TAB}{TAB}\"{key}\", {mapper}"))

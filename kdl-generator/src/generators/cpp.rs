@@ -14,7 +14,7 @@ const TAB: &str = "    ";
 
 pub struct CxxGenerator;
 
-/// Converts a `DataType` to types recognized by C++ with Glaze.
+/// Converts a `DataType` to types recognized by C++.
 fn convert_datatype(
     datatype: &DataType,
     registry: &DefinitionRegistry,
@@ -28,9 +28,9 @@ fn convert_datatype(
 
         DataType::U64 { .. } => Ok(String::from("uint64_t")),
 
-        DataType::F32 { .. } => Ok(String::from("pkghlp::float32")), // for supporting C++20 floating point
+        DataType::F32 { .. } => Ok(String::from("pkg::float32")), // for supporting C++20 floating point
 
-        DataType::F64 => Ok(String::from("pkghlp::float64")), // for supporting C++20 floating point
+        DataType::F64 => Ok(String::from("pkg::float64")), // for supporting C++20 floating point
 
         DataType::Bool { .. } => Ok(String::from("bool")),
 
@@ -40,7 +40,7 @@ fn convert_datatype(
             separator: _,
         } => Ok(String::from("std::string")),
 
-        DataType::Datetime | DataType::DatetimeUnix => Ok(String::from("pkghlp::chronotime")),
+        DataType::Datetime | DataType::DatetimeUnix => Ok(String::from("pkg::chrono_time")),
 
         DataType::Map { key, value } => {
             let key = convert_datatype(key, registry)?;
