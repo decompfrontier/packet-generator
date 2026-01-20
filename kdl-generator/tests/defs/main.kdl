@@ -1,0 +1,46 @@
+import "nested/included-3.kdl"
+import "http.kdl"
+import "xml.kdl"
+import "plist.kdl"
+// TODO(anri): support warnings to make the following test pass.
+// import "empty.kdl"
+
+int-enum Foo start=0 {
+    doc "A Foo"
+
+    variant bar {
+        doc "The bar of a Foo"
+        value 123
+    }
+}
+
+str-enum Baz {
+    doc "A Baz"
+
+    variant foo {
+        doc "The foo of a Baz"
+        value "a"
+    }
+
+    variant bar {
+        doc "The bar of a Baz"
+        value "a"
+    }
+}
+
+
+json Main {
+    doc "Main definition for the E2E test files."
+
+    field included-2 type="Included2" {
+        key "inc2"
+        doc "An included definition"
+        optional #true
+    }
+
+    field included-3 type="Included3" {
+        key "inc3"
+        doc "An included definition"
+    }
+}
+

@@ -514,7 +514,7 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
     if children.is_empty() {
         let diag = Diagnostic {
             message: "the file is empty".to_owned(),
-            severity: Severity::Error,
+            severity: Severity::Warning,
             source_info: source_info.clone(),
             span: kdl_document.span(),
             help: Some("where is everyone?".to_owned()),
