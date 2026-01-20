@@ -1,8 +1,6 @@
 use std::{
     borrow::Cow,
     collections::HashSet,
-    fs::File,
-    io::Read,
     path::{Path, PathBuf},
     sync::Arc,
 };
@@ -10,9 +8,12 @@ use std::{
 use kdl::{KdlDocument, KdlNode};
 use miette::Severity;
 
-use crate::kdl_parser::{
-    Diagnostic, ParsingError, SourceInfo,
-    schema::{EnumDefinition, RawDocument},
+use crate::{
+    kdl_parser::{
+        Diagnostic, ParserOpts, ParsingError, SourceInfo,
+        schema::{EnumDefinition, RawDocument},
+    },
+    vfs::{Vfs, VfsPathBuf},
 };
 
 pub mod enum_parser;
@@ -436,12 +437,12 @@ fn parse_all_definitions(
     Ok(all_diagnostics)
 }
 
-fn extract_unvisited_filepath(
+fn extract_unvisited_filepath<V: Vfs>(
     node: &KdlNode,
     callee_source_info: Arc<SourceInfo>,
-    visited_documents: &HashSet<PathBuf>,
+    visited_documents: &HashSet<VfsPathBuf>,
     current_directory: impl AsRef<Path>,
-) -> Option<Result<(PathBuf, PathBuf), ParsingError>> {
+) -> Option<Result<(PathBuf, VfsPathBuf), ParsingError>> {
     if node.name().value() != IMPORT_NODE_NAME {
         return None;
     }
@@ -458,10 +459,9 @@ fn extract_unvisited_filepath(
         )
         .and_then(|path| {
             let path = current_directory.as_ref().join(PathBuf::from(path));
+            let normalized = V::normalize_path(&path)?;
 
-            path.canonicalize()
-                .map(|canonical| (path.clone(), canonical))
-                .map_err(|e| ParsingError::NoAbsoluteFilePath { path, source: e })
+            Ok((path, normalized))
         });
 
     match unexplored_paths {
@@ -490,10 +490,11 @@ fn extract_unvisited_filepath(
     }
 }
 
-fn parse_single_document<S: AsRef<str>>(
+fn parse_single_document<S: AsRef<str>, V: Vfs>(
     document: S,
-    filepath: &Path,
-    visited_documents: &mut HashSet<PathBuf>,
+    filepath: &PathBuf,
+    visited_documents: &mut HashSet<VfsPathBuf>,
+    opts: &ParserOpts<V>,
 ) -> Result<RawDocument, ParsingError> {
     let kdl_document = KdlDocument::parse_v2(document.as_ref())?;
 
@@ -536,7 +537,7 @@ fn parse_single_document<S: AsRef<str>>(
     let unvisited_includes = children
         .iter()
         .filter_map(|node| {
-            extract_unvisited_filepath(
+            extract_unvisited_filepath::<V>(
                 node,
                 source_info.clone(),
                 visited_documents,
@@ -546,10 +547,9 @@ fn parse_single_document<S: AsRef<str>>(
         .collect::<Result<Vec<_>, ParsingError>>()?;
 
     for (path, canonical_path) in unvisited_includes {
-        let mut other_document = String::new();
-        let _ = File::open(&path)?.read_to_string(&mut other_document);
+        let other_document = opts.vfs.read_file_to_string(&V::normalize_path(&path)?)?;
         visited_documents.insert(canonical_path);
-        let other_root = parse_single_document(other_document, &path, visited_documents)?;
+        let other_root = parse_single_document(other_document, &path, visited_documents, opts)?;
         raw_document
             .json_definitions
             .extend(other_root.json_definitions);
@@ -586,19 +586,13 @@ fn parse_single_document<S: AsRef<str>>(
 ///
 /// Returns `Err` with [`ParsingError`] if there were any errors when parsing
 /// the file.
-/// Currently the
-pub fn raw_parse_kdl<S: AsRef<str>>(
+pub fn raw_parse_kdl<S: AsRef<str>, V: Vfs>(
     document: S,
-    filepath: &Path,
+    filepath: &PathBuf,
+    opts: &ParserOpts<V>,
 ) -> Result<RawDocument, ParsingError> {
-    let root_canonical_path =
-        filepath
-            .canonicalize()
-            .map_err(|e| ParsingError::NoAbsoluteFilePath {
-                path: filepath.to_path_buf(),
-                source: e,
-            })?;
+    let root_canonical_path = V::normalize_path(filepath)?;
 
     let mut visited_documents = HashSet::from_iter([root_canonical_path]);
-    parse_single_document(document, filepath, &mut visited_documents)
+    parse_single_document(document, filepath, &mut visited_documents, opts)
 }

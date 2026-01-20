@@ -12,6 +12,7 @@ bpaf = { version = "0.9.20", features = ["derive"] }
 kdl = "6.5.0"
 itertools = "0.14.0"
 stringcase = "0.4.0"
+path-clean = "^0.1.0"
 
 [profile.release]
 lto = true

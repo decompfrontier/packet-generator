@@ -19,7 +19,7 @@ use kdl::KdlError;
 /// the generator, by calling [`document_to_definitions`].
 pub struct Document(RawDocument);
 
-use crate::{intermediate::DefinitionRegistry, kdl_parser::schema::RawDocument};
+use crate::{intermediate::DefinitionRegistry, kdl_parser::schema::RawDocument, vfs::Vfs};
 
 pub use parser::raw_parse_kdl;
 
@@ -99,7 +99,7 @@ pub struct Diagnostic {
     ///
     /// Setting `label` to `Some(String::from("foo"))` will display the following:
     ///
-    /// ```
+    /// ```text
     /// some error here
     ///            ^^^^
     ///            foo
@@ -249,6 +249,32 @@ impl miette::Diagnostic for ParsingError {
             Self::KdlError(kdl_error) => kdl_error.diagnostic_source(),
             _ => None,
         }
+    }
+}
+
+/// Common options for the parser.
+///
+/// The trait parameter `V` specify which VFS to use.
+#[derive(Debug, Clone)]
+pub struct ParserOpts<V = crate::vfs::DefaultFS>
+where
+    V: Vfs,
+{
+    /// The VFS to use.
+    vfs: V,
+}
+
+impl Default for ParserOpts {
+    fn default() -> Self {
+        Self {
+            vfs: crate::vfs::DefaultFS,
+        }
+    }
+}
+
+impl<V: Vfs> ParserOpts<V> {
+    pub const fn new(vfs: V) -> Self {
+        Self { vfs }
     }
 }
 

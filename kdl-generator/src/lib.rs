@@ -9,23 +9,60 @@ pub mod generators;
 pub mod intermediate;
 pub mod kdl_parser;
 
-use std::path::Path;
+pub mod vfs;
 
-use crate::kdl_parser::ParsingError;
+use std::path::PathBuf;
+
+use crate::{
+    kdl_parser::{ParserOpts, ParsingError},
+    vfs::Vfs,
+};
 
 /// Parses a KDL file into a registry of definitions that can be used for
 /// generating source code.
+///
+/// # Example
+///
+/// ```rust
+/// # use std::path::PathBuf;
+/// use packet_generator::kdl_parser::ParserOpts;
+///
+/// # fn main() {
+/// let doc = r#"
+///     json Foo {
+///         doc "Is a foo!"
+///         field bar type="str" {
+///             key "bar"
+///             doc "A bar inside a Foo"
+///         }
+///     }
+/// "#;
+///
+/// let opts = ParserOpts::default();
+/// # let filemap = packet_generator::vfs::InMemoryFS::new();
+/// # let opts = ParserOpts::new(filemap);
+///
+/// match packet_generator::parse_kdl(doc, &PathBuf::from("foo.kdl"), &opts) {
+///     Ok(registry) => {
+///         println!("{:#?}", registry.find("Foo"));
+///     },
+///
+///     Err(e) => println!("Error: {e}"),
+/// }
+/// # }
+/// ```
 ///
 /// # Errors
 ///
 /// Will return `Err` if it was not possible to parse the file in `document`
 /// and its includes.
 /// See [`ParsingError`].
-pub fn parse_kdl<S: AsRef<str>>(
+pub fn parse_kdl<S: AsRef<str>, V: Vfs>(
     document: S,
-    filepath: &Path,
+    filepath: &PathBuf,
+    opts: &ParserOpts<V>,
 ) -> Result<intermediate::DefinitionRegistry, ParsingError> {
-    let raw_document = kdl_parser::raw_parse_kdl(document, filepath)?;
+    let raw_document = kdl_parser::raw_parse_kdl(document, filepath, opts)?;
 
     let document = kdl_parser::validate(raw_document)?;
 

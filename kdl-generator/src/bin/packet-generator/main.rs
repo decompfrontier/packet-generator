@@ -3,7 +3,7 @@ use std::{fs::File, io::Read, path::PathBuf};
 use miette::Context;
 use packet_generator::{
     generators::GenerationError,
-    kdl_parser::{Diagnostic, ParsingError},
+    kdl_parser::{Diagnostic, ParserOpts, ParsingError},
 };
 
 mod cli;
@@ -30,7 +30,11 @@ fn main() -> Result<(), miette::Report> {
             let mut file = File::open(&path).unwrap();
             let mut doc_str = String::new();
             let _ = file.read_to_string(&mut doc_str);
-            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str, &path)?;
+            let doc = packet_generator::kdl_parser::raw_parse_kdl(
+                doc_str,
+                &path,
+                &ParserOpts::default(),
+            )?;
 
             println!("Parser: {:#?}", doc);
 
@@ -46,7 +50,11 @@ fn main() -> Result<(), miette::Report> {
             let mut file = File::open(&path).unwrap();
             let mut doc_str = String::new();
             let _ = file.read_to_string(&mut doc_str);
-            let doc = packet_generator::kdl_parser::raw_parse_kdl(doc_str, &path)?;
+            let doc = packet_generator::kdl_parser::raw_parse_kdl(
+                doc_str,
+                &path,
+                &ParserOpts::default(),
+            )?;
 
             println!("Parser: {:#?}", doc);
 
