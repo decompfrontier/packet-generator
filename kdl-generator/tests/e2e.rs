@@ -5,12 +5,16 @@ use std::{
     process::Stdio,
 };
 
-use packet_generator::{generators, intermediate::DefinitionRegistry, kdl_parser::ParserOpts};
+use packet_generator::{
+    generators,
+    intermediate::DefinitionRegistry,
+    kdl_parser::{ParserOpts, ParsingWarnings},
+};
 
 const CXX_COMPILER: &str = "clang++";
 const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
-fn setup_e2e_registry(main_file: &str) -> DefinitionRegistry {
+fn setup_e2e_registry(main_file: &str) -> (DefinitionRegistry, ParsingWarnings) {
     let path = PathBuf::from(format!("{PROJECT_DIR}/{main_file}"));
     let document = std::fs::read_to_string(&path).unwrap();
     packet_generator::parse_kdl(&document, &path, &ParserOpts::default())
@@ -20,7 +24,7 @@ fn setup_e2e_registry(main_file: &str) -> DefinitionRegistry {
 
 #[test]
 fn e2e_can_compile_cxx_definition() {
-    let defs = setup_e2e_registry("tests/defs/main.kdl");
+    let (defs, _) = setup_e2e_registry("tests/defs/main.kdl");
     let cxx_generated = generators::generate_cxx(&defs).unwrap();
 
     let generation_basepath =
@@ -60,7 +64,7 @@ fn e2e_can_compile_cxx_definition() {
 
 #[test]
 fn e2e_can_compile_glaze_definition() {
-    let defs = setup_e2e_registry("tests/defs/main.kdl");
+    let (defs, _) = setup_e2e_registry("tests/defs/main.kdl");
     let cxx_generated = generators::generate_glaze(&defs).unwrap();
 
     let generation_basepath =
@@ -100,7 +104,7 @@ fn e2e_can_compile_glaze_definition() {
 
 #[test]
 fn e2e_can_parse_assets() {
-    let registry = setup_e2e_registry("assets/mst/receipe.kdl");
+    let (registry, _) = setup_e2e_registry("assets/mst/receipe.kdl");
 
     println!("{registry:#?}");
 }

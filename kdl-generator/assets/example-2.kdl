@@ -1,3 +1,5 @@
+import "example-3.kdl"
+
 int-enum Bar start=10 {
     doc "Really important enum"
 

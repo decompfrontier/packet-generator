@@ -10,7 +10,7 @@ use miette::Severity;
 
 use crate::{
     kdl_parser::{
-        Diagnostic, ParserOpts, ParsingError, SourceInfo,
+        Diagnostic, ParserOpts, ParsingError, ParsingWarnings, SourceInfo,
         schema::{EnumDefinition, RawDocument},
     },
     vfs::{Vfs, VfsPathBuf},
@@ -437,57 +437,75 @@ fn parse_all_definitions(
     Ok(all_diagnostics)
 }
 
-fn extract_unvisited_filepath<V: Vfs>(
-    node: &KdlNode,
-    callee_source_info: Arc<SourceInfo>,
+fn extract_unvisited_filepaths<'a, V, N>(
+    nodes: N,
+    callee_source_info: &'a Arc<SourceInfo>,
     visited_documents: &HashSet<VfsPathBuf>,
     current_directory: impl AsRef<Path>,
-) -> Option<Result<(PathBuf, VfsPathBuf), ParsingError>> {
-    if node.name().value() != IMPORT_NODE_NAME {
-        return None;
-    }
+    warnings: &mut Vec<Diagnostic>,
+) -> Result<Vec<(PathBuf, VfsPathBuf)>, ParsingError>
+where
+    V: Vfs,
+    N: IntoIterator<Item = &'a KdlNode>,
+{
+    nodes
+        .into_iter()
+        .filter_map(|node| {
+            if node.name().value() != IMPORT_NODE_NAME {
+                return None;
+            }
 
-    let unexplored_paths = node
-        .extract_argument_string(
-            0,
-            ErrorContext {
-                source_info: callee_source_info,
-                context: "document definition".into(),
-                not_found_help: Some("".into()),
-                wrong_type_help: Some("".into()),
-            },
-        )
-        .and_then(|path| {
-            let path = current_directory.as_ref().join(PathBuf::from(path));
-            let normalized = V::normalize_path(&path)?;
+            let unexplored_paths = node
+                .extract_argument_string(
+                    0,
+                    ErrorContext {
+                        source_info: callee_source_info.clone(),
+                        context: "document definition".into(),
+                        not_found_help: Some("".into()),
+                        wrong_type_help: Some("".into()),
+                    },
+                )
+                .and_then(|path| {
+                    let path = current_directory.as_ref().join(PathBuf::from(path));
+                    let normalized = V::normalize_path(&path)?;
 
-            Ok((path, normalized))
-        });
+                    Ok((path, normalized))
+                });
 
-    match unexplored_paths {
-        Ok((_cyclic_path, ref canonical_path)) if visited_documents.contains(canonical_path) => {
-            // TODO(anri):
-            // Emit a warning about there being a cycle between definitions.
-            // Requires warnings to not be treated as errors.
-            //
-            //
-            // let path_as_str = cyclic_path.to_string_lossy();
-            // Some(Err(ParsingError::from(Diagnostic {
-            //     message: format!(
-            //         "cyclic reference between {IMPORT_NODE_NAME}s, tried to {IMPORT_NODE_NAME} \"{path_as_str}\""
-            //     ),
-            //     severity: Severity::Advice,
-            //     source_info: callee_source_info,
-            //     span: node.span(),
-            //     help: None,
-            //     label: None,
-            //     related: vec![],
-            // })))
+            match unexplored_paths {
+                Ok((cyclic_path, canonical_path))
+                    if visited_documents.contains(&canonical_path) =>
+                {
+                    let cyclic_path = cyclic_path.to_string_lossy();
+                    let source_path = callee_source_info.name.clone();
 
-            None
-        }
-        _ => Some(unexplored_paths),
-    }
+                    warnings.push(Diagnostic {
+                        message: format!("cycle detected when reading \"{cyclic_path}\""),
+                        severity: Severity::Warning,
+                        source_info: callee_source_info.clone(),
+                        span: node.span(),
+                        help: Some(format!("{cyclic_path} imports\n-> {source_path}, which imports\n--> {cyclic_path} and so on...\nThe parser will parse \"{cyclic_path}\" once, however keep in mind that this cycle implies that the definitions _may_ have cycles between datatypes.")),
+                        label: Some("this file imports the current one".to_owned()),
+                        related: vec![
+                            Diagnostic {
+                                message: "break the cycle between `import`s".to_owned(),
+                                severity: Severity::Advice,
+                                source_info: callee_source_info.clone(),
+                                span: node.span(),
+                                help: None,
+                                label: None,
+                                related: vec![],
+                            },
+                        ]
+                    });
+
+                    None
+                }
+
+                _ => Some(unexplored_paths),
+            }
+        })
+        .collect()
 }
 
 fn parse_single_document<S: AsRef<str>, V: Vfs>(
@@ -495,12 +513,14 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
     filepath: &PathBuf,
     visited_documents: &mut HashSet<VfsPathBuf>,
     opts: &ParserOpts<V>,
-) -> Result<RawDocument, ParsingError> {
+) -> Result<(RawDocument, ParsingWarnings), ParsingError> {
     let kdl_document = KdlDocument::parse_v2(document.as_ref())?;
 
     let source_info = Arc::new(SourceInfo::new(filepath.to_string_lossy(), document));
 
-    let mut all_diagnostics = vec![];
+    let mut erroring_diagnostics = vec![];
+
+    let mut non_erroring_diagnostics = vec![];
 
     let mut raw_document = RawDocument {
         filepath: Some(filepath.into()),
@@ -517,61 +537,72 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
             severity: Severity::Warning,
             source_info: source_info.clone(),
             span: kdl_document.span(),
-            help: Some("where is everyone?".to_owned()),
+            help: Some("add some definitions".to_owned()),
             label: None,
             related: vec![],
         };
 
-        all_diagnostics.push(diag);
+        non_erroring_diagnostics.push(diag);
 
-        return Err(ParsingError::Diagnostics {
-            source_info,
-            diagnostics: all_diagnostics,
-        });
+        return Ok((
+            raw_document,
+            ParsingWarnings {
+                source_info: source_info.clone(),
+                diagnostics: non_erroring_diagnostics,
+            },
+        ));
     }
 
     let current_directory = filepath
         .parent()
         .map_or_else(|| PathBuf::from(""), ToOwned::to_owned);
 
-    let unvisited_includes = children
-        .iter()
-        .filter_map(|node| {
-            extract_unvisited_filepath::<V>(
-                node,
-                source_info.clone(),
-                visited_documents,
-                &current_directory,
-            )
-        })
-        .collect::<Result<Vec<_>, ParsingError>>()?;
+    let unvisited_includes = extract_unvisited_filepaths::<V, _>(
+        children,
+        &source_info,
+        visited_documents,
+        &current_directory,
+        &mut non_erroring_diagnostics,
+    )?;
 
     for (path, canonical_path) in unvisited_includes {
         let other_document = opts.vfs.read_file_to_string(&V::normalize_path(&path)?)?;
         visited_documents.insert(canonical_path);
-        let other_root = parse_single_document(other_document, &path, visited_documents, opts)?;
+        let (other_root, other_diagnostics) =
+            parse_single_document(other_document, &path, visited_documents, opts)?;
+
         raw_document
             .json_definitions
             .extend(other_root.json_definitions);
+
         raw_document
             .http_definitions
             .extend(other_root.http_definitions);
+
         raw_document
             .enum_definitions
             .extend(other_root.enum_definitions);
+
+        non_erroring_diagnostics.extend(other_diagnostics.diagnostics);
     }
 
     {
         let diagnostics = parse_all_definitions(&mut raw_document, children, &source_info)?;
-        all_diagnostics.extend(diagnostics);
+        erroring_diagnostics.extend(diagnostics);
     }
 
-    if all_diagnostics.is_empty() {
-        Ok(raw_document)
+    if erroring_diagnostics.is_empty() {
+        Ok((
+            raw_document,
+            ParsingWarnings {
+                source_info,
+                diagnostics: non_erroring_diagnostics,
+            },
+        ))
     } else {
         Err(ParsingError::Diagnostics {
             source_info,
-            diagnostics: all_diagnostics,
+            diagnostics: erroring_diagnostics,
         })
     }
 }
@@ -590,7 +621,7 @@ pub fn raw_parse_kdl<S: AsRef<str>, V: Vfs>(
     document: S,
     filepath: &PathBuf,
     opts: &ParserOpts<V>,
-) -> Result<RawDocument, ParsingError> {
+) -> Result<(RawDocument, ParsingWarnings), ParsingError> {
     let root_canonical_path = V::normalize_path(filepath)?;
 
     let mut visited_documents = HashSet::from_iter([root_canonical_path]);

@@ -1,0 +1,5 @@
+import "example-2.kdl"
+
+json Test {
+    doc "aaa"
+}

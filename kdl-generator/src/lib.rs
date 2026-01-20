@@ -14,7 +14,7 @@ pub mod vfs;
 use std::path::PathBuf;
 
 use crate::{
-    kdl_parser::{ParserOpts, ParsingError},
+    kdl_parser::{ParserOpts, ParsingError, ParsingWarnings},
     vfs::Vfs,
 };
 
@@ -61,10 +61,10 @@ pub fn parse_kdl<S: AsRef<str>, V: Vfs>(
     document: S,
     filepath: &PathBuf,
     opts: &ParserOpts<V>,
-) -> Result<intermediate::DefinitionRegistry, ParsingError> {
-    let raw_document = kdl_parser::raw_parse_kdl(document, filepath, opts)?;
+) -> Result<(intermediate::DefinitionRegistry, ParsingWarnings), ParsingError> {
+    let (raw_document, warnings) = kdl_parser::raw_parse_kdl(document, filepath, opts)?;
 
     let document = kdl_parser::validate(raw_document)?;
 
-    Ok(kdl_parser::document_to_definitions(document))
+    Ok((kdl_parser::document_to_definitions(document), warnings))
 }

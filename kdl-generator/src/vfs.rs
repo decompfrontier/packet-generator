@@ -2,7 +2,7 @@
 //! arbitrary sources.
 
 use std::{
-    borrow::Borrow,
+    borrow::{Borrow, Cow},
     collections::HashMap,
     ops::Deref,
     path::{Path, PathBuf},
@@ -54,6 +54,13 @@ impl Deref for VfsPathBuf {
 impl Borrow<VfsPath> for VfsPathBuf {
     fn borrow(&self) -> &VfsPath {
         self
+    }
+}
+
+impl VfsPathBuf {
+    #[must_use]
+    pub fn to_string_lossy(&self) -> Cow<'_, str> {
+        self.0.to_string_lossy()
     }
 }
 

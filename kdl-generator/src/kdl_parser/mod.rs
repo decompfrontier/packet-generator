@@ -252,6 +252,38 @@ impl miette::Diagnostic for ParsingError {
     }
 }
 
+#[derive(Debug, thiserror::Error)]
+#[error("warnings/advices generated during parsing")]
+pub struct ParsingWarnings {
+    source_info: Arc<SourceInfo>,
+    diagnostics: Vec<Diagnostic>,
+}
+
+impl ParsingWarnings {
+    #[must_use]
+    pub const fn are_there_any(&self) -> bool {
+        !self.diagnostics.is_empty()
+    }
+}
+
+impl miette::Diagnostic for ParsingWarnings {
+    fn source_code(&self) -> Option<&dyn SourceCode> {
+        Some(&self.source_info)
+    }
+
+    fn severity(&self) -> Option<Severity> {
+        Some(Severity::Warning)
+    }
+
+    fn related<'a>(&'a self) -> Option<Box<dyn Iterator<Item = &'a dyn miette::Diagnostic> + 'a>> {
+        Some(Box::new(
+            self.diagnostics
+                .iter()
+                .map(|d| d as &dyn miette::Diagnostic),
+        ))
+    }
+}
+
 /// Common options for the parser.
 ///
 /// The trait parameter `V` specify which VFS to use.
