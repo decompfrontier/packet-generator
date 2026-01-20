@@ -19,7 +19,7 @@ pub struct CxxOptions {
     cxx: (),
 
     #[bpaf(external(cxx_serializer))]
-    serializer: CxxSerializer,
+    pub serializer: CxxSerializer,
 }
 
 /// The tool can generate bindings for one of the following programming languages.
@@ -36,7 +36,7 @@ pub struct RustOptions {
     rust: (),
 
     #[bpaf(external(rust_serializer))]
-    serializer: RustSerializer,
+    pub serializer: RustSerializer,
 }
 
 /// The tool can generate bindings for one of the following programming languages.

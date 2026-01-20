@@ -1,10 +1,12 @@
-use std::{fs::File, io::Read, path::PathBuf};
+use std::{fs::File, io::Read, path::PathBuf, sync::Arc};
 
 use miette::Context;
 use packet_generator::{
-    generators::GenerationError,
+    generators::{self, GenerationError, PrimaryGenerator, SecondaryGenerator},
     kdl_parser::{Diagnostic, ParserOpts, ParsingError},
 };
+
+use crate::cli::CxxSerializer;
 
 mod cli;
 
@@ -50,9 +52,34 @@ fn main() -> Result<(), miette::Report> {
             println!("Registry: {:#?}", definitions);
         }
 
-        cli::CliArgs::Generate { input, .. } => {
-            let path = PathBuf::from(input);
-            let mut file = File::open(&path).unwrap();
+        cli::CliArgs::Generate { input, language, output_directory: _ } => {
+            let primary: Arc<dyn PrimaryGenerator>;
+            let mut generators: Vec<Arc<dyn SecondaryGenerator>> = Vec::new();
+
+            match language {
+                cli::ProgrammingLanguage::Cxx(options) => {
+                    primary = Arc::new(generators::CxxGenerator{});
+                    generators.push(primary);
+                    match options.serializer {
+                        CxxSerializer::Glaze => {
+                            generators.push(Arc::new(generators::GlazeGenerator{}));
+                        }
+                        CxxSerializer::Simdjson => {
+                            return Err(miette::miette!("Simdjson secondary generator for Cxx is not implemented!"))
+                        }
+                    }
+                }
+
+                cli::ProgrammingLanguage::Rust(_serializer) => {
+                    return Err(miette::miette!("Rust generator is currently not implemented!"))
+                }
+            }
+
+            let path = PathBuf::from(input.clone());
+            let mut file = File::open(&path)
+                .map_err(|e| miette::miette!(e))
+                .wrap_err(format!("Unable to open source file: {input}"))?;
+
             let mut doc_str = String::new();
             let _ = file.read_to_string(&mut doc_str);
             let (doc, warnings) = packet_generator::kdl_parser::raw_parse_kdl(
@@ -71,16 +98,32 @@ fn main() -> Result<(), miette::Report> {
             let doc = packet_generator::kdl_parser::validate(doc)?;
 
             let definitions = packet_generator::kdl_parser::document_to_definitions(doc);
+            let mut source_output = String::new();
 
-            // TODO(arves): Fix cli
-            //let source = packet_generator::generators::generate_cxx(&definitions)
-            let source = packet_generator::generators::generate_glaze(&definitions)
-                .map_err(|e| miette::miette!(e))
-                .wrap_err("error in source code generation")?;
+            for ele in &generators {
+                source_output.push_str(ele.get_prefix().as_str());
+                source_output.push('\n');
+            }
 
-            //for source in sources {
-            println!("\n// {}\n{}\n\n", source.filename, source.content);
-            //}
+            source_output.push('\n');
+
+            for ele in &generators {
+                let content = ele.step(&definitions)
+                    .map_err(|e| miette::miette!(e))
+                    .wrap_err("error in source code generation")?;
+                
+                source_output.push_str(content.as_str());
+                source_output.push('\n');
+            }
+
+            source_output.push('\n');
+
+            for ele in &generators {
+                source_output.push_str(ele.get_suffix().as_str());
+                source_output.push('\n');
+            }
+
+            println!("{}\n", source_output)
         }
     }
 

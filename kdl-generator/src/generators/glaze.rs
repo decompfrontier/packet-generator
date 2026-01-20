@@ -2,7 +2,7 @@ use itertools::Itertools;
 use rootcause::Report;
 use stringcase::Caser;
 
-use crate::generators::GenerationError;
+use crate::generators::{GenerationError, SecondaryGenerator};
 
 use crate::intermediate::{
     ArraySeparator, BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, Json,
@@ -10,12 +10,7 @@ use crate::intermediate::{
 
 const TAB: &str = "    ";
 
-// TODO(arves): Move this to mod.rs / remove...
-#[derive(Debug, Clone, Default)]
-pub struct CxxSourceCode {
-    pub filename: String,
-    pub content: String,
-}
+pub struct GlazeGenerator;
 
 const fn get_glz_array_separator(sep: ArraySeparator) -> char {
     match sep {
@@ -109,26 +104,24 @@ struct glz::meta<{struct_name}> {{
     Ok(content)
 }
 
-pub fn generate_glaze(
-    registry: &DefinitionRegistry,
-) -> Result<CxxSourceCode, Report<GenerationError>> {
-    let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
-        .all_definitions()
-        .filter_map(|def| match **def {
-            Definition::Json(ref json) => Some(generate_json_cxx(registry, json)),
-            _ => None,
-        })
-        .collect();
+impl SecondaryGenerator for GlazeGenerator {
+    fn get_prefix(&self) -> String {
+        "#include <pkgen_glaze_helpers.hpp>".to_owned()
+    }
+    
+    fn step(
+        &self,
+        registry: &DefinitionRegistry
+    ) -> Result<String, Report<GenerationError>> {
+        let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
+            .all_definitions()
+            .filter_map(|def| match **def {
+                Definition::Json(ref json) => Some(generate_json_cxx(registry, json)),
+                _ => None,
+            })
+            .collect();
 
-    let content = generated_sources?.join("\n\n");
-
-    Ok(CxxSourceCode {
-        filename: "test.hpp".to_owned(), // TODO(arves): test -> registry.name?
-        content: format!(
-            "#pragma once
-#include <pkgen_glaze_helpers.hpp>
-
-{content}"
-        ),
-    })
+        let content = generated_sources?.join("\n\n");
+        Ok(content)
+    }
 }

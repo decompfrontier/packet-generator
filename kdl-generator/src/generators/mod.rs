@@ -4,10 +4,29 @@
 //! this modules generates the source files for parsing Brave Frontier's
 //! packets in a given language.
 
-use crate::intermediate::DataType;
+use crate::intermediate::{DataType, DefinitionRegistry};
 
 mod cpp;
 mod glaze;
+
+pub trait SecondaryGenerator {
+    fn get_prefix(&self) -> String {
+        String::new()
+    }
+
+    fn get_suffix(&self) -> String {
+        String::new()
+    }
+
+    fn step(
+        &self,
+        registry: &DefinitionRegistry
+    ) -> Result<String, Report<GenerationError>>;
+}
+
+pub trait PrimaryGenerator: SecondaryGenerator {
+    fn get_output_file_name(&self, name: &str) -> String;
+}
 
 /// Error type concerning problem when generating source files.
 #[derive(Debug, Clone, thiserror::Error)]
@@ -41,7 +60,8 @@ pub enum GenerationError {
     },
 }
 
-// TODO(arves): Make a function that takes some enum about the json generator and export it there,
-//              rather than doing this pub use stuff that I'm doing right now
-pub use cpp::generate_cxx;
-pub use glaze::generate_glaze;
+use rootcause::Report;
+
+pub use cpp::CxxGenerator;
+pub use glaze::GlazeGenerator;
+

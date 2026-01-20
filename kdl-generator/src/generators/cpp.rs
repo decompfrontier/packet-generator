@@ -2,7 +2,7 @@ use itertools::Itertools;
 use rootcause::Report;
 use stringcase::Caser;
 
-use crate::generators::GenerationError;
+use crate::generators::{GenerationError, PrimaryGenerator, SecondaryGenerator};
 
 use crate::intermediate::{DataType, Definition, DefinitionRegistry, IntEnum, Json, StringEnum};
 
@@ -12,11 +12,7 @@ const AUTOGENERATION_NOTICE: &str = "
 
 const TAB: &str = "    ";
 
-#[derive(Debug, Clone, Default)]
-pub struct CxxSourceCode {
-    pub filename: String,
-    pub content: String,
-}
+pub struct CxxGenerator;
 
 /// Converts a `DataType` to types recognized by C++ with Glaze.
 fn convert_datatype(
@@ -117,7 +113,6 @@ fn generate_int_enum_cxx(
     _registry: &DefinitionRegistry,
     int_enum: &IntEnum,
 ) -> Result<String, Report<GenerationError>> {
-    let filename = format!("{}.h", int_enum.name.to_pascal_case());
     let start = int_enum.start;
 
     let mut variants_iter = int_enum.variants.iter().sorted_unstable_by_key(|a| a.index);
@@ -188,29 +183,35 @@ namespace {} {{
     Ok(content)
 }
 
-pub fn generate_cxx(
-    registry: &DefinitionRegistry,
-) -> Result<CxxSourceCode, Report<GenerationError>> {
-    let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
-        .all_definitions()
-        .map(|def| match **def {
-            Definition::Json(ref json) => generate_json_cxx(registry, json),
-            Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
-            Definition::StringEnum(ref string_enum) => generate_str_enum_cxx(registry, string_enum),
-        })
-        .collect();
+impl PrimaryGenerator for CxxGenerator {
+    fn get_output_file_name(&self, name: &str) -> String {
+        format!("{name}.hpp")
+    }
+}
 
-    let content = generated_sources?.join("\n\n");
-
-    Ok(CxxSourceCode {
-        filename: "test.hpp".to_owned(), // TODO(arves): test -> registry.name?
-        content: format!(
-            "#pragma once
+impl SecondaryGenerator for CxxGenerator {
+    fn get_prefix(&self) -> String {
+        format!(r#"#pragma once
 #include <pkgen_helpers.hpp>
 
 {AUTOGENERATION_NOTICE}
+"#)
+    }
 
-{content}"
-        ),
-    })
+    fn step(&self,
+        registry: &DefinitionRegistry
+    ) -> Result<String, Report<GenerationError>>
+    {
+        let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
+            .all_definitions()
+            .map(|def| match **def {
+                Definition::Json(ref json) => generate_json_cxx(registry, json),
+                Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
+                Definition::StringEnum(ref string_enum) => generate_str_enum_cxx(registry, string_enum),
+            })
+            .collect();
+
+        let content = generated_sources?.join("\n\n");
+        Ok(content)
+    }
 }
