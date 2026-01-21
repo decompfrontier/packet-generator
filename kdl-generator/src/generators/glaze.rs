@@ -1,5 +1,3 @@
-use std::borrow::Cow;
-
 use itertools::Itertools;
 use stringcase::Caser;
 
@@ -17,10 +15,6 @@ pub struct GlazeGenerator;
 impl Addon for GlazeGenerator {
     type For = CxxGenerator;
 
-    fn preamble(&self, _registry: &DefinitionRegistry) -> Option<std::borrow::Cow<'static, str>> {
-        Some(Cow::Borrowed("#include <pkgen_glaze_helpers.hpp>"))
-    }
-
     fn content(
         &self,
         registry: &DefinitionRegistry,
@@ -34,7 +28,22 @@ impl Addon for GlazeGenerator {
             .collect();
 
         match generated_sources {
-            Ok(content) => Some(Ok(content.join("\n\n").into())),
+            Ok(content) => {
+                let inner = content.join("\n\n");
+
+                let content = format!(
+                    "// Glaze definitions
+#if __has_include(<glaze/glaze.hpp>)
+#include <pkgen_glaze_helpers.hpp>
+
+{inner}
+
+#endif // __has_include(<glaze/glaze.hpp>)
+        "
+                );
+
+                Some(Ok(content.into()))
+            }
             Err(e) => Some(Err(e)),
         }
     }
