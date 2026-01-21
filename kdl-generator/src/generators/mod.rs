@@ -10,6 +10,7 @@ use crate::intermediate::{DataType, DefinitionRegistry};
 
 mod cpp;
 mod glaze;
+mod utils;
 
 #[derive(Debug, Clone)]
 pub struct GeneratedSource {

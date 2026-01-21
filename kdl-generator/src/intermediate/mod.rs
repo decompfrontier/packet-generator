@@ -43,6 +43,7 @@ pub struct Json {
     pub name: String,
     pub hash_name: Option<String>,
     pub fields: BTreeSet<JsonField>,
+    pub doc: String,
 }
 
 impl Borrow<str> for Json {
@@ -58,6 +59,7 @@ pub struct JsonField {
     pub key: String,
     pub type_: DataType,
     pub optional: bool,
+    pub doc: String,
 }
 
 impl Borrow<str> for JsonField {
@@ -72,6 +74,7 @@ impl PartialEq for JsonField {
             && self.name == other.name
             && self.key == other.key
             && self.optional == other.optional
+            && self.doc == other.doc
     }
 }
 
@@ -103,12 +106,13 @@ impl Ord for JsonField {
 
 impl Json {
     #[must_use]
-    pub const fn new(name: String, index: usize, hash_name: Option<String>) -> Self {
+    pub const fn new(name: String, index: usize, hash_name: Option<String>, doc: String) -> Self {
         Self {
             index,
             name,
             hash_name,
             fields: BTreeSet::new(),
+            doc,
         }
     }
 
@@ -379,9 +383,15 @@ mod tests {
                 key: String::from("bar"),
                 type_: DataType::String,
                 optional: false,
+                doc: String::from("some documentation"),
             };
 
-            let mut s = Json::new(String::from("Foo"), 0, Some(String::from("avdsfdsf")));
+            let mut s = Json::new(
+                String::from("Foo"),
+                0,
+                Some(String::from("avdsfdsf")),
+                String::from("some documentation"),
+            );
             s.add_field(field);
 
             definitions.insert(Definition::Json(s));
@@ -398,9 +408,15 @@ mod tests {
                 key: String::from("bar"),
                 type_: DataType::Definition(foo_struct),
                 optional: false,
+                doc: String::from("some documentation"),
             };
 
-            let mut s = Json::new(String::from("Bar"), 1, Some(String::from("avfdsfdsf")));
+            let mut s = Json::new(
+                String::from("Bar"),
+                1,
+                Some(String::from("avfdsfdsf")),
+                String::from("some documentation"),
+            );
             s.add_field(field);
 
             definitions.insert(Definition::Json(s));

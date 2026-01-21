@@ -11,6 +11,10 @@ const AUTOGENERATION_NOTICE: &str = "
 
 const TAB: &str = "    ";
 
+fn split_documentation(doc: &str, indent_level: usize) -> String {
+    super::utils::split_documentation(doc, TAB, "///", indent_level)
+}
+
 #[derive(Debug)]
 pub struct CxxGenerator {
     addons: Vec<Box<dyn Addon<For = Self>>>,
@@ -180,15 +184,23 @@ fn generate_json_cxx(
         .map(|field| -> Result<String, GenerationError> {
             let datatype = convert_datatype(&field.type_, registry)?;
             let name = field.name.to_snake_case();
+            let doc = split_documentation(&field.doc, 0);
 
-            Ok(format!("{TAB}{datatype} {name};"))
+            Ok(format!(
+                "
+{TAB}{doc}
+{TAB}{datatype} {name};"
+            ))
         })
         .process_results(|mut x| x.join("\n"))?;
 
     let struct_name = json.name.to_pascal_case();
+    let struct_doc = split_documentation(&json.doc, 0);
 
     let content = format!(
-        "struct {struct_name} {{
+        "
+{struct_doc}
+struct {struct_name} {{
 {fields}
 }};"
     );
@@ -226,10 +238,10 @@ fn generate_int_enum_cxx(
         })
         .join(",\n");
 
-    let doc = &int_enum.doc;
+    let doc = split_documentation(&int_enum.doc, 0);
 
     let content = format!(
-        "/// {doc}
+        "{doc}
 enum class {} {{
 {first_variant}
 {variants_str}
@@ -256,10 +268,10 @@ fn generate_str_enum_cxx(
         })
         .join("\n");
 
-    let doc = &str_enum.doc;
+    let doc = split_documentation(&str_enum.doc, 0);
 
     let content = format!(
-        "/// {doc}
+        "{doc}
 namespace {} {{
 {TAB}using Type = std::string;
 {variants}

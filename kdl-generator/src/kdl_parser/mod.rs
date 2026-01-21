@@ -480,7 +480,7 @@ mod document_to_intermediate {
         structs: Vec<SchemaJsonDefinition>,
     ) {
         for struct_ in structs {
-            let mut struct_def = Json::new(struct_.name, struct_.index, struct_.hash);
+            let mut struct_def = Json::new(struct_.name, struct_.index, struct_.hash, struct_.doc);
 
             for field in struct_.fields {
                 struct_def.add_field(JsonField {
@@ -489,6 +489,7 @@ mod document_to_intermediate {
                     key: field.key.clone(),
                     type_: convert_json_datatype(&field, registry),
                     optional: field.optional,
+                    doc: field.doc,
                 });
             }
 
