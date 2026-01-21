@@ -52,22 +52,6 @@ pub trait Addon: Debug {
     }
 }
 
-pub trait SecondaryGenerator {
-    fn get_prefix(&self) -> String {
-        String::new()
-    }
-
-    fn get_suffix(&self) -> String {
-        String::new()
-    }
-
-    fn step(&self, registry: &DefinitionRegistry) -> Result<String, GenerationError>;
-}
-
-pub trait PrimaryGenerator: SecondaryGenerator {
-    fn get_output_file_name(&self, name: &str) -> String;
-}
-
 /// Error type concerning problem when generating source files.
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum GenerationError {

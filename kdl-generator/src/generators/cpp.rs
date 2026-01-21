@@ -1,10 +1,7 @@
 use itertools::Itertools;
 use stringcase::Caser;
 
-use crate::generators::{
-    Addon, GeneratedSource, GenerationError, Generator, PrimaryGenerator, SecondaryGenerator,
-    WithAddons,
-};
+use crate::generators::{Addon, GeneratedSource, GenerationError, Generator, WithAddons};
 
 use crate::intermediate::{DataType, Definition, DefinitionRegistry, IntEnum, Json, StringEnum};
 
@@ -271,38 +268,4 @@ namespace {} {{
     );
 
     Ok(content)
-}
-
-impl PrimaryGenerator for CxxGenerator {
-    fn get_output_file_name(&self, name: &str) -> String {
-        format!("{name}.hpp")
-    }
-}
-
-impl SecondaryGenerator for CxxGenerator {
-    fn get_prefix(&self) -> String {
-        format!(
-            r#"#pragma once
-#include <pkgen_helpers.hpp>
-
-{AUTOGENERATION_NOTICE}
-"#
-        )
-    }
-
-    fn step(&self, registry: &DefinitionRegistry) -> Result<String, GenerationError> {
-        let generated_sources: Result<Vec<String>, GenerationError> = registry
-            .all_definitions()
-            .map(|def| match **def {
-                Definition::Json(ref json) => generate_json_cxx(registry, json),
-                Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
-                Definition::StringEnum(ref string_enum) => {
-                    generate_str_enum_cxx(registry, string_enum)
-                }
-            })
-            .collect();
-
-        let content = generated_sources?.join("\n\n");
-        Ok(content)
-    }
 }

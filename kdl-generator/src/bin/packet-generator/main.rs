@@ -1,13 +1,10 @@
 #![forbid(clippy::unwrap_used, clippy::unwrap_in_result)]
 
-use std::{fs::File, io::Read, path::PathBuf, sync::Arc};
+use std::path::PathBuf;
 
 use miette::Context;
 use packet_generator::{
-    generators::{
-        self, CxxGenerator, GenerationError, Generator, GlazeGenerator, PrimaryGenerator,
-        SecondaryGenerator, WithAddons,
-    },
+    generators::{CxxGenerator, GenerationError, Generator, GlazeGenerator, WithAddons},
     kdl_parser::{Diagnostic, ParserOpts, ParsingError},
 };
 
@@ -34,9 +31,11 @@ fn main() -> Result<(), miette::Report> {
     match args {
         cli::CliArgs::DumpRepresentation { input } => {
             let path = PathBuf::from(input);
-            let mut file = File::open(&path).unwrap();
-            let mut doc_str = String::new();
-            let _ = file.read_to_string(&mut doc_str);
+
+            let doc_str = std::fs::read_to_string(&path)
+                .map_err(|e| miette::miette!(e))
+                .wrap_err_with(|| format!("cannot open file: {}", path.display()))?;
+
             let (doc, warnings) = packet_generator::kdl_parser::raw_parse_kdl(
                 doc_str,
                 &path,
@@ -90,12 +89,11 @@ fn main() -> Result<(), miette::Report> {
             }
 
             let path = PathBuf::from(input.clone());
-            let mut file = File::open(&path)
-                .map_err(|e| miette::miette!(e))
-                .wrap_err(format!("Unable to open source file: {input}"))?;
 
-            let mut doc_str = String::new();
-            let _ = file.read_to_string(&mut doc_str);
+            let doc_str = std::fs::read_to_string(&path)
+                .map_err(|e| miette::miette!(e))
+                .wrap_err_with(|| format!("cannot open file: {}", path.display()))?;
+
             let (doc, warnings) = packet_generator::kdl_parser::raw_parse_kdl(
                 doc_str,
                 &path,
@@ -109,34 +107,6 @@ fn main() -> Result<(), miette::Report> {
             let doc = packet_generator::kdl_parser::validate(doc)?;
 
             let definitions = packet_generator::kdl_parser::document_to_definitions(doc);
-
-            /*
-            let mut source_output = String::new();
-
-            for ele in &generators {
-                source_output.push_str(ele.get_prefix().as_str());
-                source_output.push('\n');
-            }
-
-            source_output.push('\n');
-
-            for ele in &generators {
-                let content = ele
-                    .step(&definitions)
-                    .map_err(|e| miette::miette!(e))
-                    .wrap_err("error in source code generation")?;
-
-                source_output.push_str(content.as_str());
-                source_output.push('\n');
-            }
-
-            source_output.push('\n');
-
-            for ele in &generators {
-                source_output.push_str(ele.get_suffix().as_str());
-                source_output.push('\n');
-            }
-            */
 
             for generator in &generators {
                 let source_output = generator

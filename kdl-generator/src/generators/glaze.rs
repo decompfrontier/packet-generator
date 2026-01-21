@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use itertools::Itertools;
 use stringcase::Caser;
 
-use crate::generators::{Addon, CxxGenerator, GenerationError, SecondaryGenerator};
+use crate::generators::{Addon, CxxGenerator, GenerationError};
 
 use crate::intermediate::{
     ArraySeparator, BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, Json,
@@ -129,23 +129,4 @@ struct glz::meta<{struct_name}> {{
     );
 
     Ok(content)
-}
-
-impl SecondaryGenerator for GlazeGenerator {
-    fn get_prefix(&self) -> String {
-        "#include <pkgen_glaze_helpers.hpp>".to_owned()
-    }
-
-    fn step(&self, registry: &DefinitionRegistry) -> Result<String, GenerationError> {
-        let generated_sources: Result<Vec<String>, GenerationError> = registry
-            .all_definitions()
-            .filter_map(|def| match **def {
-                Definition::Json(ref json) => Some(generate_json_cxx(registry, json)),
-                _ => None,
-            })
-            .collect();
-
-        let content = generated_sources?.join("\n\n");
-        Ok(content)
-    }
 }
