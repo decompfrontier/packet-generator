@@ -43,7 +43,7 @@ use crate::{
 /// # let opts = ParserOpts::new(filemap);
 ///
 /// match packet_generator::parse_kdl(doc, &PathBuf::from("foo.kdl"), &opts) {
-///     Ok(registry) => {
+///     Ok((registry, _warnings)) => {
 ///         println!("{:#?}", registry.find("Foo"));
 ///     },
 ///

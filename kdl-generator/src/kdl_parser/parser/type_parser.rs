@@ -584,36 +584,36 @@ mod combinator_solution {
         #[test]
         fn can_parse_string_encoded_i32() {
             let mut s = "i32::str";
-            let val = parse_datatype(&mut s).unwrap();
+            let val = parse_datatype(&mut s);
             assert!(matches!(
                 val,
-                DataType::I32 {
+                Ok(DataType::I32 {
                     encoding: TypeEncoding::String
-                }
+                })
             ));
         }
 
         #[test]
         fn can_parse_string_encoded_i32_with_extra() {
             let mut s = "i32::{str, foo}";
-            let val = parse_datatype(&mut s).unwrap();
+            let val = parse_datatype(&mut s);
             assert!(matches!(
                 val,
-                DataType::I32 {
+                Ok(DataType::I32 {
                     encoding: TypeEncoding::String
-                }
+                })
             ));
         }
 
         #[test]
         fn can_parse_int_encoded_i32() {
             let mut s = "i32::int";
-            let val = parse_datatype(&mut s).unwrap();
+            let val = parse_datatype(&mut s);
             assert!(matches!(
                 val,
-                DataType::I32 {
+                Ok(DataType::I32 {
                     encoding: TypeEncoding::Int
-                }
+                })
             ));
         }
 
@@ -627,8 +627,8 @@ mod combinator_solution {
         #[test]
         fn can_parse_normal_arrays() {
             let mut s = "[i32::int]";
-            let val = parse_datatype(&mut s).unwrap();
-            assert!(matches!(val, DataType::Array { .. }));
+            let val = parse_datatype(&mut s);
+            assert!(matches!(val, Ok(DataType::Array { .. })));
         }
 
         #[test]
@@ -680,8 +680,8 @@ mod combinator_solution {
         #[test]
         fn can_parse_datetime() {
             let mut s = "datetime";
-            let val = parse_datatype(&mut s).unwrap();
-            assert!(matches!(val, DataType::Datetime));
+            let val = parse_datatype(&mut s);
+            assert!(matches!(val, Ok(DataType::Datetime)));
         }
 
         #[test]
@@ -694,8 +694,8 @@ mod combinator_solution {
         #[test]
         fn can_parse_custom_type() {
             let mut s = "Foo";
-            let val = parse_datatype(&mut s).unwrap();
-            assert!(matches!(val, DataType::Custom(..)));
+            let val = parse_datatype(&mut s);
+            assert!(matches!(val, Ok(DataType::Custom(..))));
         }
 
         #[test]

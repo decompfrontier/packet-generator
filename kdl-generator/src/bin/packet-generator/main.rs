@@ -1,3 +1,5 @@
+#![forbid(clippy::unwrap_used, clippy::unwrap_in_result)]
+
 use std::{fs::File, io::Read, path::PathBuf, sync::Arc};
 
 use miette::Context;
@@ -52,26 +54,34 @@ fn main() -> Result<(), miette::Report> {
             println!("Registry: {:#?}", definitions);
         }
 
-        cli::CliArgs::Generate { input, language, output_directory: _ } => {
+        cli::CliArgs::Generate {
+            input,
+            language,
+            output_directory: _,
+        } => {
             let primary: Arc<dyn PrimaryGenerator>;
             let mut generators: Vec<Arc<dyn SecondaryGenerator>> = Vec::new();
 
             match language {
                 cli::ProgrammingLanguage::Cxx(options) => {
-                    primary = Arc::new(generators::CxxGenerator{});
+                    primary = Arc::new(generators::CxxGenerator {});
                     generators.push(primary);
                     match options.serializer {
                         CxxSerializer::Glaze => {
-                            generators.push(Arc::new(generators::GlazeGenerator{}));
+                            generators.push(Arc::new(generators::GlazeGenerator {}));
                         }
                         CxxSerializer::Simdjson => {
-                            return Err(miette::miette!("Simdjson secondary generator for Cxx is not implemented!"))
+                            return Err(miette::miette!(
+                                "Simdjson secondary generator for Cxx is not implemented!"
+                            ));
                         }
                     }
                 }
 
                 cli::ProgrammingLanguage::Rust(_serializer) => {
-                    return Err(miette::miette!("Rust generator is currently not implemented!"))
+                    return Err(miette::miette!(
+                        "Rust generator is currently not implemented!"
+                    ));
                 }
             }
 
@@ -90,7 +100,7 @@ fn main() -> Result<(), miette::Report> {
 
             if warnings.are_there_any() {
                 let warnings = miette::Report::from(warnings);
-                println!("{warnings}");
+                println!("{warnings:?}");
             }
 
             println!("Parser: {:#?}", doc);
@@ -108,10 +118,11 @@ fn main() -> Result<(), miette::Report> {
             source_output.push('\n');
 
             for ele in &generators {
-                let content = ele.step(&definitions)
+                let content = ele
+                    .step(&definitions)
                     .map_err(|e| miette::miette!(e))
                     .wrap_err("error in source code generation")?;
-                
+
                 source_output.push_str(content.as_str());
                 source_output.push('\n');
             }
