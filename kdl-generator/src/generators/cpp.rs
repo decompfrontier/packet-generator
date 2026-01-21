@@ -1,8 +1,10 @@
 use itertools::Itertools;
-use rootcause::Report;
 use stringcase::Caser;
 
-use crate::generators::{GenerationError, PrimaryGenerator, SecondaryGenerator};
+use crate::generators::{
+    Addon, GeneratedSource, GenerationError, Generator, PrimaryGenerator, SecondaryGenerator,
+    WithAddons,
+};
 
 use crate::intermediate::{DataType, Definition, DefinitionRegistry, IntEnum, Json, StringEnum};
 
@@ -12,7 +14,95 @@ const AUTOGENERATION_NOTICE: &str = "
 
 const TAB: &str = "    ";
 
-pub struct CxxGenerator;
+#[derive(Debug)]
+pub struct CxxGenerator {
+    addons: Vec<Box<dyn Addon<For = Self>>>,
+    _private: (),
+}
+
+impl Default for CxxGenerator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl CxxGenerator {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            addons: vec![],
+            _private: (),
+        }
+    }
+}
+
+impl Generator for CxxGenerator {
+    fn generate(
+        &self,
+        registry: &DefinitionRegistry,
+        initial_filename: &str,
+    ) -> Result<super::GeneratedSource, GenerationError> {
+        let generated_sources: Result<Vec<String>, GenerationError> = registry
+            .all_definitions()
+            .map(|def| match **def {
+                Definition::Json(ref json) => generate_json_cxx(registry, json),
+                Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
+                Definition::StringEnum(ref string_enum) => {
+                    generate_str_enum_cxx(registry, string_enum)
+                }
+            })
+            .collect();
+
+        let mut content = format!(
+            r#"#pragma once
+
+#include <pkgen_helpers.hpp>
+
+{AUTOGENERATION_NOTICE}
+
+"#
+        );
+
+        for addon in &self.addons {
+            if let Some(preamble) = addon.preamble(registry) {
+                content.push_str(&preamble);
+                content.push_str("\n\n");
+            }
+        }
+
+        content.push_str(&generated_sources?.join("\n\n"));
+        content.push_str("\n\n");
+
+        for addon in &self.addons {
+            if let Some(addon_content) = addon.content(registry) {
+                content.push_str(&addon_content?);
+                content.push('\n');
+            }
+        }
+
+        for addon in &self.addons {
+            if let Some(postamble) = addon.postamble(registry) {
+                content.push_str(&postamble);
+                content.push_str("\n\n");
+            }
+        }
+
+        Ok(GeneratedSource {
+            filename: format!("{}.hpp", initial_filename),
+            content,
+        })
+    }
+}
+
+impl WithAddons for CxxGenerator {
+    fn add_addon<T>(&mut self, addon: T)
+    where
+        T: super::Addon<For = Self> + 'static,
+        Self: Sized,
+    {
+        self.addons.push(Box::new(addon));
+    }
+}
 
 /// Converts a `DataType` to types recognized by C++.
 fn convert_datatype(
@@ -81,7 +171,7 @@ fn convert_datatype(
 fn generate_json_cxx(
     registry: &DefinitionRegistry,
     json: &Json,
-) -> Result<String, Report<GenerationError>> {
+) -> Result<String, GenerationError> {
     // TODO(anri):
     // Calculate the approximate sizes of the C++ types and re-order the fields
     //   to pack them more efficiently, from largest to smallest.
@@ -112,7 +202,7 @@ fn generate_json_cxx(
 fn generate_int_enum_cxx(
     _registry: &DefinitionRegistry,
     int_enum: &IntEnum,
-) -> Result<String, Report<GenerationError>> {
+) -> Result<String, GenerationError> {
     let start = int_enum.start;
 
     let mut variants_iter = int_enum.variants.iter().sorted_unstable_by_key(|a| a.index);
@@ -156,7 +246,7 @@ enum class {} {{
 fn generate_str_enum_cxx(
     _registry: &DefinitionRegistry,
     str_enum: &StringEnum,
-) -> Result<String, Report<GenerationError>> {
+) -> Result<String, GenerationError> {
     let variants = str_enum
         .variants
         .iter()
@@ -191,23 +281,24 @@ impl PrimaryGenerator for CxxGenerator {
 
 impl SecondaryGenerator for CxxGenerator {
     fn get_prefix(&self) -> String {
-        format!(r#"#pragma once
+        format!(
+            r#"#pragma once
 #include <pkgen_helpers.hpp>
 
 {AUTOGENERATION_NOTICE}
-"#)
+"#
+        )
     }
 
-    fn step(&self,
-        registry: &DefinitionRegistry
-    ) -> Result<String, Report<GenerationError>>
-    {
-        let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
+    fn step(&self, registry: &DefinitionRegistry) -> Result<String, GenerationError> {
+        let generated_sources: Result<Vec<String>, GenerationError> = registry
             .all_definitions()
             .map(|def| match **def {
                 Definition::Json(ref json) => generate_json_cxx(registry, json),
                 Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
-                Definition::StringEnum(ref string_enum) => generate_str_enum_cxx(registry, string_enum),
+                Definition::StringEnum(ref string_enum) => {
+                    generate_str_enum_cxx(registry, string_enum)
+                }
             })
             .collect();
 

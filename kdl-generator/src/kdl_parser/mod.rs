@@ -252,7 +252,7 @@ impl miette::Diagnostic for ParsingError {
     }
 }
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 #[error("warnings/advices generated during parsing")]
 pub struct ParsingWarnings {
     source_info: Arc<SourceInfo>,
@@ -263,6 +263,13 @@ impl ParsingWarnings {
     #[must_use]
     pub const fn are_there_any(&self) -> bool {
         !self.diagnostics.is_empty()
+    }
+
+    pub fn print_warnings_if_any(self) {
+        if !self.diagnostics.is_empty() {
+            let report = miette::Report::from(self);
+            println!("{report:?}");
+        }
     }
 }
 

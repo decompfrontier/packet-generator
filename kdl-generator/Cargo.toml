@@ -47,5 +47,6 @@ future-not-send = "warn"
 uninlined-format-args = "allow"
 wildcard-imports = "allow"
 too-many-lines = "allow"
+needless-raw-string-hashes = "allow"
 pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }

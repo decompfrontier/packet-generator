@@ -4,10 +4,53 @@
 //! this modules generates the source files for parsing Brave Frontier's
 //! packets in a given language.
 
+use std::{borrow::Cow, fmt::Debug};
+
 use crate::intermediate::{DataType, DefinitionRegistry};
 
 mod cpp;
 mod glaze;
+
+#[derive(Debug, Clone)]
+pub struct GeneratedSource {
+    pub filename: String,
+    pub content: String,
+}
+
+pub trait Generator {
+    /// # Errors
+    fn generate(
+        &self,
+        registry: &DefinitionRegistry,
+        initial_filename: &str,
+    ) -> Result<GeneratedSource, GenerationError>;
+}
+
+pub trait WithAddons {
+    fn add_addon<T>(&mut self, addon: T)
+    where
+        T: Addon<For = Self> + 'static,
+        Self: Sized;
+}
+
+pub trait Addon: Debug {
+    type For;
+
+    fn preamble(&self, _registry: &DefinitionRegistry) -> Option<Cow<'static, str>> {
+        None
+    }
+
+    fn content(
+        &self,
+        _registry: &DefinitionRegistry,
+    ) -> Option<Result<Cow<'static, str>, GenerationError>> {
+        None
+    }
+
+    fn postamble(&self, _registry: &DefinitionRegistry) -> Option<Cow<'static, str>> {
+        None
+    }
+}
 
 pub trait SecondaryGenerator {
     fn get_prefix(&self) -> String {
@@ -18,10 +61,7 @@ pub trait SecondaryGenerator {
         String::new()
     }
 
-    fn step(
-        &self,
-        registry: &DefinitionRegistry
-    ) -> Result<String, Report<GenerationError>>;
+    fn step(&self, registry: &DefinitionRegistry) -> Result<String, GenerationError>;
 }
 
 pub trait PrimaryGenerator: SecondaryGenerator {
@@ -60,8 +100,5 @@ pub enum GenerationError {
     },
 }
 
-use rootcause::Report;
-
 pub use cpp::CxxGenerator;
 pub use glaze::GlazeGenerator;
-

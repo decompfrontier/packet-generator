@@ -1,8 +1,9 @@
+use std::borrow::Cow;
+
 use itertools::Itertools;
-use rootcause::Report;
 use stringcase::Caser;
 
-use crate::generators::{GenerationError, SecondaryGenerator};
+use crate::generators::{Addon, CxxGenerator, GenerationError, SecondaryGenerator};
 
 use crate::intermediate::{
     ArraySeparator, BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, Json,
@@ -10,7 +11,34 @@ use crate::intermediate::{
 
 const TAB: &str = "    ";
 
+#[derive(Debug, Clone)]
 pub struct GlazeGenerator;
+
+impl Addon for GlazeGenerator {
+    type For = CxxGenerator;
+
+    fn preamble(&self, _registry: &DefinitionRegistry) -> Option<std::borrow::Cow<'static, str>> {
+        Some(Cow::Borrowed("#include <pkgen_glaze_helpers.hpp>"))
+    }
+
+    fn content(
+        &self,
+        registry: &DefinitionRegistry,
+    ) -> Option<Result<std::borrow::Cow<'static, str>, GenerationError>> {
+        let generated_sources: Result<Vec<String>, GenerationError> = registry
+            .all_definitions()
+            .filter_map(|def| match **def {
+                Definition::Json(ref json) => Some(generate_json_cxx(registry, json)),
+                _ => None,
+            })
+            .collect();
+
+        match generated_sources {
+            Ok(content) => Some(Ok(content.join("\n\n").into())),
+            Err(e) => Some(Err(e)),
+        }
+    }
+}
 
 const fn get_glz_array_separator(sep: ArraySeparator) -> char {
     match sep {
@@ -75,14 +103,15 @@ fn get_glz_mapper(
 fn generate_json_cxx(
     registry: &DefinitionRegistry,
     json: &Json,
-) -> Result<String, Report<GenerationError>> {
+) -> Result<String, GenerationError> {
     let struct_name = json.name.to_pascal_case();
 
     let fields: String = json
         .fields
         .iter()
         .map(|field| -> Result<String, GenerationError> {
-            let mapper = get_glz_mapper(/*&struct_name,*/ &field.name, &field.type_, registry)?;
+            let mapper =
+                get_glz_mapper(/*&struct_name,*/ &field.name, &field.type_, registry)?;
             let key: &str = &field.key;
 
             Ok(format!("{TAB}{TAB}\"{key}\", {mapper}"))
@@ -106,12 +135,9 @@ impl SecondaryGenerator for GlazeGenerator {
     fn get_prefix(&self) -> String {
         "#include <pkgen_glaze_helpers.hpp>".to_owned()
     }
-    
-    fn step(
-        &self,
-        registry: &DefinitionRegistry
-    ) -> Result<String, Report<GenerationError>> {
-        let generated_sources: Result<Vec<String>, Report<GenerationError>> = registry
+
+    fn step(&self, registry: &DefinitionRegistry) -> Result<String, GenerationError> {
+        let generated_sources: Result<Vec<String>, GenerationError> = registry
             .all_definitions()
             .filter_map(|def| match **def {
                 Definition::Json(ref json) => Some(generate_json_cxx(registry, json)),

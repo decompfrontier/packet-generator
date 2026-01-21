@@ -4,7 +4,10 @@ use std::{fs::File, io::Read, path::PathBuf, sync::Arc};
 
 use miette::Context;
 use packet_generator::{
-    generators::{self, GenerationError, PrimaryGenerator, SecondaryGenerator},
+    generators::{
+        self, CxxGenerator, GenerationError, Generator, GlazeGenerator, PrimaryGenerator,
+        SecondaryGenerator, WithAddons,
+    },
     kdl_parser::{Diagnostic, ParserOpts, ParsingError},
 };
 
@@ -40,10 +43,7 @@ fn main() -> Result<(), miette::Report> {
                 &ParserOpts::default(),
             )?;
 
-            if warnings.are_there_any() {
-                let warnings = miette::ErrReport::from(warnings);
-                println!("{warnings:?}");
-            }
+            warnings.print_warnings_if_any();
 
             println!("Parser: {:#?}", doc);
 
@@ -59,23 +59,27 @@ fn main() -> Result<(), miette::Report> {
             language,
             output_directory: _,
         } => {
-            let primary: Arc<dyn PrimaryGenerator>;
-            let mut generators: Vec<Arc<dyn SecondaryGenerator>> = Vec::new();
+            // let primary: Box<dyn PrimaryGenerator>;
+
+            let mut generators: Vec<Box<dyn Generator>> = vec![];
 
             match language {
                 cli::ProgrammingLanguage::Cxx(options) => {
-                    primary = Arc::new(generators::CxxGenerator {});
-                    generators.push(primary);
+                    let mut cxx_generator = CxxGenerator::new();
+
                     match options.serializer {
                         CxxSerializer::Glaze => {
-                            generators.push(Arc::new(generators::GlazeGenerator {}));
+                            cxx_generator.add_addon(GlazeGenerator {});
                         }
+
                         CxxSerializer::Simdjson => {
                             return Err(miette::miette!(
                                 "Simdjson secondary generator for Cxx is not implemented!"
                             ));
                         }
                     }
+
+                    generators.push(Box::new(cxx_generator));
                 }
 
                 cli::ProgrammingLanguage::Rust(_serializer) => {
@@ -98,16 +102,15 @@ fn main() -> Result<(), miette::Report> {
                 &ParserOpts::default(),
             )?;
 
-            if warnings.are_there_any() {
-                let warnings = miette::Report::from(warnings);
-                println!("{warnings:?}");
-            }
+            warnings.print_warnings_if_any();
 
             println!("Parser: {:#?}", doc);
 
             let doc = packet_generator::kdl_parser::validate(doc)?;
 
             let definitions = packet_generator::kdl_parser::document_to_definitions(doc);
+
+            /*
             let mut source_output = String::new();
 
             for ele in &generators {
@@ -133,8 +136,15 @@ fn main() -> Result<(), miette::Report> {
                 source_output.push_str(ele.get_suffix().as_str());
                 source_output.push('\n');
             }
+            */
 
-            println!("{}\n", source_output)
+            for generator in &generators {
+                let source_output = generator
+                    .generate(&definitions, "test")
+                    .map_err(|e| miette::miette!(e))?;
+
+                println!("{}\n", source_output.content)
+            }
         }
     }
 
