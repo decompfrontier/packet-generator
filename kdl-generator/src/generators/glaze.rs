@@ -32,13 +32,13 @@ impl Addon for GlazeGenerator {
                 let inner = content.join("\n\n");
 
                 let content = format!(
-                    "// Glaze definitions
-#if __has_include(<glaze/glaze.hpp>)
+                    "// Auto-generated Glaze definitions
+// #if __has_include(<glaze/glaze.hpp>)
 #include <pkgen_glaze_helpers.hpp>
 
 {inner}
 
-#endif // __has_include(<glaze/glaze.hpp>)
+// #endif // __has_include(<glaze/glaze.hpp>)
         "
                 );
 

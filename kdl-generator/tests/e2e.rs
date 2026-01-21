@@ -1,20 +1,30 @@
-use std::{fs::File, io::Write, path::PathBuf, process::Stdio};
+use std::{
+    fs::File,
+    io::Write,
+    path::{Path, PathBuf},
+    process::Stdio,
+};
 
 use packet_generator::{
     generators::{self, Generator, GlazeGenerator, WithAddons},
-    intermediate::DefinitionRegistry,
+    intermediate::{Definition, DefinitionRegistry},
     kdl_parser::{ParserOpts, ParsingWarnings},
 };
 
-const CXX_COMPILER: &str = "clang++";
 const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
 fn setup_e2e_registry(main_file: &str) -> (DefinitionRegistry, ParsingWarnings) {
     let path = PathBuf::from(format!("{PROJECT_DIR}/{main_file}"));
-    let document = std::fs::read_to_string(&path).unwrap();
+    let document = std::fs::read_to_string(&path).expect("this is a test, we control the string");
     packet_generator::parse_kdl(&document, &path, &ParserOpts::default())
-        .map_err(|e| miette::Report::from(e))
-        .unwrap()
+        .map_err(miette::Report::from)
+        .expect("we control the files")
+}
+
+fn create_file(path: impl AsRef<Path>, content: &str) {
+    let mut f = File::create(path).expect("FS must create files");
+    f.write_all(content.as_bytes())
+        .expect("FS must write bytes");
 }
 
 #[test]
@@ -32,82 +42,101 @@ fn e2e_can_compile_cxx_definition() {
         .generate(&defs, "main")
         .expect("should generate good code");
 
-    let new_file_path = generation_basepath.join(&source.filename);
-    let mut new_file = File::create(&new_file_path).expect("filesystem must create files");
+    create_file(generation_basepath.join(&source.filename), &source.content);
 
-    new_file
-        .write_all(source.content.as_bytes())
-        .expect("filesystem must write to files");
+    let runtime_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../runtime/cpp");
 
-    let args = &[
-        "-isystem",
-        concat!(env!("CARGO_MANIFEST_DIR"), "/../runtime/cpp"),
-        "-std=c++23",
-        &new_file_path.to_string_lossy(),
-    ];
+    {
+        let cmake_file_content = format!(
+            r#"
+cmake_minimum_required(VERSION 3.24)
+project(kdl_generator_e2e_glaze_test_suite)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-    let clang_output = std::process::Command::new(CXX_COMPILER)
-        .args(args)
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .output()
-        .expect("the OS can spawn processes");
+include(FetchContent)
 
-    let stdout = str::from_utf8(&clang_output.stdout).expect("string is UTF-8");
-    let stderr = str::from_utf8(&clang_output.stderr).expect("string is UTF-8");
+FetchContent_Declare(
+  glaze
+  GIT_REPOSITORY https://github.com/stephenberry/glaze.git
+  GIT_TAG main
+  GIT_SHALLOW TRUE
+)
 
-    println!("{CXX_COMPILER} args: {CXX_COMPILER} {}", args.join(" "));
-    println!("{CXX_COMPILER} stdout:\n{stdout}");
-    println!("{CXX_COMPILER} stderr:\n{stderr}");
+FetchContent_MakeAvailable(glaze)
 
-    assert!(clang_output.status.success());
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${{CMAKE_CXX_FLAGS}} /MP /utf-8 /W3 /permissive-")
+else()
+    set(CMAKE_CXX_FLAGS "${{CMAKE_CXX_FLAGS}} -Wall -fno-permissive")
+endif()
 
-    println!("clang++ output: {clang_output:#?}");
+add_executable(${{PROJECT_NAME}}
+    main.cpp
+)
+target_include_directories(${{PROJECT_NAME}} PRIVATE {runtime_dir})
+target_link_libraries(${{PROJECT_NAME}} PRIVATE glaze::glaze)
+    "#
+        );
+
+        create_file(
+            generation_basepath.join("CMakeLists.txt"),
+            &cmake_file_content,
+        );
+    }
+
+    {
+        let main_cpp_content = format!(
+            r#"
+#include "{}"
+
+int main() {{
+    // Intentionally empty, let the compiler check the headers.
+}}
+        "#,
+            source.filename,
+        );
+
+        create_file(generation_basepath.join("main.cpp"), &main_cpp_content);
+    }
+
+    {
+        let cmake_args = &["-S", ".", "-B", "build/"];
+        let cmake_output = std::process::Command::new("cmake")
+            .current_dir(&generation_basepath)
+            .args(cmake_args)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .output()
+            .expect("the OS can spawn processes");
+
+        let stdout = str::from_utf8(&cmake_output.stdout).expect("string is UTF-8");
+        let stderr = str::from_utf8(&cmake_output.stderr).expect("string is UTF-8");
+
+        println!("CMake stdout:\n{stdout}");
+        println!("CMake stderr:\n{stderr}");
+
+        assert!(cmake_output.status.success());
+    }
+
+    {
+        let cmake_args = &["--build", "build/"];
+        let cmake_output = std::process::Command::new("cmake")
+            .current_dir(&generation_basepath)
+            .args(cmake_args)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .output()
+            .expect("the OS can spawn processes");
+
+        let stdout = str::from_utf8(&cmake_output.stdout).expect("string is UTF-8");
+        let stderr = str::from_utf8(&cmake_output.stderr).expect("string is UTF-8");
+
+        println!("CMake stdout:\n{stdout}");
+        println!("CMake stderr:\n{stderr}");
+
+        assert!(cmake_output.status.success());
+    }
+
+    // println!("clang++ output: {clang_output:#?}");
 }
-
-// #[test]
-// fn e2e_can_compile_glaze_definition() {
-//     let (defs, _) = setup_e2e_registry("tests/defs/main.kdl");
-//     let cxx_generated = generators::generate_glaze(&defs).unwrap();
-//
-//     let generation_basepath =
-//         PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/target/tests-e2e-glz"));
-//     let _ = std::fs::create_dir_all(&generation_basepath);
-//     let new_file_path = generation_basepath.join(&cxx_generated.filename);
-//     let mut new_file = File::create(&new_file_path).unwrap();
-//
-//     new_file
-//         .write_all(&cxx_generated.content.as_bytes())
-//         .unwrap();
-//
-//     let args = &[
-//         "-isystem",
-//         concat!(env!("CARGO_MANIFEST_DIR"), "/../runtime/cpp"),
-//         new_file_path.to_str().unwrap(),
-//     ];
-//
-//     let clang_output = std::process::Command::new(CXX_COMPILER)
-//         .args(args)
-//         .stdout(Stdio::piped())
-//         .stderr(Stdio::piped())
-//         .output()
-//         .unwrap();
-//
-//     let stdout = str::from_utf8(&clang_output.stdout).unwrap();
-//     let stderr = str::from_utf8(&clang_output.stderr).unwrap();
-//
-//     println!("{CXX_COMPILER} args: {CXX_COMPILER} {}", args.join(" "));
-//     println!("{CXX_COMPILER} stdout:\n{stdout}");
-//     println!("{CXX_COMPILER} stderr:\n{stderr}");
-//
-//     assert!(clang_output.status.success());
-//
-//     println!("clang++ output: {clang_output:#?}");
-// }
-//
-// #[test]
-// fn e2e_can_parse_assets() {
-//     let (registry, _) = setup_e2e_registry("assets/mst/receipe.kdl");
-//
-//     println!("{registry:#?}");
-// }
