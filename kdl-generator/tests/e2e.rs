@@ -1,12 +1,7 @@
-use std::{
-    fs::File,
-    io::Write,
-    path::{Path, PathBuf},
-    process::Stdio,
-};
+use std::{fs::File, io::Write, path::PathBuf, process::Stdio};
 
 use packet_generator::{
-    generators::{self, PrimaryGenerator, SecondaryGenerator},
+    generators::{self, Generator, GlazeGenerator, WithAddons},
     intermediate::DefinitionRegistry,
     kdl_parser::{ParserOpts, ParsingWarnings},
 };
@@ -25,29 +20,30 @@ fn setup_e2e_registry(main_file: &str) -> (DefinitionRegistry, ParsingWarnings) 
 #[test]
 fn e2e_can_compile_cxx_definition() {
     let (defs, _) = setup_e2e_registry("tests/defs/main.kdl");
-    let generator = generators::CxxGenerator {};
-
-    let filename = generator.get_output_file_name("main");
 
     let generation_basepath =
         PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/target/tests-e2e-cxx"));
     let _ = std::fs::create_dir_all(&generation_basepath);
-    let new_file_path = generation_basepath.join(&filename);
-    let mut new_file = File::create(&new_file_path).unwrap();
 
-    let mut content = generator.get_prefix();
-    content.push('\n');
-    content.push_str(&generator.step(&defs).unwrap());
-    content.push('\n');
-    content.push_str(&generator.get_suffix());
+    let mut generator = generators::CxxGenerator::new();
+    generator.add_addon(GlazeGenerator {});
 
-    new_file.write_all(content.as_bytes()).unwrap();
+    let source = generator
+        .generate(&defs, "main")
+        .expect("should generate good code");
+
+    let new_file_path = generation_basepath.join(&source.filename);
+    let mut new_file = File::create(&new_file_path).expect("filesystem must create files");
+
+    new_file
+        .write_all(source.content.as_bytes())
+        .expect("filesystem must write to files");
 
     let args = &[
         "-isystem",
         concat!(env!("CARGO_MANIFEST_DIR"), "/../runtime/cpp"),
         "-std=c++23",
-        new_file_path.to_str().unwrap(),
+        &new_file_path.to_string_lossy(),
     ];
 
     let clang_output = std::process::Command::new(CXX_COMPILER)
@@ -55,10 +51,10 @@ fn e2e_can_compile_cxx_definition() {
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .output()
-        .unwrap();
+        .expect("the OS can spawn processes");
 
-    let stdout = str::from_utf8(&clang_output.stdout).unwrap();
-    let stderr = str::from_utf8(&clang_output.stderr).unwrap();
+    let stdout = str::from_utf8(&clang_output.stdout).expect("string is UTF-8");
+    let stderr = str::from_utf8(&clang_output.stderr).expect("string is UTF-8");
 
     println!("{CXX_COMPILER} args: {CXX_COMPILER} {}", args.join(" "));
     println!("{CXX_COMPILER} stdout:\n{stdout}");
