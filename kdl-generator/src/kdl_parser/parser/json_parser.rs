@@ -133,6 +133,8 @@ pub fn parse_data_definition(
 
     Ok(JsonDefinition {
         index,
+        source_info: source_code.clone(),
+        span: definition.span(),
         name: name.into(),
         doc: doc.into(),
         hash,
@@ -278,7 +280,7 @@ fn parse_field(
         .extract_argument_string(
             0,
             ErrorContext {
-                source_info: source_code,
+                source_info: source_code.clone(),
                 context: format!("field definition `{data_name}::{field_node}`").into(),
                 not_found_help: None,
                 wrong_type_help: None,
@@ -287,6 +289,8 @@ fn parse_field(
 
     Ok(JsonField {
         index,
+        source_info: source_code,
+        span: node.span(),
         name: field_node.to_owned(),
         r#type: datatype,
         key,

@@ -84,6 +84,8 @@ pub fn parse_int_enum_definition(
 
     Ok(IntEnumDefinition {
         index,
+        source_info: source_code.clone(),
+        span: definition.span(),
         name: name.into(),
         doc: doc.into(),
         start,
@@ -150,7 +152,7 @@ fn parse_int_enum_variant(
                 entry.value().as_integer().ok_or_else(|| ParsingError::from(Diagnostic {
                     message: format!("first argument of child `value` in integer enum variant definition `{enum_name}::{name}` is not an integer"),
                     severity: Severity::Error,
-                    source_info: source_code,
+                    source_info: source_code.clone(),
                     span: entry.span(),
                     help: None,
                     label: None,
@@ -160,8 +162,10 @@ fn parse_int_enum_variant(
             .transpose()?;
 
     Ok(IntEnumInner {
-        name: name.to_owned(),
         index,
+        source_info: source_code,
+        span: node.span(),
+        name: name.to_owned(),
         value,
         doc: doc.to_owned(),
     })
@@ -224,6 +228,8 @@ pub fn parse_string_enum_definition(
 
     Ok(StringEnumDefinition {
         index,
+        source_info: source_code.clone(),
+        span: definition.span(),
         name: name.into(),
         doc: doc.into(),
         variants,
@@ -292,7 +298,7 @@ fn parse_string_enum_variant(
         .extract_argument_string(
             0,
             ErrorContext {
-                source_info: source_code,
+                source_info: source_code.clone(),
                 context: format!(
                     "child `doc` in string enum variant definition `{enum_name}::{name}``"
                 )
@@ -303,8 +309,10 @@ fn parse_string_enum_variant(
         )?;
 
     Ok(StringEnumInner {
-        name: name.to_owned(),
         index,
+        source_info: source_code,
+        span: node.span(),
+        name: name.to_owned(),
         value: value.to_owned(),
         doc: doc.to_owned(),
     })

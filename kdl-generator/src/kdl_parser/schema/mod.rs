@@ -2,9 +2,13 @@ use std::{collections::BTreeSet, fmt::Display, path::PathBuf, str::FromStr, sync
 
 mod validator;
 
+use miette::SourceSpan;
 pub use validator::validate;
 
-use crate::intermediate::{IntEnumVariant, StringEnumVariant};
+use crate::{
+    intermediate::{IntEnumVariant, StringEnumVariant},
+    kdl_parser::SourceInfo,
+};
 
 #[derive(Debug)]
 pub struct RawDocument {
@@ -29,6 +33,10 @@ pub enum EnumDefinition {
 pub struct StringEnumDefinition {
     pub index: usize,
 
+    pub source_info: Arc<SourceInfo>,
+
+    pub span: SourceSpan,
+
     pub name: String,
 
     pub doc: String,
@@ -39,6 +47,9 @@ pub struct StringEnumDefinition {
 #[derive(Debug)]
 pub struct StringEnumInner {
     pub index: usize,
+
+    pub source_info: Arc<SourceInfo>,
+    pub span: SourceSpan,
 
     pub name: String,
 
@@ -76,6 +87,9 @@ impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
 pub struct IntEnumDefinition {
     pub index: usize,
 
+    pub source_info: Arc<SourceInfo>,
+    pub span: SourceSpan,
+
     pub name: String,
 
     pub start: i128,
@@ -88,6 +102,10 @@ pub struct IntEnumDefinition {
 #[derive(Debug)]
 pub struct IntEnumInner {
     pub index: usize,
+
+    pub source_info: Arc<SourceInfo>,
+
+    pub span: SourceSpan,
 
     pub name: String,
 
@@ -147,6 +165,10 @@ pub struct HTTPProperty {
 #[derive(Debug)]
 pub struct JsonDefinition {
     pub index: usize,
+
+    pub source_info: Arc<SourceInfo>,
+
+    pub span: SourceSpan,
 
     pub name: String,
 
@@ -329,6 +351,10 @@ impl FromStr for BoolEncoding {
 #[derive(Debug)]
 pub struct JsonField {
     pub index: usize,
+
+    pub source_info: Arc<SourceInfo>,
+
+    pub span: SourceSpan,
 
     pub name: String,
 

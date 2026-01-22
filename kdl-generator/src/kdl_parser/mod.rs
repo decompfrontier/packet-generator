@@ -29,10 +29,10 @@ pub use parser::raw_parse_kdl;
 #[derive(Debug, Clone)]
 pub struct SourceInfo {
     /// Simple name (relative path) of the source code.
-    name: String,
+    pub name: String,
 
     /// The actual source code.
-    source_code: String,
+    pub source_code: String,
 }
 
 impl SourceInfo {
