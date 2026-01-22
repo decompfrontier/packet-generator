@@ -6,7 +6,10 @@
 
 use std::{borrow::Cow, fmt::Debug};
 
-use crate::intermediate::{DataType, DefinitionRegistry};
+use crate::intermediate::{
+    DataType, DefinitionRegistry, IntEnum, IntEnumVariant, Json, JsonField, StringEnum,
+    StringEnumVariant,
+};
 
 mod cpp;
 mod glaze;
@@ -25,6 +28,33 @@ pub trait Generator {
         registry: &DefinitionRegistry,
         initial_filename: &str,
     ) -> Result<GeneratedSource, GenerationError>;
+
+    fn json_name<'a>(&'a self, definition: &'a Json) -> CowArc<'a, str> {
+        CowArc::Borrowed(&definition.name)
+    }
+
+    fn json_field_name<'a>(&'a self, definition: &'a JsonField) -> CowArc<'a, str> {
+        CowArc::Borrowed(&definition.name)
+    }
+
+    fn int_enum_name<'a>(&'a self, definition: &'a IntEnum) -> CowArc<'a, str> {
+        CowArc::Borrowed(&definition.name)
+    }
+
+    fn int_enum_variant_name<'a>(&'a self, definition: &'a IntEnumVariant) -> CowArc<'a, str> {
+        CowArc::Borrowed(&definition.name)
+    }
+
+    fn string_enum_name<'a>(&'a self, definition: &'a StringEnum) -> CowArc<'a, str> {
+        CowArc::Borrowed(&definition.name)
+    }
+
+    fn string_enum_variant_name<'a>(
+        &'a self,
+        definition: &'a StringEnumVariant,
+    ) -> CowArc<'a, str> {
+        CowArc::Borrowed(&definition.name)
+    }
 }
 
 pub trait WithAddons {
@@ -85,5 +115,6 @@ pub enum GenerationError {
     },
 }
 
+use atomicow::CowArc;
 pub use cpp::CxxGenerator;
 pub use glaze::GlazeGenerator;

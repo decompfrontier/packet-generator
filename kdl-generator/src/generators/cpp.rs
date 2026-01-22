@@ -1,9 +1,12 @@
+use atomicow::CowArc;
 use itertools::Itertools;
 use stringcase::Caser;
 
 use crate::generators::{Addon, GeneratedSource, GenerationError, Generator, WithAddons};
 
-use crate::intermediate::{DataType, Definition, DefinitionRegistry, IntEnum, Json, StringEnum};
+use crate::intermediate::{
+    DataType, Definition, DefinitionRegistry, IntEnum, Json, JsonField, StringEnum,
+};
 
 const AUTOGENERATION_NOTICE: &str = "
 // This file is auto-generated from a KDL specification by `packet-generator`.
@@ -13,6 +16,22 @@ const TAB: &str = "    ";
 
 fn split_documentation(doc: &str, indent_level: usize) -> String {
     super::utils::split_documentation(doc, TAB, "///", indent_level)
+}
+
+fn struct_format(string: &str) -> String {
+    string.to_pascal_case()
+}
+
+fn enum_format(string: &str) -> String {
+    string.to_pascal_case()
+}
+
+fn enum_variant_format(string: &str) -> String {
+    string.to_pascal_case()
+}
+
+fn field_format(string: &str) -> String {
+    string.to_snake_case()
 }
 
 #[derive(Debug)]
@@ -92,6 +111,36 @@ impl Generator for CxxGenerator {
             filename: format!("{}.hpp", initial_filename),
             content,
         })
+    }
+
+    fn json_name<'a>(&'a self, definition: &'a Json) -> CowArc<'a, str> {
+        CowArc::Owned(struct_format(&definition.name).into())
+    }
+
+    fn json_field_name<'a>(&'a self, definition: &'a JsonField) -> CowArc<'a, str> {
+        CowArc::Owned(field_format(&definition.name).into())
+    }
+
+    fn int_enum_name<'a>(&'a self, definition: &'a IntEnum) -> CowArc<'a, str> {
+        CowArc::Owned(enum_format(&definition.name).into())
+    }
+
+    fn int_enum_variant_name<'a>(
+        &'a self,
+        definition: &'a crate::intermediate::IntEnumVariant,
+    ) -> CowArc<'a, str> {
+        CowArc::Owned(enum_variant_format(&definition.name).into())
+    }
+
+    fn string_enum_name<'a>(&'a self, definition: &'a StringEnum) -> CowArc<'a, str> {
+        CowArc::Owned(enum_format(&definition.name).into())
+    }
+
+    fn string_enum_variant_name<'a>(
+        &'a self,
+        definition: &'a crate::intermediate::StringEnumVariant,
+    ) -> CowArc<'a, str> {
+        CowArc::Owned(enum_variant_format(&definition.name).into())
     }
 }
 
@@ -183,7 +232,7 @@ fn generate_json_cxx(
         .iter()
         .map(|field| -> Result<String, GenerationError> {
             let datatype = convert_datatype(&field.type_, registry)?;
-            let name = field.name.to_snake_case();
+            let name = field_format(&field.name);
             let doc = split_documentation(&field.doc, 0);
 
             Ok(format!(
@@ -194,7 +243,7 @@ fn generate_json_cxx(
         })
         .process_results(|mut x| x.join("\n"))?;
 
-    let struct_name = json.name.to_pascal_case();
+    let struct_name = struct_format(&json.name);
     let struct_doc = split_documentation(&json.doc, 0);
 
     let content = format!(
@@ -219,7 +268,7 @@ fn generate_int_enum_cxx(
     let first_variant = variants_iter
         .next()
         .map(|variant| {
-            let name = variant.name.to_pascal_case();
+            let name = enum_variant_format(&variant.name);
 
             let start = variant.value.unwrap_or(start);
             let doc = &variant.doc;
@@ -230,7 +279,7 @@ fn generate_int_enum_cxx(
 
     let variants_str = variants_iter
         .map(|variant| {
-            let name = variant.name.to_pascal_case();
+            let name = enum_variant_format(&variant.name);
             let maybe_val = variant.value.map(|v| format!(" = {v}")).unwrap_or_default();
             let doc = &variant.doc;
 
@@ -246,7 +295,7 @@ enum class {} {{
 {first_variant}
 {variants_str}
 }};",
-        int_enum.name.to_pascal_case(),
+        enum_format(&int_enum.name),
     );
 
     Ok(content)
@@ -261,7 +310,7 @@ fn generate_str_enum_cxx(
         .iter()
         .sorted_unstable_by_key(|a| a.index)
         .map(|variant| {
-            let name = variant.name.to_pascal_case();
+            let name = enum_variant_format(&variant.name);
             let doc = &variant.doc;
             let val = &variant.value;
             format!("\n{TAB}/// {doc}\n{TAB}constexpr const auto {name} = \"{val}\";")
@@ -276,7 +325,7 @@ namespace {} {{
 {TAB}using Type = std::string;
 {variants}
 }};",
-        str_enum.name.to_pascal_case(),
+        enum_format(&str_enum.name),
     );
 
     Ok(content)

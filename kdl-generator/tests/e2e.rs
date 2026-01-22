@@ -92,8 +92,7 @@ target_link_libraries(${{PROJECT_NAME}} PRIVATE glaze::glaze)
 
 int main() {{
     // Intentionally empty, let the compiler check the headers.
-}}
-        "#,
+}}"#,
             source.filename,
         );
 
