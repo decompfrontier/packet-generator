@@ -1,12 +1,12 @@
 #pragma once
 
 /**
-        Simple helpers for pkggen types
+        Simple helpers for packet generator types
 */
 #include <chrono>
-#include <cmath>
+#include <deque>
+#include <format>
 #include <sstream>
-#include <unordered_map>
 
 #if __cplusplus <= 201703L
 #include "date.h" // now standard in c++20 ^^
@@ -88,8 +88,99 @@ static constexpr bool chrono_to_unix(const chrono_time &in, uint64_t &out) {
   }
 }
 
-template <typename T> using inner_type_v = T::value_type;
+template <typename T> using string_list = std::deque<T>;
+
 template <typename T>
-constexpr bool is_arithmetic_inner_v = std::is_arithmetic_v<inner_type_v<T>>;
+constexpr auto str_to_int(std::string_view v, T &result, int base = 10) {
+  auto [ptr, ec] = std::from_chars(v.data(), v.data() + v.size(), result, base);
+  return ec == std::errc() && ptr == v.data() + v.size();
+}
+
+template <typename T>
+constexpr auto int_to_str(T input, std::string &result, int base = 10) {
+  constexpr size_t buffer_size = 30;
+  char buffer[buffer_size] = {};
+  auto [ptr, ec] = std::to_chars(buffer, buffer + buffer_size, input, base);
+  if (ec == std::errc()) {
+    result += buffer;
+    return true;
+  }
+
+  return false;
+}
+
+template <typename T>
+static constexpr bool string_list_push_any(std::string_view sv,
+                                           string_list<T> &sl) {
+  if constexpr (std::is_arithmetic_v<T>) {
+    T result = 0;
+    if (!str_to_int<T>(sv, result)) {
+      return false;
+    }
+
+    sl.emplace_back(result);
+    return true;
+  } else {
+    T result = T(sv);
+    sl.emplace_back(result);
+    return true;
+  }
+}
+
+template <typename T>
+static constexpr bool string_list_pop_any(const T &sl, std::string &out) {
+  if constexpr (std::is_arithmetic_v<T>) {
+    return int_to_str<T>(sl, out);
+  } else {
+    out += sl;
+    return true;
+  }
+}
+
+template <typename T>
+static constexpr bool string_list_from(string_list<T> &sl, std::string_view sv,
+                                       char character) {
+  size_t pos = 0, last = 0;
+
+  if (sv.empty())
+    return true;
+
+  sl.clear();
+
+  while ((pos = sv.find(character, last)) != std::string::npos) {
+    const auto sv_ptr = sv.substr(last, pos - last);
+    last = pos + 1;
+
+    if (!string_list_push_any<T>(sv_ptr, sl)) {
+      return false;
+    }
+  }
+
+  const auto sv_ptr = sv.substr(last);
+  if (!sv_ptr.empty()) {
+    return string_list_push_any<T>(sv_ptr, sl);
+  }
+
+  return true;
+}
+
+template <typename T>
+static constexpr bool string_list_to(const string_list<T> &sl, std::string &out,
+                                     char character) {
+  out.clear();
+
+  if (sl.empty())
+    return true;
+
+  for (const auto &it : sl) {
+    if (!string_list_pop_any<T>(it, out)) {
+      return false;
+    }
+
+    out += character;
+  }
+  out = out.substr(0, out.size() - 1);
+  return true;
+}
 
 } // namespace pkg
