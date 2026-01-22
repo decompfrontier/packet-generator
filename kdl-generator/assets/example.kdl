@@ -29,7 +29,7 @@ json InitializeReq {
     doc "Initialization command"
 
     field user-info type=UserInfoReq {
-        key transparent=#true
+        key "foo"
         doc "User information request"
     }
 

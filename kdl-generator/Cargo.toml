@@ -3,16 +3,25 @@ name = "packet-generator"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
-thiserror = "2.0.17"
+[workspace]
+members = ["tools/*"]
+
+[workspace.dependencies]
 miette = { version = "7", features = ["fancy"] } # pretty diagnostics
-winnow = { version = "0.7.14", features = ["simd"] }
 bpaf = { version = "0.9.20", features = ["derive"] }
-kdl = "6.5.0"
+atomicow = "1.1.0"
 itertools = "0.14.0"
+
+[dependencies]
+atomicow = { workspace = true }
+miette = { workspace = true }
+thiserror = "2.0.17"
+bpaf = { workspace = true }
+itertools = { workspace = true }
+winnow = { version = "0.7.14", features = ["simd"] }
+kdl = "6.5.0"
 stringcase = "0.4.0"
 path-clean = "^0.1.0"
-atomicow = "1.1.0"
 
 [profile.release]
 lto = true

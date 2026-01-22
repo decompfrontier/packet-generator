@@ -1,0 +1,18 @@
+[package]
+name = "lsp"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+miette = { workspace = true }
+bpaf = { workspace = true }
+atomicow = { workspace = true }
+itertools = { workspace = true }
+packet-generator = { path = "../.." }
+tower-lsp = "0.20.0"
+tokio = { version = "1.49", features = ["full", "rt-multi-thread"] }
+tokio-macros = "2"
+ropey = "1.6.1"
+dashmap = "6.1.0"
+tracing = "0.1.44"
+tracing-subscriber = "0.3.22"
