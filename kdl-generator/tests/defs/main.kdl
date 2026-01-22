@@ -2,8 +2,7 @@ import "nested/included-3.kdl"
 import "http.kdl"
 import "xml.kdl"
 import "plist.kdl"
-// TODO(anri): support warnings to make the following test pass.
-// import "empty.kdl"
+import "empty.kdl"
 
 int-enum Foo start=0 {
     doc "A Foo"
@@ -47,6 +46,33 @@ json Main {
     field included-3 type="Included3" {
         key "inc3"
         doc "An included definition"
+    }
+
+    // Removing the comment /- will make this not compile
+    /-field non-existant type="DoesNotExist" {
+        key "not_exists"
+        doc "Not existant type, should error"
+    }
+
+    field a-single-element-array type="[i32::int]::size(1)" {
+        key "sea"
+        doc "A single element array of ints"
+    }
+
+    field a-map type="%{i32::str => u64::int}" {
+        key "a_map"
+        doc "A map from i32 to u64"
+    }
+
+    field a-complex-map type="%{i32::str => %{str => [f32::str]::sep(comma)}}" {
+        key "a_complex_map"
+        doc "A map to a map"
+    }
+
+    field a-string type="str" {
+        key "a_string"
+        doc "An optional string"
+        optional #true
     }
 }
 
