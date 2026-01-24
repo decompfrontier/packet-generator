@@ -1,4 +1,4 @@
-enum RewardType {
+int-enum RewardType start=0 {
     doc "TODO"
 
     variant Type1 {
@@ -10,42 +10,43 @@ enum RewardType {
     }
 }
 
-data ArenaRankMst  {
+json ArenaRankMst  {
+    doc "TODO"
     hash "6kWq78zx"
 
-    field id type=i32 encoding=str {
-        hash "JmFn3g9t" 
+    field id type=i32::str {
+        key "JmFn3g9t" 
         doc "Ranking ID"
     }
 
     field name type=str  {
-        hash "rGm09bav"
+        key "rGm09bav"
         doc "Ranking name"
     }
 
-    field rank_point_start type=i32  encoding=str {
-        hash "w0aTd94Y"
+    field rank_point_start type=i32::str {
+        key "w0aTd94Y"
         doc "Points when this rank starts (included)"
     }
 
-    field rank_point_end type=i32  encoding=str {
-        hash "1U3eBCyY"
+    field rank_point_end type=i32::str  {
+        key "1U3eBCyY"
         doc "Points when this rank ends (included)"
     }
 
     field reward_type type=RewardType  {
-        hash "IkmC8gG2"
+        key "IkmC8gG2"
         doc "Type of reward"
     }
 
     // list[int]: ArrayType.DOUBLEDOT
-    field reward_param type="[i32,]" {
-        hash "empaR60j"
+    field reward_param type="[i32::str]::sep(comma)" {
+        key "empaR60j"
         doc  "Configuration of the reward"
     }
 
     field scenario_info type=str {
-        hash "N4XVE1uA"
+        key "N4XVE1uA"
         doc "ID of the scene to play"
     }
 }

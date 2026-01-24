@@ -1,0 +1,10 @@
+// @keyjson(key_group = "3aDk1xk7", array=ArrayStep.Array)
+json ExcludedDungeonMissionMst {
+    doc TODO
+
+    field id type="i32::int" {
+        key "j28VNcUW"
+        doc "TODO"
+    }
+
+}

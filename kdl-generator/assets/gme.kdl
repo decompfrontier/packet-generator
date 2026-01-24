@@ -32,18 +32,88 @@ class GmeErrorCommand(Enum):
     Close3 = 10
 */
 
+int-enum GmeErrorFlags start=0 {
+    doc "Flags of the error that happened in the game."
+
+    variant no-error {
+        doc "No error occurred"
+        value 0
+    }
+
+    variant is-in-error {
+        doc "The server generated an error."
+        value 1
+    }
+
+    variant should-handle-commands {
+        doc "The custom command should be handled"
+        value 2
+    }
+}
+
+int-enum GmeErrorCommand start=0 {
+    doc "Type of command to do after the user presses OK."
+
+    variant retry {
+        doc "TODO"
+        value 2
+    }
+
+    variant continue {
+        doc "TODO"
+        value 3
+    }
+
+    variant close {
+        doc "TODO"
+        value 4
+    }
+
+    variant close-2 {
+        doc "TODO"
+        value 5
+    }
+
+    variant return-to-game {
+        doc "TODO"
+        value 6
+    }
+
+    variant raid-error {
+        doc "TODO"
+        value 7
+    }
+
+    variant continue-2 {
+        doc "TODO"
+        value 8
+    }
+
+
+    variant logout-facebook {
+        doc "TODO"
+        value 9
+    }
+
+    variant close-3 {
+        doc "TODO"
+        value 10
+    }
+}
 
 json GmeError {
     doc "Object that stores an error during a Server (gme) action"
 
-    field flag type="i32::int" { // TODO(arves): i32 -> GmeErrorFlags
+    field flag type="GmeErrorFlags" { // TODO(arves): i32 -> GmeErrorFlags
         doc "Error flags"
         key "3e9aGpus"
     }
-    field cmd type="i32::int" { // TODO(arves): i32 -> GmeErrorCommand
+
+    field cmd type="GmeErrorCommand" { // TODO(arves): i32 -> GmeErrorCommand
         doc "Action to do after the user pressed OK in the error dialog"
         key "iPD12YCr"
     }
+
     field message type="str" {
         doc "Message to show on the error dialog"
         key "ZC0msu2L"

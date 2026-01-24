@@ -1,0 +1,130 @@
+
+// keyjson(key_group = "p283g07d", array=ArrayStep.Single)
+json DailyTaskBonusMst {
+    doc "TODO"
+    field bonus_brave_points type="i32::str" {
+        key "k3bD738b"
+        doc "TODO"
+    }
+
+}
+
+// keyjson(key_group = "k23D7d43", array=ArrayStep.Array)
+json DailyTaskMst {
+    doc "TODO"
+
+    field key type="str" {
+        key "O36Qv37k"
+        doc "TODO"
+    }
+
+     // # TODO: make this an enum
+    field title type="str" {
+        key "hd2Jf3nC"
+        doc "TODO"
+    }
+
+    field desc type="str" {
+        key "M7yKr4c1"
+        doc "TODO"
+    }
+
+    field task_count type="i32::str" {
+        key "Y3DbX5ot"
+        doc "TODO"
+    }
+
+    // # TODO: better names for this
+    field task_brave_pts type="i32::str" {
+        key "T4bV8aI9"
+        doc "TODO"
+    }
+
+    field brave_points_total type="i32::str" {
+        key "bya9a67k"
+        doc "TODO"
+    }
+
+    field brave_points type="i32::str" {
+        key "22rqpZTo"
+        doc "TODO"
+    }
+
+    field area_id type="str" {
+        key "a3011F8b"
+        doc "TODO"
+    }
+
+    times_completed type="i32::int" {
+        hash "9cKyb15U"
+        doc "Number of times the task was completed"
+    }
+}
+
+// keyjson(key_group = "a739yK18", array=ArrayStep.Array)
+json DailyTaskPrizeMst {
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "d83aQ39U"
+        doc "TODO"
+    }
+
+    field title type="str" {
+        key "T091Rsbe"
+        doc "TODO"
+    }
+
+    field desc type="str" {
+        key "L2VkgH08"
+        doc "TODO"
+    }
+
+    field present_type type="i32::str" {
+        key "30Kw4WBa"
+        doc "TODO"
+    }
+
+    field reward_id type="i32::str" {
+        key "TdDHf59J"
+        doc "TODO"
+    }
+
+    field reward_count type="i32::str" {
+        key "wJsB35iH"
+        doc "TODO"
+    }
+
+    field reward_param type="str" {
+        key "37moriMq"
+        doc "TODO"
+    }
+
+    field brave_points_cost type="i32::str" {
+        key "4NuIwm77"
+        doc "TODO"
+    }
+
+    field time_limit type="i64::int" {
+        key "qY49LBjw"
+        doc "TODO"
+    }
+
+    field max_claim_count type="i32::str" {
+        key "D2BlS89M"
+        doc "TODO"
+    }
+
+    // max number of times you can claim this
+    field current_claim_count type="i32::int" {
+        key "jT3oB57e"
+        doc "TODO"
+    }
+
+    // if the user has claimed it
+    field milestone_prize type="bool::str" {
+        key "J3l5We66"
+        doc "TODO"
+    }
+
+}

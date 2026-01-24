@@ -1,0 +1,6 @@
+// from schema import *
+
+// @keyjson(key_group = "8UawtzHw", array=ArrayStep.Array)
+json FirstDescMst {
+    doc TODO
+}

@@ -1,0 +1,16 @@
+
+// @keyjson(key_group = "Pj6zDW3m", array=ArrayStep.Array)
+json NoticeInfo {
+    doc TODO
+
+    field id type="i32::str" {
+        key "xJNom6i0"
+        doc "TODO"
+    }
+
+    field url type="str" {
+        key "jsRoN50z"
+        doc "TODO"
+    }
+
+}

@@ -252,9 +252,40 @@ impl LanguageServer for Backend {
         );
 
         match res {
-            Ok((document, _warnings)) => {
+            Ok((document, warnings)) => {
                 self.semantic_map.insert(uri, document);
-                Ok(default_return)
+
+                let new_diagnostics: Vec<_> = warnings
+                    .iter()
+                    .map(|diag| {
+                        Diagnostic::new(
+                            Range::new(
+                                char_to_position(diag.span.offset(), &file),
+                                char_to_position(diag.span.offset() + diag.span.len(), &file),
+                            ),
+                            Some(to_lsp_sev(diag.severity)),
+                            None,
+                            None,
+                            diag.message.clone(),
+                            None,
+                            None,
+                        )
+                    })
+                    .collect();
+
+                if new_diagnostics.is_empty() {
+                    Ok(default_return)
+                } else {
+                    Ok(DocumentDiagnosticReportResult::Report(
+                        DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                            related_documents: None,
+                            full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                                result_id: None,
+                                items: new_diagnostics,
+                            },
+                        }),
+                    ))
+                }
             }
 
             Err(errors) => match errors {

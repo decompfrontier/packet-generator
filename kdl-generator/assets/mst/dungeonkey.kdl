@@ -1,0 +1,68 @@
+// @keyjson(key_group = "4NG79sX1", array=ArrayStep.Array)
+json DungeonKeyMst {
+    doc TODO
+
+    field id type="i32::str" {
+        key "16KMNJLb"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "BM29ZgnK"
+        doc "TODO"
+    }
+
+    field dungeon_id type="i32::str" {
+        key "MHx05sXt"
+        doc "TODO"
+    }
+
+    field thumbnail_img type="str" {
+        key "M2cv6dum"
+        doc "TODO"
+    }
+
+    field open_img type="str" {
+        key "VX0j1fni"
+        doc "TODO"
+    }
+
+    field close_img type="str" {
+        key "9unNZ6b0"
+        doc "TODO"
+    }
+
+    field limit_sec type="i32::str" {
+        key "i9sBW8uD"
+        doc "TODO"
+    }
+
+    field possession_limit type="str" {
+        key "N7I9vYZb"
+        doc "TODO"
+    }
+
+    field distribute_count type="i32::str" {
+        key "khsb74Nq"
+        doc "TODO"
+        // "default": DefaultType.Omit
+        optional #true
+    }
+
+    field distribute_flag type="i32::str" {
+        key "EK5I6MQ9"
+        doc "TODO"
+    }
+
+    // TODO: is this a boolean?
+    field usage_pattern type="str" {
+        key "CR6aKWg8"
+        doc "TODO"
+    }
+
+    field state type="i32::str" {
+        key "j0Uszek2"
+        doc "TODO"
+    }
+
+}

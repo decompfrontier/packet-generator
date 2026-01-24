@@ -1,0 +1,135 @@
+// @keyjson(key_group = "At7Gny2V", array=ArrayStep.Single)
+json UrlMst {
+    doc TODO
+
+    field id type="str" {
+        key "ut3nd0yV"
+        doc "TODO"
+    }
+
+    field official_site type="str" {
+        key "ME4h3vDn"
+        doc "TODO"
+    }
+
+    field notice_url type="str" {
+        key "cH0Kdchp"
+        doc "TODO"
+    }
+
+    field contact_url type="str" {
+        key "UMRh8tS2"
+        doc "TODO"
+    }
+
+    field friend_refeer_url type="str" {
+        key "R4Dk2FYs"
+        doc "TODO"
+    }
+
+    field appli_dl_url type="str" {
+        key "E1oFw94b"
+        doc "TODO"
+    }
+
+    field appli_dl_android_url type="str" {
+        key "D0gMyJ3o"
+        doc "TODO"
+    }
+
+    field fami_app_site_url type="str" {
+        key "UWb9B6sm"
+        doc "TODO"
+    }
+
+    field facebook_site_url type="str" {
+        key "HcIt7G8y"
+        doc "TODO"
+    }
+
+    field twitter_site_url type="str" {
+        key "13kI62fP"
+        doc "TODO"
+    }
+
+    field transfer_site_url type="str" {
+        key "Rf63vLu7"
+        doc "TODO"
+    }
+
+    field app_bank_site_url type="str" {
+        key "e4qEPM8j"
+        doc "TODO"
+    }
+
+    field lobl_site_url type="str" {
+        key "t9jT3QKC"
+        doc "TODO"
+    }
+
+    field lobl_schema_url type="str" {
+        key "Yh6MiF8f"
+        doc "TODO"
+    }
+
+    field appli_sommelier_url type="str" {
+        key "25oCPAM7"
+        doc "TODO"
+    }
+
+    field credit_url type="str" {
+        key "iVgm9n6v"
+        doc "TODO"
+    }
+
+    field game_gift_url type="str" {
+        key "wT6cF35V"
+        doc "TODO"
+    }
+
+    field agreement_url type="str" {
+        key "3f9T5d6G"
+        doc "TODO"
+    }
+
+    field agreement_official_url type="str" {
+        key "fNud6c7r"
+        doc "TODO"
+    }
+
+    field legal_fund_settlement_url type="str" {
+        key "z6q1aUXE"
+        doc "TODO"
+    }
+
+    field specific_trade_url type="str" {
+        key "AZ2mCbU1"
+        doc "TODO"
+    }
+
+    field dia_possession_url type="str" {
+        key "9Nrt0SPY"
+        doc "TODO"
+    }
+
+    field lobi_rec_help_url type="str" {
+        key "tK24myuj"
+        doc "TODO"
+    }
+
+    field lobi_agreement_url type="str" {
+        key "6Qj8YZtE"
+        doc "TODO"
+    }
+
+    field gacha_contents_url type="str" {
+        key "qlO1kVZZ"
+        doc "TODO"
+    }
+
+    field multi_archive_url type="str" {
+        key "R10T3gFJ"
+        doc "TODO"
+    }
+
+}

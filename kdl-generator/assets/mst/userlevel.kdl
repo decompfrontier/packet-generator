@@ -1,0 +1,35 @@
+// @keyjson(key_group = "YDv9bJ3s", array=ArrayStep.Array)
+json UserLevelMst {
+    doc TODO
+
+    field level type="i32::int" {
+        key "D9wXQI2V"
+        doc "TODO"
+    }
+
+    field exp type="i64::int" {
+        key "d96tuT2E"
+        doc "TODO"
+    }
+
+    field action_points type="i32::int" {
+        key "0P9X1YHs"
+        doc "TODO"
+    }
+
+    field deck_cost type="i32::int" {
+        key "ziex06DY"
+        doc "TODO"
+    }
+
+    field friend_count type="i32::int" {
+        key "oFQ3mbS6"
+        doc "TODO"
+    }
+
+    field add_friend_count type="i32::int" {
+        key "GZ2rKW90"
+        doc "TODO"
+    }
+
+}

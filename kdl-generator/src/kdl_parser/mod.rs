@@ -271,6 +271,10 @@ impl ParsingWarnings {
             println!("{report:?}");
         }
     }
+
+    pub fn iter(&self) -> impl Iterator<Item = &Diagnostic> {
+        self.diagnostics.iter()
+    }
 }
 
 impl miette::Diagnostic for ParsingWarnings {
