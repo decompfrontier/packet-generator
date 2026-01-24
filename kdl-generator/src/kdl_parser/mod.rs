@@ -58,7 +58,7 @@ impl SourceCode for SourceInfo {
 
         Ok(Box::new(
             MietteSpanContents::new_named(
-                self.name.to_string(),
+                self.name.clone(),
                 inner_span.data(),
                 *inner_span.span(),
                 inner_span.line(),
@@ -109,7 +109,7 @@ pub struct Diagnostic {
     pub label: Option<String>,
 
     /// Related diagnostics.
-    pub related: Vec<Diagnostic>,
+    pub related: Vec<Self>,
 }
 
 impl Display for Diagnostic {

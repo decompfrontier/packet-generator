@@ -264,21 +264,21 @@ pub enum DataType {
     DatetimeUnix,
 
     Map {
-        key: Arc<DataType>,
-        value: Arc<DataType>,
+        key: Arc<Self>,
+        value: Arc<Self>,
     },
 
     StringArray {
-        inner_type: Arc<DataType>,
+        inner_type: Arc<Self>,
         separator: ArraySeparator,
     },
 
     Array {
-        inner_type: Arc<DataType>,
+        inner_type: Arc<Self>,
     },
 
     SingleElementArray {
-        inner_type: Arc<DataType>,
+        inner_type: Arc<Self>,
     },
 
     Definition(Weak<Definition>),

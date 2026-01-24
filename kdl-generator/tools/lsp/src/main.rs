@@ -18,6 +18,7 @@ fn char_to_position(char_idx: usize, rope: &Rope) -> Position {
     Position::new(line_idx as u32, column_idx as u32)
 }
 
+#[allow(dead_code)]
 fn offset_to_position(offset: usize, rope: &Rope) -> Option<Position> {
     let line = rope.try_char_to_line(offset).ok()?;
     let first_char_of_line = rope.try_line_to_char(line).ok()?;

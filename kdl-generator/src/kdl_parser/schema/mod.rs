@@ -269,20 +269,20 @@ pub enum DataType {
 
     /// An array typically represented as a string separated by a separator.
     StringArray {
-        inner: Arc<DataType>,
+        inner: Arc<Self>,
         separator: ArraySeparator,
     },
 
     /// A normal array.
-    Array(Arc<DataType>),
+    Array(Arc<Self>),
 
     /// Like `Array` but it only holds a single element.
-    SingleElementArray(Arc<DataType>),
+    SingleElementArray(Arc<Self>),
 
     /// Dictionary from one type to another.
     Map {
-        key: Arc<DataType>,
-        value: Arc<DataType>,
+        key: Arc<Self>,
+        value: Arc<Self>,
     },
 
     // Tuple(Vec<DataType>),

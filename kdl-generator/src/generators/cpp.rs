@@ -211,7 +211,7 @@ fn convert_datatype(
         DataType::Unknown(other) => match registry.find(other) {
             Some(definition) => Ok(definition.name().clone()),
             None => Err(GenerationError::TypeNotFound {
-                name: other.to_string(),
+                name: other.clone(),
                 queried_from: datatype.clone(),
             }),
         },

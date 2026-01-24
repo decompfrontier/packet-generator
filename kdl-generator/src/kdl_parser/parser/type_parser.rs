@@ -338,8 +338,7 @@ mod combinator_solution {
                 Some(modifiers) => {
                     let valid_modifiers = modifiers
                         .iter()
-                        .filter(|modifier| matches!(modifier.name, "str" | "int"))
-                        .next_back();
+                        .rfind(|modifier| matches!(modifier.name, "str" | "int"));
 
                     let last_encoding = valid_modifiers
                         .and_then(|s| match s.name {

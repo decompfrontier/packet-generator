@@ -7,7 +7,7 @@ use std::{
 
 use packet_generator::{
     generators::{self, Generator, GlazeGenerator, WithAddons},
-    intermediate::{Definition, DefinitionRegistry},
+    intermediate::DefinitionRegistry,
     kdl_parser::{ParserOpts, ParsingWarnings},
 };
 

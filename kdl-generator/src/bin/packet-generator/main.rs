@@ -88,7 +88,7 @@ fn main() -> Result<(), miette::Report> {
                 }
             }
 
-            let path = PathBuf::from(input.clone());
+            let path = PathBuf::from(input);
 
             let doc_str = std::fs::read_to_string(&path)
                 .map_err(|e| miette::miette!(e))
@@ -113,7 +113,7 @@ fn main() -> Result<(), miette::Report> {
                     .generate(&definitions, "test")
                     .map_err(|e| miette::miette!(e))?;
 
-                println!("{}\n", source_output.content)
+                println!("{}\n", source_output.content);
             }
         }
     }
