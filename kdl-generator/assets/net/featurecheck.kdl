@@ -1,0 +1,461 @@
+// This module contains the configuration of the server and enabled contents.
+
+// @json
+json FeatureCheck {
+    doc "Features of the server"
+
+    field randall type="bool::int" {
+        key "randall"
+        doc "TODO"
+    }
+
+    field frontier_hunter type="bool::int" {
+        key "frontierhunter"
+        doc "Enables the frontier hunter"
+    }
+
+
+    // new
+    field field dungeon_key type="bool::int" {
+        key "dungeon_key"
+        doc "Enables the requirement to use keys for vortex dungeons"
+    }
+
+
+    field exp_window type="bool::int" {
+        key "exp_window"
+        doc "TODO"
+    }
+
+    field trial type="bool::int" {
+        key "trial"
+        doc "TODO"
+    }
+
+   
+    // end of new
+
+    field send_banner_mst type="bool::int" {
+        key "banner_mst"
+        doc "Enables sending the Banner MST"
+    }
+
+    
+   
+    // new
+    field reload_file_mst type="bool::int" {
+        key "reload_file_mst"
+        doc "TODO"
+    }
+
+    field recommend_app type="bool::int" {
+        key "recommend_app"
+        doc "TODO"
+    }
+
+   
+    // end of new
+
+    field raid type="bool::int" {
+        key "raid"
+        doc "Enables the raids"
+    }
+
+    
+   
+    // new
+    field raid_beta type="bool::int" {
+        key "raid_beta"
+        doc "Enables the beta testing mode of raids"
+    }
+
+    field dict type="bool::int" {
+        key "dict"
+        doc "TODO"
+    }
+
+    field enable_character_voice type="bool::int" {
+        key "character_voice"
+        doc "Enables the voices during attacks on units"
+    }
+
+    field enable_raid_battle_restart type="bool::int" {
+        key "raid_battle_restart"
+        doc "Allows restarting a raid battle"
+    }
+
+   
+    // end of new
+
+    field enable_auto_battle type="bool::int" {
+        key "autobattle"
+        doc "Enables auto button in battles"
+    }
+
+
+   
+    // new
+    field multi_summon type="bool::int" {
+        key "multisummon"
+        doc "Enables multisummoning"
+    }
+
+   
+    // end of new
+
+    field multiaccept type="bool::int" {
+        key "multiaccept"
+        doc "TODO"
+    }
+
+    field facebook_stories type="bool::int " {
+        key "facebook_stories"
+        doc TODO
+    }
+
+    field enable_name_change type="bool::int" {
+        key "name_change_func"
+        doc "Enables name changing"
+    }
+
+
+   
+    // new
+    field randall_facility type="bool::int" {
+        key "randall_facility"
+        doc "TODO"
+    }
+
+    field dailytask_notify type="bool::int" {
+        key "dailytask_notify"
+        doc "TODO"
+    }
+
+    field dailylogin_gem type="bool::int" {
+        key "dailylogin_gem"
+        doc "TODO"
+    }
+
+   
+    // end of new
+
+    field shop_friend type="bool::int" {
+        key "shop_friend"
+        doc "TODO"
+    }
+
+    field slot type="bool::int" {
+        key "slot"
+        doc "TODO"
+    }
+
+    field sort type="bool::int" {
+        key "sort"
+        doc "TODO"
+    }
+
+    field dungeon_key_count_on_redeem type="int" {
+        key "dungeon_key_cnt"
+        doc "Sets the dungeon keys gave to the players everytime they redeem a key"
+    }
+
+    // 1
+
+   
+    // new
+    field dlc_popup_android type="bool::int" {
+        key "dlc_popup_android"
+        doc "TODO"
+    }
+
+    field select_dlc_android type="bool::int" {
+        key "select_dlc_android"
+        doc "TODO"
+    }
+
+    field fps_low type="float" {
+        key "fps_low"
+        doc "TODO"
+    }
+
+    // 30.0
+   
+    // end of new
+
+    field battle_item_limit type="int" {
+        key "battle_item_limit"
+        doc "TODO"
+    }
+
+    // 500
+
+   
+    // new
+    field bb_timer type="int" {
+        key "bb_timer"
+        doc "TODO"
+    }
+
+    // 4
+    field social_special type="bool::int" {
+        key "social_special"
+        doc "TODO"
+    }
+
+   
+    //end of new
+
+    field enable_cheats type="bool::int" {
+        key "ischeat_enable"
+        doc "TODO"
+    }
+
+
+   
+    // new
+    field arx_punish_enable type="bool::int" {
+        key "arx_punish_enable"
+        doc "TODO"
+    }
+
+   
+    // end of new
+
+    field arx_popup_enable type="bool::int" {
+        key "arx_popup_enable"
+        doc "TODO"
+    }
+
+    field arx_popup_ios_enable type="bool::int" {
+        key "arx_popup_ios_enable"
+        doc "TODO"
+    }
+
+
+   
+    // new
+    field randall_library_memories type="bool::int" {
+        key "randall_library_memories"
+        doc "TODO"
+    }
+
+    field full_unit_ills_esclude type="bool::int" {
+        key "full_unit_ills_esclude"
+        doc "TODO"
+    }
+
+   
+    // end of new
+
+    field check_for_corrupted_mst type="bool::int" {
+        key "corrupted_mst_check"
+        doc "Let the cliet checks for corrupted MSTs"
+    }
+
+    field tutorial_skip type="bool::int" {
+        key "tutorial_skip"
+        doc "Skips the tutorial"
+    }
+
+    field enable_grand_quests type="bool::int" {
+        key "bf_campaign_grand_quest"
+        doc "Enables the Grand quest"
+    }
+
+    field enable_achievements type="bool::int" {
+        key "bf_achievement"
+        doc "Enables achievements in Randall capital"
+    }
+
+    field bf_achievement_ext type="bool::int" {
+        key "bf_achievement_ext"
+        doc "TODO"
+    }
+
+
+   
+    // new
+    field force_using_summon_tickets type="bool::int" {
+        key "force_use_summon_tickets"
+        doc "Forces the use of Summon tickets before Gems"
+    }
+
+   
+    // end of new
+
+    field feature_gate type="bool::int" {
+        key "feature_gate"
+        doc "TODO"
+    }
+
+    field enable_challenge_arena type="bool::int" {
+        key "challenge_arena"
+        doc "Enables the Challenge Arena"
+    }
+
+    field challenge_arena_banner_lock type="bool::int" {
+        key "challenge_arena_banner_lock"
+        doc "TODO"
+    }
+
+    field video_ads type="bool::int" {
+        key "video_ads"
+        doc "TODO"
+    }
+
+    field enable_new_video_ads_slot type="bool::int" {
+        key "video_ads_slot"
+        doc "Enables the slot machines with video ads"
+    }
+
+    field enable_battle_speed_button type="bool::int" {
+        key "battle_speed"
+        doc "Enables the battle speedup button"
+    }
+
+    field enable_battle_speed_button_in_ca type="bool::int" {
+        key "battle_speed_ca"
+        doc "Enables the battle speedup button in Challenge Arena"
+    }
+
+    field enable_battle_speed_button_in_arena type="bool::int" {
+        key "battle_speed_arena_pvp"
+        doc "Enables the battle speedup button in Arena"
+    }
+
+    field autobattle_record type="bool::int" {
+        key "autobattle_record"
+        doc "TODO"
+    }
+
+    field enable_colosseum type="bool::int" {
+        key "colosseum_enable"
+        doc "Enables the colosseum"
+    }
+
+    field sandbag_enable type="bool::int" {
+        key "sandbag_enable"
+        doc "TODO"
+    }
+
+
+   
+    // new
+    field exclude_ca_fusion_unit type="bool::int" {
+        key "exclude_ca_fusion_unit"
+        doc "TODO"
+    }
+
+    field enable_resummons type="bool::int" {
+        key "sg_resummon_gacha_enable"
+        doc "Enables the resummoning banner"
+    }
+
+    field sg_target_bundle_flag type="bool::int" {
+        key "sg_target_bundle_flag"
+        doc "TODO"
+    }
+
+   
+    // end of new
+
+    field guild_visible type="bool::int" {
+        key "guild_visible"
+        doc "TODO"
+    }
+
+    field enable_guilds type="bool::int" {
+        key "guild"
+        doc "Enables guids system"
+    }
+
+
+   
+    // new
+    field enable_old_video_ads_slot type="bool::int" {
+        key "old_video_ads_slot"
+        doc "TODO"
+    }
+
+   
+    // end of new
+
+    field daily_dungeon_list type="str" {
+        key "daily_dungeon_list"
+        doc "TODO"
+    }
+
+    // TODO: s/str/commalist[int]/ (100000,100050,100100,100200,100300,100310,100320,100400,100500)
+    field new_164_trial type="bool::int" {
+        key "new_164_trial"
+        doc "TODO"
+    }
+
+    field enable_mystery_chests type="bool::int" {
+        key "mystery_chest"
+        doc "Enables mystery chests"
+    }
+
+    field freepaid_gems type="bool::int" {
+        key "freepaid_gems"
+        doc "TODO"
+    }
+
+    field cooldown_timer type="int" {
+        key "cooldown_timer"
+        doc "TODO"
+    }
+
+    // 5
+    field va_sp_skill type="bool::int" {
+        key "va_sp_skill"
+        doc "TODO"
+    }
+
+    field frontiergate_plus type="bool::int" {
+        key "frontiergate_plus"
+        doc "TODO"
+    }
+
+    field enable_summon_categories type="bool::int" {
+        key "gacha_category"
+        doc "Enables category in summons"
+    }
+
+    field unit_type_bonus_skill type="bool::int" {
+        key "unit_type_bonus_skill"
+        doc "TODO"
+    }
+
+
+    // tags unused by version 2.9.16 but where still found in the answer
+    field fish type="bool::int" {
+        key "fish"
+        doc "TODO"
+    }
+
+    field felloplay_community type="bool::int" {
+        key "felloplay_community"
+        doc "TODO"
+    }
+
+    field supersonic_google type="bool::int" {
+        key "supersonic_google"
+        doc "TODO"
+    }
+
+    field google_felloplay type="bool::int" {
+        key "google_felloplay"
+        doc "TODO"
+    }
+
+    field felloplay_community_ios type="bool::int" {
+        key "felloplay_community_ios"
+        doc "TODO"
+    }
+
+    field amazon_coins_reward_control type="bool::int" {
+        key "amazon_conins_reward_control"
+        doc "TODO"
+    }
+}

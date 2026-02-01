@@ -1,0 +1,59 @@
+json ChallengeArenaUserInfo {
+    doc TODO
+
+    field unk type="str" {
+        key "h7eY3sAK"
+        doc "TODO"
+    }
+
+    field unkint type="i32::str" {
+        key "Nou5bCmm"
+        doc "TODO"
+    }
+
+    field unkint2 type="i32::str" {
+        key "AKP8t3xK"
+        doc "TODO"
+    }
+
+    field rainbow_coins type="i32::str" {
+        key "KAZmxkgy"
+        doc "TODO"
+    }
+
+    field unkint4 type="i32::str" {
+        key "e34YV1Ey"
+        doc "TODO"
+    }
+
+    field unkint5 type="i32::str" {
+        key "4lH05mQr"
+        doc "TODO"
+    }
+
+    field league_id type="i32::str" {
+        key "xZeGgDQe"
+        doc "TODO"
+    }
+
+    field unkint7 type="i32::str" {
+        key "BcIqcWDM"
+        doc "TODO"
+    }
+
+    field unkint8 type="i32::str" {
+        key "fBGCdi8I"
+        doc "TODO"
+    }
+
+    field unkint9 type="i32::str" {
+        key "zf5Ae850"
+        doc "TODO"
+    }
+
+    field unkstr2 type="str" {
+        key "outas79f"
+        doc "TODO"
+    }
+
+}

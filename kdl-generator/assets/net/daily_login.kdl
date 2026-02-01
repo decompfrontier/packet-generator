@@ -1,0 +1,40 @@
+// @keyjson(key_group = "Drudr2w5")
+json DailyLoginRewardsUserInfo {
+    doc "TODO"
+    field id type="i32::str" {
+        key "XIvaD6Jp"
+        doc "TODO"
+    }
+
+    field user_current_count type="i32::str" {
+        key "35JXN4Ay"
+        doc "TODO"
+    }
+
+    field user_spin_limit_count type="i32::str" {
+        key "5xStG99s"
+        doc "TODO"
+    }
+
+    field current_day type="i32::str" {
+        key "ad6i23pO"
+        doc "TODO"
+    }
+
+    field remaining_days_till_guaranteed_reward type="i32::str" {
+        key "u8iD6ka7"
+        doc "TODO"
+    }
+
+    field message type="str" {
+        key "ZC0msu2L"
+        doc "TODO"
+    }
+
+    field next_reward_id type="i32::str" {
+        key "outas79f"
+        doc "TODO"
+    }
+
+}
+

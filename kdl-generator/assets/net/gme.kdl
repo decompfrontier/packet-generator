@@ -1,0 +1,149 @@
+// from enum import Enum, Flag
+// from schema import *
+
+// This module contains the basic game request/response.
+
+int-enum GmeErrorFlags start=0 {
+    doc "Flags of the error happend in the game."
+
+    variant NoError {
+        doc "No error oncurred."
+        value 0
+    }
+
+    variant IsInError {
+        doc "The server oncurred an error."
+        value 1
+    }
+
+    variant ShouldHandleCommands { 
+        doc "The custom command should be handled."
+        value 2
+    }
+}
+
+// @processable
+int-enum GmeErrorCommand start=0 {
+    doc "Type of command to do after the user presses OK."
+
+    variant Retry {
+        doc TODO
+        value 2
+    }
+
+    variant Continue {
+        doc TODO
+        value 3
+    }
+
+    variant Close {
+        doc TODO
+        value 4
+    }
+
+    variant Close2 {
+        doc TODO
+        value 5
+    }
+
+    variant ReturnToGame {
+        doc TODO
+        value 6
+    }
+
+    variant RaidError {
+        doc TODO
+        value 7
+    }
+
+    variant Continue2 {
+        doc TODO
+        value 8
+    }
+
+    variant LogoutFacebook {
+        doc TODO
+        value 9
+    }
+
+    variant Close3 {
+        doc TODO
+        value 10
+    }
+}
+
+// keyjson(key_group = "F4q6i9xe")
+json GmeHeader {
+    doc "Header of a game request/response."
+    
+    field id type="str" {
+        key "Hhgi79M1"
+        doc "ID of the request"
+    }
+
+    field client_id type="str" {
+        key "aV6cLn3v"
+        doc "ID of the client that invoked the request"
+    }
+}
+
+
+// keyjson(key_group = "a3vSYuq2")
+json GmeBody {
+    doc "Content of the game request/response."
+
+    field body type="str" {
+        key "Kn51uR4Y"
+        doc "Encrypted JSON content."
+    }
+
+}
+
+// keyjson(key_group = "b5PH6mZa")
+json GmeError {
+    doc "Object that stores any possible error with the request or response."
+
+    field flag type="GmeErrorFlags" {
+        key "3e9aGpus"
+        doc "Error flags."
+    }
+
+    field cmd type="GmeErrorCommand" {
+        key "iPD12YCr"
+        doc "Action to execute after pressing OK. (Only enabled if the flag `ShouldHandleCommands` is set)"
+    }
+
+    field message type="str" {
+        key "ZC0msu2L"
+        doc "Message to show on the error."
+    }
+
+    field url type="str" {
+        key "zcJeTx18"
+        doc "URL to open in the browser after OK is pressed. (like for update the game)"
+    }
+}
+
+// json
+json GmeAction {
+    doc "Main packet of interaction between client and server."
+
+    field header type=GmeHeader {
+        key "F4q6i9xe"
+        doc "Header of the message."
+    }
+
+    field body type=GmeBody {
+        // "default": DefaultType.Omit
+        key "a3vSYuq2"
+        doc "Body of the message."
+        optional #true
+    }
+
+    field field error type=GmeError {
+        // "default": DefaultType.Omit,
+        key "b5PH6mZa"
+        doc "Error object in case of an error."
+        optional #true
+    }
+}

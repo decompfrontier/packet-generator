@@ -1,0 +1,11 @@
+// @keyjson(key_group = "IkdSufj5")
+json GuildInfo {
+    doc TODO
+
+    field id type="i32::str" {
+        key "sD73jd20"
+        doc "TODO"
+    }
+
+    // TODO ...
+}
