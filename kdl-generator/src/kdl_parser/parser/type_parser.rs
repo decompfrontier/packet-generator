@@ -382,9 +382,71 @@ mod combinator_solution {
     }
 
     fn parse_custom_type(input: &mut &str) -> PResult {
+        macro_rules! gen_error {
+            (match $var:expr, $(($name:ident -> $expected:expr)),+ $(,)*) => {
+                match $var {
+                    $(
+                    stringify!($name) => Err(MiniDiagnostic {
+                        message: String::from(concat!("Found legacy Python datatype `", stringify!($name), "`.")),
+                        severity: miette::Severity::Error,
+                        help: Some(String::from(concat!("Replace it with `", stringify!($expected), "`."))),
+                    }),
+                    )+
+
+                    _ => Ok(())
+                }
+            };
+        }
+
+        fn error_on_python_datatype(custom_str: &str) -> Result<(), MiniDiagnostic> {
+            gen_error!(match custom_str,
+                (int -> i32::int),
+                (intstr -> i32::str),
+                (long -> i64::int),
+                (longstr -> i64::str),
+                (float -> f32::int),
+                (floatstr -> f32::str),
+                (double -> f64::int),
+                (doublestr -> f64::str),
+                (boolint -> bool::int),
+                (intbool -> bool::int),
+                (boolstr -> bool::str),
+                (strbool -> bool::str),
+                (commalist -> "[...]::sep(comma)"),
+                (atlist -> "[...]::sep(at)"),
+                (colonlist -> "[...]::sep(colon)"),
+                (datetimeunix -> "datetime-unix"),
+            )
+        }
+
         (alphanumeric1, (not(alphanumeric1), opt(parse_modifier)))
-            .map(|(name, ((), _maybe_modifiers))| DataType::Custom(name.to_owned()))
+            .try_map(
+                |(name, _maybe_modifiers)| -> Result<DataType, MiniDiagnostic> {
+                    error_on_python_datatype(name)?;
+
+                    Ok(DataType::Custom(name.into()))
+                },
+            )
             .parse_next(input)
+
+        //     .verify(|(name, _)| {
+        //         !matches!(
+        //             *name,
+        //             "int"
+        //                 | "intstr"
+        //                 | "boolint"
+        //                 | "boolstr"
+        //                 | "float"
+        //                 | "floatstr"
+        //                 | "double"
+        //                 | "doublestr"
+        //         )
+        //     })
+        // .context( MiniDiagnostic {
+        //     message: "Found an old Python datatype `int`, `intstr`, `boolint`, `boolstr`, `float`, `floatstr`, `double` or `doublestr`. Convert it to either `i32`, `bool`, `f32`, `f64`.".into(),
+        //     severity: miette::Severity::Error,
+        //     help: None,
+        // })
     }
 
     fn parse_map(input: &mut &str) -> PResult {
