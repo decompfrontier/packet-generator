@@ -62,17 +62,6 @@ impl Generator for CxxGenerator {
         registry: &DefinitionRegistry,
         initial_filename: &str,
     ) -> Result<super::GeneratedSource, GenerationError> {
-        let generated_sources: Result<Vec<String>, GenerationError> = registry
-            .all_definitions()
-            .map(|def| match **def {
-                Definition::Json(ref json) => generate_json_cxx(registry, json),
-                Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
-                Definition::StringEnum(ref string_enum) => {
-                    generate_str_enum_cxx(registry, string_enum)
-                }
-            })
-            .collect();
-
         let mut content = format!(
             r#"#pragma once
 
@@ -89,6 +78,29 @@ impl Generator for CxxGenerator {
                 content.push_str("\n\n");
             }
         }
+
+        let forward_definitions: Vec<_> = registry
+            .all_definitions()
+            .filter_map(|def| match **def {
+                Definition::Json(ref json) => Some(format!("struct {};", json.name)),
+                Definition::IntEnum(ref int_enum) => Some(format!("enum class {};", int_enum.name)),
+                Definition::StringEnum(_) => None,
+            })
+            .collect();
+
+        content.push_str(&forward_definitions.join("\n\n"));
+        content.push_str("\n\n");
+
+        let generated_sources: Result<Vec<String>, GenerationError> = registry
+            .all_definitions()
+            .map(|def| match **def {
+                Definition::Json(ref json) => generate_json_cxx(registry, json),
+                Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
+                Definition::StringEnum(ref string_enum) => {
+                    generate_str_enum_cxx(registry, string_enum)
+                }
+            })
+            .collect();
 
         content.push_str(&generated_sources?.join("\n\n"));
         content.push_str("\n\n");
@@ -202,14 +214,24 @@ fn convert_datatype(
         }
 
         DataType::Definition(weak) => match weak.upgrade() {
-            Some(definition) => Ok(definition.name().clone()),
+            Some(definition) => match *definition {
+                Definition::StringEnum(ref str_enum) => Ok(format!("{}::Type", str_enum.name)),
+
+                _ => Ok(definition.name().clone()),
+            },
+
             None => Err(GenerationError::ExpiredRegistry {
                 queried_from: datatype.clone(),
             }),
         },
 
         DataType::Unknown(other) => match registry.find(other) {
-            Some(definition) => Ok(definition.name().clone()),
+            Some(definition) => match *definition {
+                Definition::StringEnum(ref str_enum) => Ok(format!("{}::Type", str_enum.name)),
+
+                _ => Ok(definition.name().clone()),
+            },
+
             None => Err(GenerationError::TypeNotFound {
                 name: other.clone(),
                 queried_from: datatype.clone(),

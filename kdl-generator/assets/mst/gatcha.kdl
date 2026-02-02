@@ -42,7 +42,7 @@ json GachaEffectMst {
 json GachaCategory {
     doc TODO
 
-    field id type="int" {
+    field id type="i32::int" {
         key "vx9uyQVQ"
         doc "TODO"
     }
@@ -52,7 +52,7 @@ json GachaCategory {
         doc "TODO"
     }
 
-    field disp_order type="int" {
+    field disp_order type="i32::int" {
         key "2r4EoNt4"
         doc "TODO"
     }

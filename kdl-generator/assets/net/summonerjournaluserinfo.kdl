@@ -7,12 +7,12 @@ json SummonerJournalUserInfo {
         doc "TODO"
     }
 
-    field points type="int" {
+    field points type="i32::int" {
         key "9hH0neGa"
         doc "TODO"
     }
 
-    field journal_flag type="int" {
+    field journal_flag type="i32::int" {
         key "da365dB8"
         doc "TODO"
     }

@@ -10,6 +10,7 @@ use packet_generator::{
     intermediate::DefinitionRegistry,
     kdl_parser::{ParserOpts, ParsingWarnings},
 };
+use stringcase::Caser;
 
 const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
@@ -27,12 +28,15 @@ fn create_file(path: impl AsRef<Path>, content: &str) {
         .expect("FS must write bytes");
 }
 
-#[test]
-fn e2e_can_compile_cxx_definition() {
-    let (defs, _) = setup_e2e_registry("tests/defs/main.kdl");
+fn generic_e2e_cxx_glaze_harness(path_entrypoint: &str, test_name: &str) {
+    let (defs, _) = setup_e2e_registry(path_entrypoint);
 
-    let generation_basepath =
-        PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/target/tests-e2e-cxx"));
+    let generation_basepath = PathBuf::from(format!(
+        "{}/target/tests-e2e-{}",
+        env!("CARGO_MANIFEST_DIR"),
+        test_name.to_kebab_case()
+    ));
+
     let _ = std::fs::create_dir_all(&generation_basepath);
 
     let mut generator = generators::CxxGenerator::new();
@@ -47,10 +51,11 @@ fn e2e_can_compile_cxx_definition() {
     let runtime_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../runtime/cpp");
 
     {
+        let test_name = test_name.to_snake_case();
         let cmake_file_content = format!(
             r#"
 cmake_minimum_required(VERSION 3.24)
-project(kdl_generator_e2e_glaze_test_suite)
+project(kdl_generator_e2e_{test_name}_test_suite)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -136,6 +141,14 @@ int main() {{
 
         assert!(cmake_output.status.success());
     }
+}
 
-    // println!("clang++ output: {clang_output:#?}");
+#[test]
+fn e2e_can_compile_cxx_glaze_stresstest() {
+    generic_e2e_cxx_glaze_harness("tests/defs/main.kdl", "generic-definitions");
+}
+
+#[test]
+fn e2e_can_compile_cxx_glaze_brave_frontier() {
+    generic_e2e_cxx_glaze_harness("assets/net/handlers.kdl", "brave-frontier");
 }

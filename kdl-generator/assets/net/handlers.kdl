@@ -1,0 +1,179 @@
+import "../mst/versioninfo.kdl"
+import "../mst/logincampaign.kdl"
+import "../mst/userlevel.kdl"
+import "../mst/town.kdl"
+import "../mst/dungeonkey.kdl"
+import "../mst/arena.kdl"
+import "../mst/gatcha.kdl"
+import "../mst/define.kdl"
+import "../mst/npc.kdl"
+import "../mst/slots.kdl"
+import "../mst/banner.kdl"
+import "../mst/excludeddungeon.kdl"
+import "../mst/passiveskill.kdl"
+import "../mst/noticeinfo.kdl"
+import "../mst/dailytaskbonus.kdl"
+import "../net/signalkey.kdl"
+import "../net/challenge_arena.kdl"
+import "../net/guild.kdl"
+import "../net/daily_login.kdl"
+import "../net/summonerjournaluserinfo.kdl"
+import "../net/userinfo.kdl"
+
+json InitializeReq {
+    doc "Initialization command"
+
+    field userInfo type=UserInfoReq {
+        key IKqx1Cn9
+        doc "User information request"
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST that should be sent"
+     }
+}
+
+
+// @json
+json InitializeResp {
+    doc "Response of the initialize command"
+
+    // # cachable
+    field loginCampagin  type=LoginCampaignMst {
+        key Bd29Pqw0
+        doc TODO
+    }
+
+    field loginCampaignReward type=LoginCampaignReward {
+        key "bD18x9Ti"
+        doc TODO
+    }
+
+    field progression type=UserLevelMst {
+        key "YDv9bJ3s"
+        doc "Configuration of the user stats progression"
+    }
+
+    field mst type=VersionInfo {
+        key "KeC10fuL"
+        doc "Configuration of the versions of the MSTs"
+    }
+
+    field townFacility type=TownFacilityMst {
+        key "Lh1I3dGo"
+        doc TODO
+    }
+
+    field townFacilityLv type=TownFacilityLvMst {
+        key "d0EkJ4TB"
+        doc TODO
+    }
+
+    field townLocation type=TownLocationMst {
+        key "1y2JDv79"
+        doc TODO
+    }
+
+    field townLocationLv type=TownLocationLvMst {
+        key "9ekQ4tZq"
+        doc TODO
+    }
+
+    field dungeonKeys type=DungeonKeyMst {
+        key "4NG79sX1"
+        doc "Configuration of the Vortex dungeon with keys"
+    }
+
+    field arenaRanks type=ArenaRankMst {
+        key "6kWq78zx"
+        doc "PVP Arena rankings"
+    }
+
+    field gachaEffects type=GachaEffectMst {
+        key "Pf97SzVw"
+        doc TODO
+    }
+
+    field gachas type="GachaMst" {
+        key "5Y4GJeo3"
+        doc "Configuration of current Gacha banners"
+    }
+
+    field defines type="DefineMst" {
+        key "VkoZ5t3K"
+        doc "Configuration of the server"
+    }
+
+    field npcs type=NpcMst {
+        key "hV5vWu6C"
+        doc TODO
+    }
+
+    field bannerInfo type=BannerInfoMst {
+        key "Pk5F1vhx"
+        doc TODO
+    }
+
+    field extraPassiveSkills type=ExtraPassiveSkillMst {
+        key "z5U7utsm"
+        doc TODO
+    }
+
+    field noticeInfo type="NoticeInfo" {
+        key "Pj6zDW3m"
+        doc "Configuration of notices"
+    }
+
+    // # user specific
+    field signalKey type=SignalKey {
+        key "6FrKacq7"
+        doc TODO
+    }
+
+    field challengeArenaUserInfo type="ChallengeArenaUserInfo" {
+        key "XGmGpmYW"
+        doc "User current progression in Challenge Arena"
+    }
+
+    field dailyTaskBonuses type=DailyTaskBonusMst {
+        key "p283g07d"
+        doc TODO
+    }
+
+    field dailyTaskPrizes type=DailyTaskPrizeMst {
+        key "a739yK18"
+        doc TODO
+    }
+
+    field dailyTasks type=DailyTaskMst {
+        key "k23D7d43"
+        doc TODO
+    }
+
+    field dailyLoginRewards type=DailyLoginRewardsUserInfo {
+        key "Drudr2w5"
+        doc TODO
+    }
+
+    field guild type="GuildInfo" {
+        key "IkdSufj5"
+        doc "Guild information"
+    }
+
+    field videoAdSlots type=VideoAdsSlotGameInfo {
+        key "mebW7mKD"
+        doc TODO
+    }
+
+    field summonerJournal type=SummonerJournalUserInfo {
+        key "M3dw18eB"
+        doc TODO
+    }
+
+    field userInfo type="UserInfoResp" {
+        key "IKqx1Cn9"
+        doc "User information"
+    }
+
+}
