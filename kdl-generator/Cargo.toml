@@ -21,7 +21,7 @@ itertools = { workspace = true }
 winnow = { version = "0.7.14", features = ["simd"] }
 kdl = "6.5.0"
 stringcase = "0.4.0"
-path-clean = "^0.1.0"
+clean-path = "0.2"
 
 [profile.release]
 lto = true

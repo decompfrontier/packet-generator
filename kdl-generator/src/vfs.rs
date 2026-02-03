@@ -123,7 +123,7 @@ impl InMemoryFS {
 impl Vfs for InMemoryFS {
     fn normalize_path(path: &Path) -> Result<VfsPathBuf, std::io::Error> {
         match path.to_str() {
-            Some(s) => Ok(VfsPathBuf(path_clean::clean(s).into())),
+            Some(s) => Ok(VfsPathBuf(clean_path::clean(s))),
             None => Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidFilename,
                 String::from("path is not UTF-8"),
