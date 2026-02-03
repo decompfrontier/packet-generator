@@ -79,26 +79,28 @@ impl Generator for CxxGenerator {
             }
         }
 
-        let forward_definitions: Vec<_> = registry
-            .all_definitions()
-            .filter_map(|def| match **def {
-                Definition::Json(ref json) => Some(format!("struct {};", json.name)),
-                Definition::IntEnum(ref int_enum) => Some(format!("enum class {};", int_enum.name)),
-                Definition::StringEnum(_) => None,
-            })
-            .collect();
-
-        content.push_str(&forward_definitions.join("\n\n"));
-        content.push_str("\n\n");
-
-        let generated_sources: Result<Vec<String>, GenerationError> = registry
+        let forward_definitions: Result<Vec<String>, _> = registry
             .all_definitions()
             .map(|def| match **def {
-                Definition::Json(ref json) => generate_json_cxx(registry, json),
-                Definition::IntEnum(ref int_enum) => generate_int_enum_cxx(registry, int_enum),
+                Definition::Json(ref json) => Ok(format!("struct {};", json.name)),
+                Definition::IntEnum(ref int_enum) => Ok(format!("enum class {};", int_enum.name)),
                 Definition::StringEnum(ref string_enum) => {
                     generate_str_enum_cxx(registry, string_enum)
                 }
+            })
+            .collect();
+
+        content.push_str(&forward_definitions?.join("\n\n"));
+        content.push_str("\n\n");
+
+        let generated_sources: Result<Vec<String>, _> = registry
+            .all_definitions()
+            .filter_map(|def| match **def {
+                Definition::Json(ref json) => Some(generate_json_cxx(registry, json)),
+                Definition::IntEnum(ref int_enum) => {
+                    Some(generate_int_enum_cxx(registry, int_enum))
+                }
+                Definition::StringEnum(ref _string_enum) => None,
             })
             .collect();
 
