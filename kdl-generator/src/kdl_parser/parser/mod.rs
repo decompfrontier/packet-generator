@@ -532,7 +532,7 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
     let children = kdl_document.nodes();
 
     if children.is_empty() {
-        let diag = Diagnostic {
+        non_erroring_diagnostics.push(Diagnostic {
             message: "the file is empty".to_owned(),
             severity: Severity::Warning,
             source_info: source_info.clone(),
@@ -540,9 +540,7 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
             help: Some("add some definitions".to_owned()),
             label: None,
             related: vec![],
-        };
-
-        non_erroring_diagnostics.push(diag);
+        });
 
         return Ok((
             raw_document,
@@ -570,6 +568,17 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
         visited_documents.insert(canonical_path);
         let (other_root, other_diagnostics) =
             parse_single_document(other_document, &path, visited_documents, opts)?;
+
+        // last_json_index = {
+        //     let mut last_max_seen = last_json_index;
+        //     for def in &mut other_root.json_definitions {
+        //         def.index += last_json_index;
+        //         if def.index > last_max_seen {
+        //             last_max_seen = def.index;
+        //         }
+        //     }
+        //     last_max_seen
+        // };
 
         raw_document
             .json_definitions

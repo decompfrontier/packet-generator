@@ -66,5 +66,5 @@ pub fn parse_kdl<S: AsRef<str>, V: Vfs>(
 
     let document = kdl_parser::validate(raw_document)?;
 
-    Ok((kdl_parser::document_to_definitions(document), warnings))
+    Ok((kdl_parser::document_to_definitions(document)?, warnings))
 }

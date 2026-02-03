@@ -81,12 +81,10 @@ impl Generator for CxxGenerator {
 
         let forward_definitions: Result<Vec<String>, _> = registry
             .all_definitions()
-            .map(|def| match **def {
-                Definition::Json(ref json) => Ok(format!("struct {};", json.name)),
-                Definition::IntEnum(ref int_enum) => Ok(format!("enum class {};", int_enum.name)),
-                Definition::StringEnum(ref string_enum) => {
-                    generate_str_enum_cxx(registry, string_enum)
-                }
+            .map(|def| match registry.get(def) {
+                Definition::Json(json) => Ok(format!("struct {};", json.name)),
+                Definition::IntEnum(int_enum) => Ok(format!("enum class {};", int_enum.name)),
+                Definition::StringEnum(string_enum) => generate_str_enum_cxx(registry, string_enum),
             })
             .collect();
 
@@ -94,13 +92,13 @@ impl Generator for CxxGenerator {
         content.push_str("\n\n");
 
         let generated_sources: Result<Vec<String>, _> = registry
-            .all_definitions()
-            .filter_map(|def| match **def {
-                Definition::Json(ref json) => Some(generate_json_cxx(registry, json)),
-                Definition::IntEnum(ref int_enum) => {
-                    Some(generate_int_enum_cxx(registry, int_enum))
-                }
-                Definition::StringEnum(ref _string_enum) => None,
+            .sorted_definitions()
+            .map_err(GenerationError::CycleFound)?
+            .iter()
+            .filter_map(|&def| match registry.get(def) {
+                Definition::Json(json) => Some(generate_json_cxx(registry, json)),
+                Definition::IntEnum(int_enum) => Some(generate_int_enum_cxx(registry, int_enum)),
+                Definition::StringEnum(_string_enum) => None,
             })
             .collect();
 
@@ -215,21 +213,20 @@ fn convert_datatype(
             Ok(format!("std::array<{inner}, 1>")) // TODO(arves): Can this be made a meta-data only generation step?
         }
 
-        DataType::Definition(weak) => match weak.upgrade() {
-            Some(definition) => match *definition {
+        DataType::Definition(weak) => match registry.get(*weak) {
+            definition => match *definition {
                 Definition::StringEnum(ref str_enum) => Ok(format!("{}::Type", str_enum.name)),
 
                 _ => Ok(definition.name().clone()),
             },
-
-            None => Err(GenerationError::ExpiredRegistry {
-                queried_from: datatype.clone(),
-            }),
+            // None => Err(GenerationError::ExpiredRegistry {
+            //     queried_from: datatype.clone(),
+            // }),
         },
 
         DataType::Unknown(other) => match registry.find(other) {
-            Some(definition) => match *definition {
-                Definition::StringEnum(ref str_enum) => Ok(format!("{}::Type", str_enum.name)),
+            Some((definition, _idx)) => match definition {
+                Definition::StringEnum(str_enum) => Ok(format!("{}::Type", str_enum.name)),
 
                 _ => Ok(definition.name().clone()),
             },

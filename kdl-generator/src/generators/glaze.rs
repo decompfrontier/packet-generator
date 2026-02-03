@@ -21,8 +21,8 @@ impl Addon for GlazeGenerator {
     ) -> Option<Result<std::borrow::Cow<'static, str>, GenerationError>> {
         let generated_sources: Result<Vec<String>, GenerationError> = registry
             .all_definitions()
-            .filter_map(|def| match **def {
-                Definition::Json(ref json) => Some(generate_json_cxx(registry, json)),
+            .filter_map(|def| match registry.get(def) {
+                Definition::Json(json) => Some(generate_json_cxx(registry, json)),
                 _ => None,
             })
             .collect();

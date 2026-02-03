@@ -113,8 +113,14 @@ pub enum GenerationError {
         /// The type from which the query originated.
         queried_from: DataType,
     },
+
+    /// There is a cycle between definitions in the
+    /// [`DefinitionRegistry`](crate::intermediate::DefinitionRegistry).
+    #[error("found a cycle in the definition registry: node #{0:?}")]
+    CycleFound(Cycle<NodeIndex>),
 }
 
 use atomicow::CowArc;
 pub use cpp::CxxGenerator;
 pub use glaze::GlazeGenerator;
+use petgraph::{algo::Cycle, graph::NodeIndex};

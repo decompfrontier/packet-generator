@@ -19,7 +19,11 @@ use kdl::KdlError;
 /// the generator, by calling [`document_to_definitions`].
 pub struct Document(RawDocument);
 
-use crate::{intermediate::DefinitionRegistry, kdl_parser::schema::RawDocument, vfs::Vfs};
+use crate::{
+    intermediate::{DefinitionRegistry, PartialDefinitionRegistry, RegistryError},
+    kdl_parser::schema::RawDocument,
+    vfs::Vfs,
+};
 
 pub use parser::raw_parse_kdl;
 
@@ -329,7 +333,7 @@ mod document_to_intermediate {
     use crate::{
         intermediate::{
             self, BoolEncoding as IntermediateBoolEncoding, DataType as IntermediateDataType,
-            Definition, DefinitionRegistry, Encoding, Json, JsonField,
+            Definition, Encoding, Json, JsonField, PartialDefinitionRegistry,
         },
         kdl_parser::schema::{
             self, BoolEncoding, DataType as SchemaDataType, JsonDefinition as SchemaJsonDefinition,
@@ -339,7 +343,7 @@ mod document_to_intermediate {
 
     fn convert_datatype_recursive(
         type_: &schema::DataType,
-        registry: &mut DefinitionRegistry,
+        registry: &mut PartialDefinitionRegistry,
     ) -> intermediate::DataType {
         match type_ {
             schema::DataType::I32 { encoding } => match encoding {
@@ -445,8 +449,8 @@ mod document_to_intermediate {
             },
 
             SchemaDataType::Custom(s) => {
-                if let Some(def) = registry.find_weak(s) {
-                    intermediate::DataType::Definition(def)
+                if let Some(idx) = registry.find_weak(s) {
+                    intermediate::DataType::Definition(idx)
                 } else {
                     intermediate::DataType::Unknown(s.to_owned())
                 }
@@ -456,12 +460,15 @@ mod document_to_intermediate {
 
     fn convert_json_datatype(
         schema_field: &SchemaJsonField,
-        registry: &mut DefinitionRegistry,
+        registry: &mut PartialDefinitionRegistry,
     ) -> IntermediateDataType {
         convert_datatype_recursive(&schema_field.r#type, registry)
     }
 
-    pub fn add_enum_definitions(registry: &mut DefinitionRegistry, enums: Vec<EnumDefinition>) {
+    pub fn add_enum_definitions(
+        registry: &mut PartialDefinitionRegistry,
+        enums: Vec<EnumDefinition>,
+    ) {
         use crate::intermediate::{IntEnum, StringEnum};
 
         for enum_ in enums {
@@ -480,7 +487,7 @@ mod document_to_intermediate {
     }
 
     pub fn add_json_definitions(
-        registry: &mut DefinitionRegistry,
+        registry: &mut PartialDefinitionRegistry,
         structs: Vec<SchemaJsonDefinition>,
     ) {
         for struct_ in structs {
@@ -503,11 +510,11 @@ mod document_to_intermediate {
 }
 
 #[must_use = "Converting a `Document` to the IR representation implies that you want to use the resulting registry."]
-pub fn document_to_definitions(document: Document) -> DefinitionRegistry {
-    let mut registry = DefinitionRegistry::new();
+pub fn document_to_definitions(document: Document) -> Result<DefinitionRegistry, Diagnostic> {
+    let mut registry = PartialDefinitionRegistry::new();
 
     document_to_intermediate::add_enum_definitions(&mut registry, document.0.enum_definitions);
     document_to_intermediate::add_json_definitions(&mut registry, document.0.json_definitions);
 
-    registry
+    registry.finalize()
 }

@@ -2,9 +2,21 @@
 
 use std::{
     borrow::Borrow,
-    collections::{BTreeMap, BTreeSet, btree_map::Values},
-    sync::{Arc, Weak},
+    collections::{BTreeSet, HashMap, HashSet},
+    sync::Arc,
 };
+
+use petgraph::{
+    algo::toposort, graph::NodeIndex, prelude::StableDiGraph, stable_graph::NodeIndices,
+};
+
+use crate::kdl_parser::Diagnostic;
+
+#[derive(Debug, Clone, thiserror::Error)]
+pub enum RegistryError {
+    #[error("the definition `{name}` refers to a type `{target}` that does not exist")]
+    IncompleteDefinition { name: String, target: String },
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Encoding {
@@ -18,6 +30,8 @@ pub enum BoolEncoding {
     Int,
     Bool,
 }
+
+type DefinitionRef = NodeIndex;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Definition {
@@ -281,90 +295,171 @@ pub enum DataType {
         inner_type: Arc<Self>,
     },
 
-    Definition(Weak<Definition>),
+    Definition(DefinitionRef),
 
     Unknown(String),
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct DefinitionRegistry {
-    definitions: BTreeMap<String, Arc<Definition>>,
-
+    definitions: StableDiGraph<Definition, ()>,
+    names: HashMap<String, DefinitionRef>,
     _private: std::marker::PhantomData<()>,
 }
 
 impl DefinitionRegistry {
     #[must_use]
-    pub const fn new() -> Self {
+    pub fn get(&self, definition_ref: DefinitionRef) -> &Definition {
+        &self.definitions[definition_ref]
+    }
+
+    pub fn find<S: AsRef<str>>(&self, name: S) -> Option<(&Definition, NodeIndex)> {
+        self.names
+            .get(name.as_ref())
+            .map(|&idx| (&self.definitions[idx], idx))
+    }
+
+    #[must_use]
+    pub fn find_weak<S: AsRef<str>>(&self, name: S) -> Option<NodeIndex> {
+        self.names.get(name.as_ref()).copied()
+    }
+
+    #[must_use]
+    pub fn all_definitions(&self) -> NodeIndices<'_, Definition> {
+        self.definitions.node_indices()
+    }
+
+    /// # Errors
+    ///
+    /// Errors if the definitions have a cycle between each other.
+    pub fn sorted_definitions(&self) -> Result<Vec<NodeIndex>, petgraph::algo::Cycle<NodeIndex>> {
+        toposort(&self.definitions, None)
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct PartialDefinitionRegistry {
+    definitions: StableDiGraph<Definition, ()>,
+    names: HashMap<String, DefinitionRef>,
+
+    _private: std::marker::PhantomData<()>,
+}
+
+impl PartialDefinitionRegistry {
+    #[must_use]
+    pub fn new() -> Self {
         Self {
-            definitions: BTreeMap::new(),
+            definitions: StableDiGraph::new(),
+            names: HashMap::new(),
             _private: std::marker::PhantomData {},
         }
     }
 
-    pub fn insert(&mut self, definition: Definition) -> Option<Arc<Definition>> {
-        match definition {
-            Definition::Json(ref json) => self
-                .definitions
-                .insert(json.name.clone(), Arc::new(definition)),
+    /// Validates the current incomplete registry a builds a [`DefinitionRegistry`].
+    ///
+    /// # Errors
+    ///
+    /// Return `Err` if the definitions reference non-existing definitions.
+    ///
+    /// # Panics
+    ///
+    /// FIXME(anri): currently panics on the error conditions above.
+    pub fn finalize(mut self) -> Result<DefinitionRegistry, Diagnostic> {
+        let all_nodes: Vec<_> = self.definitions.node_indices().collect();
+        let mut missing_edges = vec![];
 
-            Definition::IntEnum(ref int_enum) => self
-                .definitions
-                .insert(int_enum.name.clone(), Arc::new(definition)),
+        for node_idx in &all_nodes {
+            let node = &mut self.definitions[*node_idx];
 
-            Definition::StringEnum(ref string_enum) => self
-                .definitions
-                .insert(string_enum.name.clone(), Arc::new(definition)),
+            if let Definition::Json(json) = node {
+                let fields = json
+                    .fields
+                    .iter()
+                    .map(|field| -> Result<_, RegistryError> {
+                        let mut f = field.clone();
+
+                        if let DataType::Unknown(name) = &field.type_ {
+                            let idx = self.names.get(name).ok_or_else(|| {
+                                RegistryError::IncompleteDefinition {
+                                    name: format!("{}::{}", json.name, f.name),
+                                    target: name.clone(),
+                                }
+                            })?;
+
+                            f.type_ = DataType::Definition(*idx);
+
+                            missing_edges
+                                .push((idx, self.names.get(&json.name).expect("this is myself")));
+                        }
+
+                        Ok(f)
+                    })
+                    .collect::<Result<_, RegistryError>>()
+                    .expect("todo: remove this panic on favor of Result");
+
+                json.fields = fields;
+            }
         }
+
+        for (source, destination) in &missing_edges {
+            self.definitions.add_edge(**source, **destination, ());
+        }
+
+        Ok(DefinitionRegistry {
+            definitions: self.definitions,
+            names: self.names,
+            _private: std::marker::PhantomData {},
+        })
     }
 
-    pub fn insert_and_get_weak(
-        &mut self,
-        definition: Definition,
-    ) -> (Weak<Definition>, Option<Arc<Definition>>) {
+    pub fn insert(&mut self, definition: Definition) -> DefinitionRef {
+        #[allow(clippy::single_match_else, reason = "May add more cases in the future")]
         match definition {
             Definition::Json(ref json) => {
-                let name = json.name.clone();
-                let new_entry = Arc::new(definition);
+                let dependencies: Vec<_> = json
+                    .fields
+                    .iter()
+                    .filter_map(|field| match field.type_ {
+                        DataType::Definition(def_idx) => Some(def_idx),
 
-                (
-                    Arc::downgrade(&new_entry),
-                    self.definitions.insert(name, new_entry),
-                )
+                        _ => None,
+                    })
+                    .collect();
+
+                let name = definition.name().clone();
+                let idx = self.definitions.add_node(definition);
+                self.names.insert(name, idx);
+                for &dependency in &dependencies {
+                    self.definitions.add_edge(dependency, idx, ());
+                }
+
+                idx
             }
 
-            Definition::IntEnum(ref int_enum) => {
-                let name = int_enum.name.clone();
-                let new_entry = Arc::new(definition);
+            _ => {
+                let name = definition.name().clone();
+                let idx = self.definitions.add_node(definition);
+                self.names.insert(name, idx);
 
-                (
-                    Arc::downgrade(&new_entry),
-                    self.definitions.insert(name, new_entry),
-                )
-            }
-
-            Definition::StringEnum(ref string_enum) => {
-                let name = string_enum.name.clone();
-                let new_entry = Arc::new(definition);
-
-                (
-                    Arc::downgrade(&new_entry),
-                    self.definitions.insert(name, new_entry),
-                )
+                idx
             }
         }
     }
 
-    pub fn find<S: AsRef<str>>(&self, name: S) -> Option<Arc<Definition>> {
-        self.definitions.get(name.as_ref()).cloned()
-    }
+    // #[must_use]
+    // fn get(&self, definition_ref: DefinitionRef) -> &Definition {
+    //     &self.definitions[definition_ref]
+    // }
+    //
+    // fn find<S: AsRef<str>>(&self, name: S) -> Option<(&Definition, NodeIndex)> {
+    //     self.names
+    //         .get(name.as_ref())
+    //         .map(|&idx| (&self.definitions[idx], idx))
+    // }
 
-    pub fn find_weak<S: AsRef<str>>(&self, name: S) -> Option<Weak<Definition>> {
-        self.definitions.get(name.as_ref()).map(Arc::downgrade)
-    }
-
-    pub fn all_definitions(&self) -> Values<'_, String, Arc<Definition>> {
-        self.definitions.values()
+    #[must_use]
+    pub fn find_weak<S: AsRef<str>>(&self, name: S) -> Option<NodeIndex> {
+        self.names.get(name.as_ref()).copied()
     }
 }
 
@@ -374,7 +469,7 @@ mod tests {
 
     #[test]
     pub fn registry_can_handle_circular_definitions() {
-        let mut definitions = DefinitionRegistry::new();
+        let mut definitions = PartialDefinitionRegistry::new();
 
         {
             let field = JsonField {
@@ -421,6 +516,8 @@ mod tests {
 
             definitions.insert(Definition::Json(s));
         };
+
+        let definitions = definitions.finalize().expect("should resolve cycles?");
 
         definitions.find("Bar").expect("Bar was inserted above.");
     }
