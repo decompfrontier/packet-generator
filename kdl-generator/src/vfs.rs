@@ -170,36 +170,36 @@ mod tests {
 
     #[test]
     fn inmem_vfs_normalizes() {
+        let path = Path::new("foo.kdl");
         assert_eq!(
-            "foo.kdl",
-            InMemoryFS::normalize_path(Path::new("foo.kdl"))
+            *path,
+            InMemoryFS::normalize_path(path)
                 .expect("cannot error: path is UTF-8")
                 .inner
-                .to_string_lossy()
+        );
+
+        let path = PathBuf::from_iter(["test", "foo.kdl"]);
+        assert_eq!(
+            path,
+            InMemoryFS::normalize_path(&path)
+                .expect("cannot error: path is UTF-8")
+                .inner
         );
 
         assert_eq!(
-            "test/foo.kdl",
-            InMemoryFS::normalize_path(Path::new("test/foo.kdl"))
+            *Path::new("foo.kdl"),
+            InMemoryFS::normalize_path(&PathBuf::from_iter(["test", "..", "foo.kdl"]))
                 .expect("cannot error: path is UTF-8")
                 .inner
-                .to_string_lossy()
         );
 
         assert_eq!(
-            "foo.kdl",
-            InMemoryFS::normalize_path(Path::new("test/../foo.kdl"))
-                .expect("cannot error: path is UTF-8")
-                .inner
-                .to_string_lossy()
-        );
-
-        assert_eq!(
-            "foo/bar/quox/a..kdl",
-            InMemoryFS::normalize_path(Path::new("./foo/bax/../bar/./ooo/../quox/a..kdl"))
-                .expect("cannot error: path is UTF-8")
-                .inner
-                .to_string_lossy()
+            PathBuf::from_iter(["foo", "bar", "quox", "a..kdl"]),
+            InMemoryFS::normalize_path(&PathBuf::from_iter([
+                ".", "foo", "bax", "..", "bar", ".", "ooo", "..", "quox", "a..kdl"
+            ]))
+            .expect("cannot error: path is UTF-8")
+            .inner
         );
     }
 }
