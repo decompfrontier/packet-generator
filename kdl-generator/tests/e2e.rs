@@ -15,7 +15,7 @@ use stringcase::Caser;
 const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
 fn setup_e2e_registry(main_file: &str) -> (DefinitionRegistry, ParsingWarnings) {
-    let path = PathBuf::from(format!("{PROJECT_DIR}/{main_file}"));
+    let path = PathBuf::from_iter([PROJECT_DIR, main_file]);
     let document = std::fs::read_to_string(&path).expect("this is a test, we control the string");
     packet_generator::parse_kdl(&document, &path, &ParserOpts::default())
         .map_err(miette::Report::from)
@@ -31,11 +31,11 @@ fn create_file(path: impl AsRef<Path>, content: &str) {
 fn generic_e2e_cxx_glaze_harness(path_entrypoint: &str, test_name: &str) {
     let (defs, _) = setup_e2e_registry(path_entrypoint);
 
-    let generation_basepath = PathBuf::from(format!(
-        "{}/target/tests-e2e-{}",
-        env!("CARGO_MANIFEST_DIR"),
-        test_name.to_kebab_case()
-    ));
+    let generation_basepath = PathBuf::from_iter([
+        test_name.to_kebab_case(),
+        "target",
+        format!("tests-e2e-{}", env!("CARGO_MANIFEST_DIR")),
+    ]);
 
     let _ = std::fs::create_dir_all(&generation_basepath);
 
@@ -48,9 +48,8 @@ fn generic_e2e_cxx_glaze_harness(path_entrypoint: &str, test_name: &str) {
 
     create_file(generation_basepath.join(&source.filename), &source.content);
 
-    let runtime_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../runtime/cpp");
-
     {
+        let runtime_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../runtime/cpp");
         let test_name = test_name.to_snake_case();
         let cmake_file_content = format!(
             r#"
@@ -124,7 +123,7 @@ int main() {{
     }
 
     {
-        let cmake_args = &["--build", "build/"];
+        let cmake_args = &["--build", "build"];
         let cmake_output = std::process::Command::new("cmake")
             .current_dir(&generation_basepath)
             .args(cmake_args)
