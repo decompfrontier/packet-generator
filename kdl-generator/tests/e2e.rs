@@ -32,9 +32,9 @@ fn generic_e2e_cxx_glaze_harness(path_entrypoint: &str, test_name: &str) {
     let (defs, _) = setup_e2e_registry(path_entrypoint);
 
     let generation_basepath = PathBuf::from_iter([
-        test_name.to_kebab_case(),
+        env!("CARGO_MANIFEST_DIR"),
+        test_name,
         "target",
-        format!("tests-e2e-{}", env!("CARGO_MANIFEST_DIR")),
     ]);
 
     let _ = std::fs::create_dir_all(&generation_basepath);
@@ -49,7 +49,8 @@ fn generic_e2e_cxx_glaze_harness(path_entrypoint: &str, test_name: &str) {
     create_file(generation_basepath.join(&source.filename), &source.content);
 
     {
-        let runtime_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../runtime/cpp");
+        // this should be enough as cmake should be clever
+        let runtime_dir = env!("CARGO_MANIFEST_DIR").replace("\\", "/") + "/../runtime/cpp";
         let test_name = test_name.to_snake_case();
         let cmake_file_content = format!(
             r#"
@@ -78,7 +79,7 @@ endif()
 add_executable(${{PROJECT_NAME}}
     main.cpp
 )
-target_include_directories(${{PROJECT_NAME}} PRIVATE {runtime_dir})
+target_include_directories(${{PROJECT_NAME}} PRIVATE "{runtime_dir}")
 target_link_libraries(${{PROJECT_NAME}} PRIVATE glaze::glaze)
     "#
         );
