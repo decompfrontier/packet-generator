@@ -6,7 +6,6 @@
 namespace pkg::glaze {
 
 struct my_ops : glz::opts {
-  glz::optimization_level optimization_level = glz::optimization_level::size;
   bool minified = true; // Also skip whitespace parsing for smaller code
   bool error_on_unknown_keys = false; // More lenient parsing
   bool prettify = false;
@@ -50,99 +49,30 @@ template <auto MemPtr> constexpr decltype(auto) datetime_unix() {
   return [](auto &&val) { return datetime_unix_helper{val.*MemPtr, 0}; };
 }
 
-#if 0
+template <typename ContainerType, auto MemPtr, char delimiter> requires pkg::detail::containerable<pkg::detail::decltype_real<MemPtr>>
+constexpr auto array_string = glz::custom<
+    [](ContainerType& container_object, std::string_view in) {    
+    
+    auto& data = glz::get_member(container_object, MemPtr);
 
-/**
-* Maps a string into an integer and vice-versa.
-*/
-template <typename T>
-constexpr auto str_to_int(glz::sv v, int base = 10)
-{
-	T result = 0;
-	auto [_, ec] = std::from_chars(v.data(), v.data() + v.size(), result, base);
-	if (ec != std::errc()) {
-		throw std::system_error(std::make_error_code(ec));
-		// TODO: handle errors with glaze context
-	}
-}
+    if (in.empty()) return;
+    if (!pkg::string_list_from(data, in, delimiter)) {
+        // TODO(arves): Handle error...
+    }
 
-/**
-* Maps a string into a vector<T> and vice-versa.
-*/
-template <typename P, auto T, char CH>
-constexpr auto stringlist = glz::custom<
-	[](P& out, const std::string& in)
-	{
-		// read
-		if (in.empty())
-		{
-			return;
-		}
+    },
+    [](const ContainerType& container_object) -> std::string {
 
-		auto& p = glz::get_member(out, T);
+    const auto& data = glz::get_member(container_object, MemPtr);
+    if (data.empty()) return "";
+    std::string output;
+    if (!pkg::string_list_to(data, output, delimiter)) {
+        // TODO(arves): Handle error...
+    }
 
-		using pV = std::remove_reference_t<decltype(p)>;
-
-		p.clear();
-
-		size_t pos = 0, lastpos = 0;
-		while ((pos = in.find(CH, lastpos)) != std::string::npos)
-		{
-			const auto cur = in.substr(lastpos, pos - lastpos);
-			lastpos = pos + 1;
-
-			if constexpr (std::is_arithmetic_v<inner_type_v<pV>>)
-			{
-				p.emplace_back(str_to_int<pV>(cur));
-			}
-			else
-			{
-				p.emplace_back(cur);
-			}
-		}
-
-		const auto cur = in.substr(lastpos);
-
-		if constexpr (std::is_arithmetic_v<inner_type_v<pV>>)
-		{
-			p.emplace_back(str_to_int<pV>(cur));
-		}
-		else
-		{
-			p.emplace_back(cur);
-		}
-		// TODO: handle errors with glaze context
-	},
-	[](const P& in) -> std::string
-	{
-		// write
-		const auto& data = glz::get_member(in, T);
-
-		if (data.empty())
-			return "";
-
-		using pV = std::remove_reference_t<decltype(data)>;
-
-		std::string so = "";
-		for (const auto& v : data)
-		{
-			so += CH;
-			if constexpr (std::is_arithmetic_v<inner_type_v<pV>>)
-			{
-				so += std::to_string(v);
-			}
-			else
-			{
-				so += v;
-			}
-		}
-		so = so.substr(1);
-		return so;
-	}
-	// TODO: handle errors with glaze context
+    return output;
+    }
 >;
-
-#endif
 
 } // namespace pkg::glaze
 

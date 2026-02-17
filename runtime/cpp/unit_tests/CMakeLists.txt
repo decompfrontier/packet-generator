@@ -62,6 +62,7 @@ add_executable(pkgen_tests
 #  test_list.cpp
         test_pkg.cpp
         test_glaze_unsorted.cpp
+        test_glaze_array.cpp
 )
 
 target_include_directories(pkgen_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)

@@ -109,12 +109,16 @@ TEST(pkg, parse_string_list_unk)
 
 using namespace std::chrono;
 
-TEST(pkg, unparse_string_test_komplex)
+TEST(pkg, unparse_string_test_complex)
 {
   pkg::string_list<pkg::chrono_time> p;
-  p.emplace_back(pkg::chrono_time{ sys_days{ 100d } });
+  auto time = pkg::chrono_time{ sys_days{ 2026y / February / 17 } };
+  p.emplace_back(time);
+  auto time2 = pkg::chrono_time{ sys_days{ 2025y / February / 17 } };
+  p.emplace_back(time2);
+
   std::string o;
   const auto r = pkg::string_list_to(p, o, '|');
   ASSERT_TRUE(r);
-  ASSERT_EQ(o, "356|alepflp|@@@@@");
+  ASSERT_EQ(o, "2026-02-17 00:00:00|2025-02-17 00:00:00");
 }

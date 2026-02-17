@@ -122,3 +122,4 @@ TEST(glaze, bool_as_str) {
 	const auto ec3 = glz::read_json<SimpleA>(bad_input);
 	ASSERT_EQ(ec3.error(), glz::error_code::expected_true_or_false);
 }
+
