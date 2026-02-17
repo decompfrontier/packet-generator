@@ -14,8 +14,8 @@ use stringcase::Caser;
 
 const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
-fn setup_e2e_registry(main_file: &str) -> (DefinitionRegistry, ParsingWarnings) {
-    let path = PathBuf::from_iter([PROJECT_DIR, main_file]);
+fn setup_e2e_registry(main_file: PathBuf) -> (DefinitionRegistry, ParsingWarnings) {
+    let path = PathBuf::from(PROJECT_DIR).join(main_file);
     let document = std::fs::read_to_string(&path).expect("this is a test, we control the string");
     packet_generator::parse_kdl(&document, &path, &ParserOpts::default())
         .map_err(miette::Report::from)
@@ -28,14 +28,11 @@ fn create_file(path: impl AsRef<Path>, content: &str) {
         .expect("FS must write bytes");
 }
 
-fn generic_e2e_cxx_glaze_harness(path_entrypoint: &str, test_name: &str) {
+fn generic_e2e_cxx_glaze_harness(path_entrypoint: PathBuf, test_name: &str) {
     let (defs, _) = setup_e2e_registry(path_entrypoint);
 
-    let generation_basepath = PathBuf::from_iter([
-        env!("CARGO_MANIFEST_DIR"),
-        test_name,
-        "target",
-    ]);
+    let generation_basepath =
+        PathBuf::from_iter([PROJECT_DIR, "target", &format!("test-e2e-{test_name}")]);
 
     let _ = std::fs::create_dir_all(&generation_basepath);
 
@@ -50,7 +47,7 @@ fn generic_e2e_cxx_glaze_harness(path_entrypoint: &str, test_name: &str) {
 
     {
         // this should be enough as cmake should be clever
-        let runtime_dir = env!("CARGO_MANIFEST_DIR").replace("\\", "/") + "/../runtime/cpp";
+        let runtime_dir = PROJECT_DIR.replace("\\", "/") + "/../runtime/cpp";
         let test_name = test_name.to_snake_case();
         let cmake_file_content = format!(
             r#"
@@ -112,10 +109,10 @@ int main() {{
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .output()
-            .expect("the OS can spawn processes");
+            .expect("the OS can spawn CMake process");
 
-        let stdout = str::from_utf8(&cmake_output.stdout).expect("string is UTF-8");
-        let stderr = str::from_utf8(&cmake_output.stderr).expect("string is UTF-8");
+        let stdout = str::from_utf8(&cmake_output.stdout).expect("CMake output is UTF-8");
+        let stderr = str::from_utf8(&cmake_output.stderr).expect("CMake error output is UTF-8");
 
         println!("CMake stdout:\n{stdout}");
         println!("CMake stderr:\n{stderr}");
@@ -131,10 +128,10 @@ int main() {{
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .output()
-            .expect("the OS can spawn processes");
+            .expect("the OS can spawn CMake process");
 
-        let stdout = str::from_utf8(&cmake_output.stdout).expect("string is UTF-8");
-        let stderr = str::from_utf8(&cmake_output.stderr).expect("string is UTF-8");
+        let stdout = str::from_utf8(&cmake_output.stdout).expect("CMake output is UTF-8");
+        let stderr = str::from_utf8(&cmake_output.stderr).expect("CMake error output is UTF-8");
 
         println!("CMake stdout:\n{stdout}");
         println!("CMake stderr:\n{stderr}");
@@ -145,10 +142,16 @@ int main() {{
 
 #[test]
 fn e2e_can_compile_cxx_glaze_stresstest() {
-    generic_e2e_cxx_glaze_harness("tests/defs/main.kdl", "generic-definitions");
+    generic_e2e_cxx_glaze_harness(
+        PathBuf::from_iter(["tests", "defs", "main.kdl"]),
+        "generic-definitions",
+    );
 }
 
 #[test]
 fn e2e_can_compile_cxx_glaze_brave_frontier() {
-    generic_e2e_cxx_glaze_harness("assets/net/handlers.kdl", "brave-frontier");
+    generic_e2e_cxx_glaze_harness(
+        PathBuf::from_iter(["assets", "net", "handlers.kdl"]),
+        "brave-frontier",
+    );
 }
