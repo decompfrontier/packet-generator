@@ -68,7 +68,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glaze)
 
 if (MSVC)
-    set(CMAKE_CXX_FLAGS "${{CMAKE_CXX_FLAGS}} /MP /utf-8 /W3 /permissive-")
+    set(CMAKE_CXX_FLAGS "${{CMAKE_CXX_FLAGS}} /Zc:__cplusplus /MP /utf-8 /W3 /permissive-")
 else()
     set(CMAKE_CXX_FLAGS "${{CMAKE_CXX_FLAGS}} -Wall -fno-permissive")
 endif()
