@@ -7,6 +7,7 @@
 #include <deque>
 #include <format>
 #include <sstream>
+#include <array>
 #include <unordered_map>
 
 #if __cplusplus <= 201703L
