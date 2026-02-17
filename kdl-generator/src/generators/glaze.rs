@@ -75,30 +75,27 @@ fn get_glz_mapper(
         }
         | DataType::F32 {
             encoding: Encoding::String,
-        }
-        | DataType::F64 => Ok(format!("glz::quoted_num<&T::{name}>")),
+        } => Ok(format!("glz::quoted_num<&T::{name}>")),
 
         DataType::F32 {
             encoding: Encoding::Int,
         } => Ok(format!("glz::write_float32_t(&T::{name})")),
-        DataType::I64 {
-            encoding: Encoding::Int,
-        } => Ok(format!("glz::write_float64_t(&T::{name})")),
+        DataType::F64 => Ok(format!("glz::write_float64_t(&T::{name})")),
         DataType::Bool {
             encoding: BoolEncoding::String,
-        } => Ok(format!("pkg::glaze::bool_as_string<T, {name}>()")),
+        } => Ok(format!("pkg::glaze::bool_as_string<&T::{name}>()")),
         DataType::Bool {
             encoding: BoolEncoding::Int,
         } => Ok(format!("glz::bools_as_numbers<&T::{name}>")),
-        DataType::Datetime => Ok(format!("pkg::glaze::datetime<T, &T::{name}>()")),
-        DataType::DatetimeUnix => Ok(format!("pkg::glaze::datetime_unix<T, &T::{name}>()")),
+        DataType::Datetime => Ok(format!("pkg::glaze::datetime<&T::{name}>()")),
+        DataType::DatetimeUnix => Ok(format!("pkg::glaze::datetime_unix<&T::{name}>()")),
         DataType::StringArray {
             inner_type: _,
             separator,
         } => {
             let glz_sep = get_glz_array_separator(*separator);
             Ok(format!(
-                "pkg::glaze::array_as_string_list<T, &T::{name}, '{glz_sep}'>"
+                "pkg::glaze::array_string<T, &T::{name}, '{glz_sep}'>"
             ))
         }
 

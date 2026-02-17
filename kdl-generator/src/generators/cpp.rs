@@ -186,11 +186,16 @@ fn convert_datatype(
 
         DataType::Bool { .. } => Ok(String::from("bool")),
 
-        DataType::String
-        | DataType::StringArray {
-            inner_type: _,
+        DataType::String => Ok(String::from("std::string")), 
+        
+        DataType::StringArray {
+            inner_type,
             separator: _,
-        } => Ok(String::from("std::string")),
+        } => {
+            let inner = convert_datatype(inner_type, registry)?;
+
+            Ok(format!("pkg::string_list<{inner}>"))
+        },
 
         DataType::Datetime | DataType::DatetimeUnix => Ok(String::from("pkg::chrono_time")),
 
