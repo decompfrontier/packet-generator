@@ -151,7 +151,7 @@ namespace detail {
         value_typable<T>;
         { a.clear() };
         { a.empty() } -> std::convertible_to<bool>;
-        { a.emplace_back };
+        { a.emplace_back() };
     };
 
     // conversion string -> string
