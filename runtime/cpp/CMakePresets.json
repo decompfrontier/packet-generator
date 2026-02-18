@@ -13,7 +13,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/default",
       "cacheVariables": {
-        "PKGEN_ENABLE_UNIT_TESTS": "ON"
+        "PKGEN_ENABLE_UNIT_TESTS": true
       }
     },
     {
