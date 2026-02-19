@@ -4,7 +4,15 @@
 //! this modules generates the source files for parsing Brave Frontier's
 //! packets in a given language.
 
-use std::{borrow::Cow, fmt::Debug};
+use std::{
+    borrow::Cow,
+    fmt::Debug,
+    io::Write,
+    path::{Path, PathBuf},
+};
+
+use atomicow::CowArc;
+use petgraph::{algo::Cycle, graph::NodeIndex};
 
 use crate::intermediate::{
     DataType, DefinitionRegistry, IntEnum, IntEnumVariant, Json, JsonField, StringEnum,
@@ -17,7 +25,7 @@ mod utils;
 
 #[derive(Debug, Clone)]
 pub struct GeneratedSource {
-    pub filename: String,
+    pub filename: PathBuf,
     pub content: String,
 }
 
@@ -27,7 +35,7 @@ pub trait Generator {
         &self,
         registry: &DefinitionRegistry,
         initial_filename: &str,
-    ) -> Result<GeneratedSource, GenerationError>;
+    ) -> Result<Vec<GeneratedSource>, GenerationError>;
 
     fn json_name<'a>(&'a self, definition: &'a Json) -> CowArc<'a, str> {
         CowArc::Borrowed(&definition.name)
@@ -120,7 +128,42 @@ pub enum GenerationError {
     CycleFound(Cycle<NodeIndex>),
 }
 
-use atomicow::CowArc;
+/// Writes the generated sources to the files obtained from the generator,
+/// while using `base_directory` as the base path.
+///
+/// # Errors
+///
+/// Returns an error if the
+pub fn write_sources(
+    base_directory: impl AsRef<Path>,
+    sources: &[GeneratedSource],
+) -> Result<(), miette::Error> {
+    for source in sources {
+        let output_file = base_directory.as_ref().join(&source.filename);
+
+        if let Some(path) = output_file.parent() {
+            std::fs::create_dir_all(path).map_err(|e| {
+                miette::miette!(
+                    "could not create directories for path `{}`: {e}",
+                    path.display()
+                )
+            })?;
+        }
+
+        let mut file = std::fs::File::create(&output_file).map_err(|e| {
+            miette::miette!(
+                "failed to open output file `{}`: {e}",
+                output_file.display()
+            )
+        })?;
+
+        file.write_all(source.content.as_bytes()).map_err(|e| {
+            miette::miette!("failed to write to file `{}`: {e}", output_file.display())
+        })?;
+    }
+
+    Ok(())
+}
+
 pub use cpp::CxxGenerator;
 pub use glaze::GlazeGenerator;
-use petgraph::{algo::Cycle, graph::NodeIndex};

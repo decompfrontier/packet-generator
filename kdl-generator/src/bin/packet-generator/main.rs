@@ -1,8 +1,9 @@
 #![forbid(clippy::unwrap_used, clippy::unwrap_in_result)]
 
-use std::path::PathBuf;
+use std::{env::current_dir, path::PathBuf};
 
-use miette::Context;
+use miette::{Context, miette};
+use packet_generator::generators::write_sources;
 use packet_generator::{
     generators::{CxxGenerator, GenerationError, Generator, GlazeGenerator, WithAddons},
     kdl_parser::{Diagnostic, ParserOpts, ParsingError},
@@ -56,13 +57,14 @@ fn main() -> Result<(), miette::Report> {
         cli::CliArgs::Generate {
             input,
             language,
-            output_directory: _,
+            output_directory,
         } => {
-            // let primary: Box<dyn PrimaryGenerator>;
+            let output_directory = match output_directory.map(PathBuf::from) {
+                Some(v) => v,
+                None => current_dir().map_err(|e| miette::miette!(e))?,
+            };
 
-            let mut generators: Vec<Box<dyn Generator>> = vec![];
-
-            match language {
+            let generator = match language {
                 cli::ProgrammingLanguage::Cxx(options) => {
                     let mut cxx_generator = CxxGenerator::new();
 
@@ -78,7 +80,7 @@ fn main() -> Result<(), miette::Report> {
                         }
                     }
 
-                    generators.push(Box::new(cxx_generator));
+                    Box::new(cxx_generator)
                 }
 
                 cli::ProgrammingLanguage::Rust(_serializer) => {
@@ -86,35 +88,48 @@ fn main() -> Result<(), miette::Report> {
                         "Rust generator is currently not implemented!"
                     ));
                 }
-            }
+            };
 
-            let path = PathBuf::from(input);
+            let input_path = PathBuf::from(input);
 
-            let doc_str = std::fs::read_to_string(&path)
+            let doc_str = std::fs::read_to_string(&input_path)
                 .map_err(|e| miette::miette!(e))
-                .wrap_err_with(|| format!("cannot open file: {}", path.display()))?;
+                .wrap_err_with(|| format!("cannot open file: {}", input_path.display()))?;
 
             let (doc, warnings) = packet_generator::kdl_parser::raw_parse_kdl(
                 doc_str,
-                &path,
+                &input_path,
                 &ParserOpts::default(),
             )?;
 
             warnings.print_warnings_if_any();
 
-            println!("Parser: {:#?}", doc);
-
             let doc = packet_generator::kdl_parser::validate(doc)?;
 
             let definitions = packet_generator::kdl_parser::document_to_definitions(doc)?;
 
-            for generator in &generators {
-                let source_output = generator
-                    .generate(&definitions, "test")
-                    .map_err(|e| miette::miette!(e))?;
+            let sources = generator
+                .generate(
+                    &definitions,
+                    input_path
+                        .file_stem()
+                        .ok_or_else(|| {
+                            miette!(
+                                "could not obtain file name from path `{}`",
+                                input_path.display()
+                            )
+                        })?
+                        .to_str()
+                        .ok_or_else(|| {
+                            miette!(
+                                "file name `{}` is not a valid UTF-8 string",
+                                input_path.display()
+                            )
+                        })?,
+                )
+                .map_err(|e| miette::miette!("could not generate sources: {e}"))?;
 
-                println!("{}\n", source_output.content);
-            }
+            write_sources(&output_directory, &sources)?;
         }
     }
 

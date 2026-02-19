@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use atomicow::CowArc;
 use itertools::Itertools;
 use stringcase::Caser;
@@ -61,7 +63,7 @@ impl Generator for CxxGenerator {
         &self,
         registry: &DefinitionRegistry,
         initial_filename: &str,
-    ) -> Result<super::GeneratedSource, GenerationError> {
+    ) -> Result<Vec<GeneratedSource>, GenerationError> {
         let mut content = format!(
             r#"#pragma once
 
@@ -119,10 +121,10 @@ impl Generator for CxxGenerator {
             }
         }
 
-        Ok(GeneratedSource {
-            filename: format!("{}.hpp", initial_filename),
+        Ok(vec![GeneratedSource {
+            filename: PathBuf::from(format!("{}.hpp", initial_filename)),
             content,
-        })
+        }])
     }
 
     fn json_name<'a>(&'a self, definition: &'a Json) -> CowArc<'a, str> {
@@ -186,8 +188,8 @@ fn convert_datatype(
 
         DataType::Bool { .. } => Ok(String::from("bool")),
 
-        DataType::String => Ok(String::from("std::string")), 
-        
+        DataType::String => Ok(String::from("std::string")),
+
         DataType::StringArray {
             inner_type,
             separator: _,
@@ -195,7 +197,7 @@ fn convert_datatype(
             let inner = convert_datatype(inner_type, registry)?;
 
             Ok(format!("pkg::string_list<{inner}>"))
-        },
+        }
 
         DataType::Datetime | DataType::DatetimeUnix => Ok(String::from("pkg::chrono_time")),
 

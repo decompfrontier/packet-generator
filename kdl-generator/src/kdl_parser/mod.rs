@@ -20,7 +20,7 @@ use kdl::KdlError;
 pub struct Document(RawDocument);
 
 use crate::{
-    intermediate::{DefinitionRegistry, PartialDefinitionRegistry, RegistryError},
+    intermediate::{DefinitionRegistry, PartialDefinitionRegistry},
     kdl_parser::schema::RawDocument,
     vfs::Vfs,
 };
