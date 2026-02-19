@@ -6,7 +6,7 @@ use std::{
 };
 
 use packet_generator::{
-    generators::{self, Generator, GlazeGenerator, WithAddons},
+    generators::{self, Generator, GlazeGenerator, WithAddons, write_sources},
     intermediate::DefinitionRegistry,
     kdl_parser::{ParserOpts, ParsingWarnings},
 };
@@ -39,11 +39,13 @@ fn generic_e2e_cxx_glaze_harness(path_entrypoint: PathBuf, test_name: &str) {
     let mut generator = generators::CxxGenerator::new();
     generator.add_addon(GlazeGenerator {});
 
-    let source = generator
+    let sources = generator
         .generate(&defs, "main")
         .expect("should generate good code");
 
-    create_file(generation_basepath.join(&source.filename), &source.content);
+    write_sources(&generation_basepath, &sources).expect("should be able to generate sources");
+
+    // create_file(generation_basepath.join(&source.filename), &source.content);
 
     {
         // this should be enough as cmake should be clever
@@ -95,7 +97,7 @@ target_link_libraries(${{PROJECT_NAME}} PRIVATE glaze::glaze)
 int main() {{
     // Intentionally empty, let the compiler check the headers.
 }}"#,
-            source.filename,
+            sources[0].filename.display(),
         );
 
         create_file(generation_basepath.join("main.cpp"), &main_cpp_content);
