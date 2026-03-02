@@ -19,6 +19,18 @@ struct debug_opts : glz::opts {
   bool skip_null_members = false;
 };
 
+template <class T> struct single_array_helper {
+    T &val; // reference to the data
+};
+
+template <auto MemPtr> constexpr decltype(auto) single_array() {
+    return [](auto&& val) {
+        using T = std::decay_t<decltype(val.*MemPtr)>;
+        return single_array_helper<T>{
+            const_cast<T&>(val.*MemPtr) }; // NOTE(arves): this is a crappy thing yes...
+        };
+}
+
 template <class T> struct bool_as_string_helper {
   std::string as_str;
   T &val; // reference to the boolean
@@ -51,32 +63,55 @@ template <auto MemPtr> constexpr decltype(auto) datetime_unix() {
 
 template <typename ContainerType, auto MemPtr, char delimiter> requires pkg::detail::containerable<pkg::detail::decltype_real<MemPtr>>
 constexpr auto array_string = glz::custom<
-    [](ContainerType& container_object, std::string_view in) {    
+    [](ContainerType& container_object, std::string_view in, glz::context& ctx) {
     
     auto& data = glz::get_member(container_object, MemPtr);
 
     if (in.empty()) return;
     if (!pkg::string_list_from(data, in, delimiter)) {
-        // TODO(arves): Handle error...
+        ctx.error = glz::error_code::invalid_variant_string;
     }
 
     },
-    [](const ContainerType& container_object) -> std::string {
+    [](const ContainerType& container_object, glz::context& ctx) -> std::string {
 
     const auto& data = glz::get_member(container_object, MemPtr);
     if (data.empty()) return "";
     std::string output;
     if (!pkg::string_list_to(data, output, delimiter)) {
-        // TODO(arves): Handle error...
+        ctx.error = glz::error_code::invalid_variant_string;
     }
 
     return output;
     }
 >;
 
+
 } // namespace pkg::glaze
 
 namespace glz {
+
+template <class T> struct from<JSON, pkg::glaze::single_array_helper<T>> {
+    template <auto Opts>
+    static void op(auto&& value, auto&& ctx, auto&& it, auto&& end) {
+        skip_ws<Opts>(ctx, it, end);
+        if (it >= end) {
+            ctx.error = error_code::unexpected_end;
+            return;
+        }
+        std::array<T, 1> data;
+        parse<JSON>::op<Opts>(data, ctx, it, end);
+        value.val = data[0];
+    }
+};
+
+template <class T> struct to<JSON, pkg::glaze::single_array_helper<T>> {
+    template <auto Opts, class B>
+    static void op(auto&& value, auto&& ctx, B&& b, auto&& ix) noexcept {
+        std::array<T, 1> data { value.val };
+        serialize<JSON>::op<Opts>(data, ctx, b, ix);
+    }
+};
 
 template <class T> struct from<JSON, pkg::glaze::bool_as_string_helper<T>> {
   template <auto Opts>
