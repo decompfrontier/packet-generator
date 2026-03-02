@@ -26,3 +26,11 @@ json C {
         key "o"
     }
 }
+
+json D {
+    doc "d"
+    field a type="[i32::int]::size(1)" {
+        doc "q"
+        key "a"
+    }
+}

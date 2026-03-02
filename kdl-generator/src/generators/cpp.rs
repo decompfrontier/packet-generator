@@ -216,8 +216,7 @@ fn convert_datatype(
 
         DataType::SingleElementArray { inner_type } => {
             let inner = convert_datatype(inner_type, registry)?;
-
-            Ok(format!("std::array<{inner}, 1>")) // TODO(arves): Can this be made a meta-data only generation step?
+            Ok(format!("{inner}")) // TODO(arves): Can this be made a meta-data only generation step?
         }
 
         DataType::Definition(weak) => match registry.get(*weak) {
