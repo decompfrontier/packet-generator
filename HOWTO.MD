@@ -4,7 +4,7 @@
 ## Introduction 
 As Brave Frontier JSON data is shared between multiple projects, recreating the exact same input/output data every single time becomes a long task, with the cost of implicitly understanding the meaning of the code.
 
-To address this issue, decompfrontier contains a simple python-based packet definition and generation to automatically generate packet and MST information.
+To address this issue, decompfrontier contains a simple KDL-based packet schema and a few generation utilities to automatically generate packet and MST information.
 
 In order to add a new definition, you'll need to clone the packet-generator repository (https://github.com/decompfrontier/packet-generator).
 
@@ -12,21 +12,96 @@ There are generally two types of information that you want to generate:
 * Network definitions, these are the request/responses used by the game to talk with the server
 * MST definitions, these are the definitions of the game data, such as units or items
 
-You must have Python 3.10 or greater installed on your system.
+The definitions are currently rooted in `kdl-generator/assets`, to add one either create a new KDL file or modify
+an existing one.
+For brevity, we assume that `net/foo.kdl` is in the directory `kdl-generator/assets/net/foo.kdl`.
+The main "entrypoint" is `net/handler.kdl`.
+
+You must have a Rust toolchain to compile the `packet-generator` library and CLI.
+
+## Generating the output source files
+
+Go in the `kdl-generator` directory; from now on we assume this is the case.
+To run the CLI from `cargo`, you can issue the following:
+
+```sh
+cargo run --release -- your arguments here
+# Shorter: cargo r -r -- your arguments here
+```
+The binary `packet-generator` will be built inside `target/release`.
+You can install it locally in your user `PATH` by issuing `cargo install`:
+
+```sh
+cargo install --path packet-generator-cli
+
+# You can now use:
+packet-generator your-arguments-here
+```
+
+From now on we assume, for succintness in writing, that you call the `packet-generator`
+binary directly, but everything can be done via the `cargo run` command without
+locally installing the CLI.
+
+Finally, to generate the source code for C++ using Glaze, issue the following:
+
+```sh
+# Full verbose command: packet-generator generate --cxx --glaze --input assets/net/handlers.kdl --output output/directory/for/the/definitions
+
+# Shortened:
+packet-generator generate --cxx --glaze -i assets/net/handlers.kdl -o output/directory/for/the/definitions
+```
+
+The `--help` for the `generate` sub-command will show the available options and
+supported languages.
 
 ## Adding a definition
 
-First, you need to create a new python class that contains your new definition inside the specific field that you are adding.
-
-For an MST, you can create a new python file in the `mst` directory, while for a Network request or response you can create a python file in the `net` directory, or alter any of the existing ones if you undercovered some information.
+For an MST, you can create a new KDL file in the `mst` directory, while for a Network request or response you can create a KDL file in the `net` directory, or alter any of the existing ones if you discovered new information.
 
 A general definition can be composed of the following data:
-```
-from schema import *
 
-@keyjson(key_group = "6FrKacq7", single = True)
-class SignalKey:
-    key = { "Kn51uR4Y": str }
+```kdl
+// A comment.
+
+json Foo {
+    doc "Some documentation that will be included in the generated source"
+
+    // A field/property named `bar` with type string.
+    field bar type="str" {
+        key "BaR"
+
+        doc "Some other documentation that will be included in the generated source"
+    }
+
+    field baz type="i32::int" {
+        key "BaZ"
+
+        doc "A 32-bit int represented as an integer."
+
+    }
+}
+```
+
+The above translates to the following JSON:
+
+```json
+{
+    "BaR": "a string value",
+    "BaZ": 42
+}
+```
+
+And, if using C++, to the following struct:
+
+```cpp
+/// Some documentation that will be included in the generated source
+struct Foo {
+    /// Some other that will be included in the generated source
+    std::string bar;
+
+    /// A 32-bit int represented as an integer.
+    int32_t baz;
+};
 ```
 
 
