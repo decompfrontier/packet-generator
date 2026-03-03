@@ -216,19 +216,17 @@ fn convert_datatype(
 
         DataType::SingleElementArray { inner_type } => {
             let inner = convert_datatype(inner_type, registry)?;
-            Ok(format!("{inner}")) // TODO(arves): Can this be made a meta-data only generation step?
+            Ok(inner) // TODO(arves): Can this be made a meta-data only generation step?
         }
 
-        DataType::Definition(weak) => match registry.get(*weak) {
-            definition => match *definition {
+        DataType::Definition(weak) => {
+            let definition = registry.get(*weak);
+            match *definition {
                 Definition::StringEnum(ref str_enum) => Ok(format!("{}::Type", str_enum.name)),
 
                 _ => Ok(definition.name().clone()),
-            },
-            // None => Err(GenerationError::ExpiredRegistry {
-            //     queried_from: datatype.clone(),
-            // }),
-        },
+            }
+        }
 
         DataType::Unknown(other) => match registry.find(other) {
             Some((definition, _idx)) => match definition {
