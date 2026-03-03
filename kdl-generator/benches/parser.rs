@@ -22,10 +22,6 @@ fn parse_files(
     res
 }
 
-// fn read_file(path: &'static str) -> String {
-//     std::fs::read_to_string(path).expect("we control the test")
-// }
-
 fn build_stresstest_input() -> (&'static str, PathBuf, ParserOpts<InMemoryFS>) {
     let mut fs = InMemoryFS::new();
 
