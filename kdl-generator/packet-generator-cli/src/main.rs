@@ -1,5 +1,9 @@
 #![forbid(clippy::unwrap_used, clippy::unwrap_in_result)]
 
+#[cfg(feature = "mimalloc")]
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 use std::{env::current_dir, path::PathBuf};
 
 use miette::{Context, miette};
@@ -130,6 +134,18 @@ fn main() -> Result<(), miette::Report> {
                 .map_err(|e| miette::miette!("could not generate sources: {e}"))?;
 
             write_sources(&output_directory, &sources)?;
+        }
+
+        cli::CliArgs::Version {} => {
+            let version = env!("CARGO_PKG_VERSION");
+            print!("packet-generator v{version} ");
+
+            #[cfg(feature = "mimalloc")]
+            {
+                print!("[+mimalloc] ");
+            }
+
+            println!();
         }
     }
 

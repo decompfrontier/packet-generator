@@ -82,6 +82,10 @@ pub enum CliArgs {
         #[bpaf(external(programming_language))]
         language: ProgrammingLanguage,
     },
+
+    /// Prints version information.
+    #[bpaf(command("version"))]
+    Version {},
 }
 
 pub mod commands {

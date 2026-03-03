@@ -1,0 +1,23 @@
+[package]
+name = "packet-generator-cli"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "packet-generator"
+path = "src/main.rs"
+
+
+[dependencies]
+packet-generator = { path = ".." }
+bpaf = { workspace = true }
+atomicow = { workspace = true }
+miette = { workspace = true }
+itertools = { workspace = true }
+thiserror = { workspace = true }
+
+mimalloc = { version = "*", optional = true }
+
+[features]
+mimalloc = ["dep:mimalloc"]
+

@@ -4,37 +4,33 @@ version = "0.1.0"
 edition = "2024"
 
 [workspace]
-members = ["tools/*"]
+members = ["packet-generator-cli", "tools/*"]
+default-members = ["packet-generator-cli", "."]
+resolver = "3"
 
 [workspace.dependencies]
 miette = { version = "7", features = ["fancy"] } # pretty diagnostics
 bpaf = { version = "0.9.20", features = ["derive"] }
 atomicow = "1.1.0"
 itertools = "0.14.0"
+thiserror = "2.0.17"
 
 [dependencies]
 atomicow = { workspace = true }
 miette = { workspace = true }
-thiserror = "2.0.17"
-bpaf = { workspace = true }
 itertools = { workspace = true }
+thiserror = { workspace = true }
 winnow = { version = "0.7.14", features = ["simd"] }
-kdl = "6.5.0"
 stringcase = "0.4.0"
 clean-path = "0.2"
 petgraph = "0.8.3"
+kdl = "6.5.0"
 
 [profile.release]
 lto = true
 strip = true
 
-# [lints.rust]
-# missing-docs = "warn"
-
-# [lints.rustdoc]
-# missing-crate-level-docs = "warn"
-
-[lints.clippy]
+[workspace.lints.clippy]
 unwrap-used = "forbid"
 unwrap-in-result = "forbid"
 unwrap-or-default = "forbid"
