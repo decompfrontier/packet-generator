@@ -47,11 +47,19 @@ debug = true
 lto = false
 strip = false
 
+[lints]
+workspace = true
+
 [workspace.lints.clippy]
-unwrap-used = "forbid"
+unwrap-used = "deny"
+expect-used = "deny"
+expect-fun-call = "deny"
 unwrap-in-result = "forbid"
 unwrap-or-default = "forbid"
-missing-errors-doc = "deny"
+get-unwrap = "forbid"
+missing-errors-doc = "forbid"
+missing-panics-doc = "forbid"
+missing-safety-doc = "forbid"
 explicit-iter-loop = "deny"
 items-after-statements = "deny"
 ref-option-ref = "deny"

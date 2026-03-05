@@ -21,3 +21,5 @@ mimalloc = { version = "*", optional = true }
 [features]
 mimalloc = ["dep:mimalloc"]
 
+[lints]
+workspace = true

@@ -1,3 +1,5 @@
+#![allow(clippy::expect_used, reason = "Sir, this is a test file")]
+
 use std::{
     fs::File,
     io::Write,
@@ -49,7 +51,7 @@ fn generic_e2e_cxx_glaze_harness(path_entrypoint: PathBuf, test_name: &str) {
 
     {
         // this should be enough as cmake should be clever
-        let runtime_dir = PROJECT_DIR.replace("\\", "/") + "/../runtime/cpp";
+        let runtime_dir = PROJECT_DIR.replace('\\', "/") + "/../runtime/cpp";
         println!("Runtime dir: {runtime_dir}");
         let test_name = test_name.to_snake_case();
         let cmake_file_content = format!(

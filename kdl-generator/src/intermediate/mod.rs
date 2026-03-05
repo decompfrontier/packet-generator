@@ -6,16 +6,21 @@ use std::{
     sync::Arc,
 };
 
+use miette::SourceSpan;
 use petgraph::{
     algo::toposort, graph::NodeIndex, prelude::StableDiGraph, stable_graph::NodeIndices,
 };
 
-use crate::kdl_parser::Diagnostic;
+use crate::kdl_parser::{Diagnostic, SourceInfo};
 
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum RegistryError {
     #[error("the definition `{name}` refers to a type `{target}` that does not exist")]
-    IncompleteDefinition { name: String, target: String },
+    IncompleteDefinition {
+        name: String,
+        target: String,
+        field_span: SourceSpan,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -58,6 +63,8 @@ pub struct Json {
     pub hash_name: Option<String>,
     pub fields: BTreeSet<JsonField>,
     pub doc: String,
+    pub source: Arc<SourceInfo>,
+    pub span: SourceSpan,
 }
 
 impl Borrow<str> for Json {
@@ -74,6 +81,7 @@ pub struct JsonField {
     pub type_: DataType,
     pub optional: bool,
     pub doc: String,
+    pub span: SourceSpan,
 }
 
 impl Borrow<str> for JsonField {
@@ -120,13 +128,22 @@ impl Ord for JsonField {
 
 impl Json {
     #[must_use]
-    pub const fn new(name: String, index: usize, hash_name: Option<String>, doc: String) -> Self {
+    pub const fn new(
+        name: String,
+        index: usize,
+        hash_name: Option<String>,
+        doc: String,
+        defined_in_source: Arc<SourceInfo>,
+        defined_in_span: SourceSpan,
+    ) -> Self {
         Self {
             index,
             name,
             hash_name,
             fields: BTreeSet::new(),
             doc,
+            source: defined_in_source,
+            span: defined_in_span,
         }
     }
 
@@ -355,15 +372,11 @@ impl PartialDefinitionRegistry {
         }
     }
 
-    /// Validates the current incomplete registry a builds a [`DefinitionRegistry`].
+    /// Validates the current incomplete registry to build a [`DefinitionRegistry`].
     ///
     /// # Errors
     ///
     /// Return `Err` if the definitions reference non-existing definitions.
-    ///
-    /// # Panics
-    ///
-    /// FIXME(anri): currently panics on the error conditions above.
     #[allow(clippy::result_large_err, reason = "We can take the performance hit.")]
     pub fn finalize(mut self) -> Result<DefinitionRegistry, Diagnostic> {
         let all_nodes: Vec<_> = self.definitions.node_indices().collect();
@@ -376,29 +389,56 @@ impl PartialDefinitionRegistry {
                 let fields = json
                     .fields
                     .iter()
-                    .map(|field| -> Result<_, RegistryError> {
+                    .map(|field| -> Result<_, Diagnostic> {
                         let mut f = field.clone();
 
                         if let DataType::Unknown(name) = &field.type_ {
-                            let idx = self.names.get(name).ok_or_else(|| {
-                                RegistryError::IncompleteDefinition {
-                                    name: format!("{}::{}", json.name, f.name),
-                                    target: name.clone(),
-                                }
+                            let idx = self.names.get(name).ok_or_else(|| Diagnostic {
+                                message: format!("could not find definition `{name}`"),
+                                severity: miette::Severity::Error,
+                                source_info: json.source.clone(),
+                                span: field.span,
+                                help: None,
+                                label: None,
+                                related: vec![Diagnostic {
+                                    message: format!(
+                                        "the definition {name} is used inside field `{}::{}`",
+                                        json.name, field.name
+                                    ),
+                                    severity: miette::Severity::Advice,
+                                    source_info: json.source.clone(),
+                                    span: field.span,
+                                    help: None,
+                                    label: None,
+                                    related: vec![],
+                                }],
                             })?;
 
                             f.type_ = DataType::Definition(*idx);
 
-                            missing_edges
-                                .push((idx, self.names.get(&json.name).expect("this is myself")));
+                            let Some(target_definition) = self.names.get(&json.name) else {
+                                return Err(Diagnostic {
+                                    message: format!(
+                                        "could not find definition `{}`, which is myself!",
+                                        json.name
+                                    ),
+                                    severity: miette::Severity::Error,
+                                    source_info: json.source.clone(),
+                                    span: json.span,
+                                    help: None,
+                                    label: None,
+                                    related: vec![],
+                                });
+                            };
+
+                            missing_edges.push((idx, target_definition));
                         }
 
                         Ok(f)
                     })
-                    .collect::<Result<_, RegistryError>>()
-                    .expect("todo: remove this panic on favor of Result");
+                    .collect::<Result<_, Diagnostic>>();
 
-                json.fields = fields;
+                json.fields = fields?;
             }
         }
 
@@ -472,6 +512,11 @@ mod tests {
     pub fn registry_can_handle_circular_definitions() {
         let mut definitions = PartialDefinitionRegistry::new();
 
+        let source = Arc::new(SourceInfo {
+            name: String::from("test.kdl"),
+            source_code: String::from("json {{}}"),
+        });
+
         {
             let field = JsonField {
                 index: 0,
@@ -480,6 +525,7 @@ mod tests {
                 type_: DataType::String,
                 optional: false,
                 doc: String::from("some documentation"),
+                span: SourceSpan::from((0, 0)),
             };
 
             let mut s = Json::new(
@@ -487,6 +533,8 @@ mod tests {
                 0,
                 Some(String::from("avdsfdsf")),
                 String::from("some documentation"),
+                source.clone(),
+                SourceSpan::from((0, 0)),
             );
             s.add_field(field);
 
@@ -505,6 +553,7 @@ mod tests {
                 type_: DataType::Definition(foo_struct),
                 optional: false,
                 doc: String::from("some documentation"),
+                span: SourceSpan::from((0, 0)),
             };
 
             let mut s = Json::new(
@@ -512,6 +561,8 @@ mod tests {
                 1,
                 Some(String::from("avfdsfdsf")),
                 String::from("some documentation"),
+                source,
+                SourceSpan::from((0, 0)),
             );
             s.add_field(field);
 

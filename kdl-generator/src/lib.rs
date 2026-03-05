@@ -5,6 +5,8 @@
 //! The structure of the packets are defined over custom KDL files defined by
 //! this library.
 
+#![forbid(clippy::expect_used, clippy::unwrap_used)]
+
 pub mod generators;
 pub mod intermediate;
 pub mod kdl_parser;

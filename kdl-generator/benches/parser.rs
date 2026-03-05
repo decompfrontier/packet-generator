@@ -1,3 +1,6 @@
+#![allow(clippy::expect_used, reason = "Sir, this is a benchmark")]
+#![allow(clippy::unwrap_used, reason = "Sir, this is a benchmark")]
+
 use criterion::{Criterion, criterion_group, criterion_main};
 use packet_generator::{
     intermediate::DefinitionRegistry,

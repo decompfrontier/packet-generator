@@ -30,7 +30,7 @@ pub use parser::raw_parse_kdl;
 /// Information about the origin of a KDL document.
 ///
 /// Used for generating correct [`Diagnostic`]s.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq)]
 pub struct SourceInfo {
     /// Simple name (relative path) of the source code.
     pub name: String,
@@ -491,7 +491,14 @@ mod document_to_intermediate {
         structs: Vec<SchemaJsonDefinition>,
     ) {
         for struct_ in structs {
-            let mut struct_def = Json::new(struct_.name, struct_.index, struct_.hash, struct_.doc);
+            let mut struct_def = Json::new(
+                struct_.name,
+                struct_.index,
+                struct_.hash,
+                struct_.doc,
+                struct_.source_info,
+                struct_.span,
+            );
 
             for field in struct_.fields {
                 struct_def.add_field(JsonField {
@@ -501,6 +508,7 @@ mod document_to_intermediate {
                     type_: convert_json_datatype(&field, registry),
                     optional: field.optional,
                     doc: field.doc,
+                    span: field.span,
                 });
             }
 
@@ -511,6 +519,18 @@ mod document_to_intermediate {
 
 #[must_use = "Converting a `Document` to the IR representation implies that you want to use the resulting registry."]
 #[allow(clippy::result_large_err, reason = "We can take the performance hit.")]
+/// Converts a [`Document`] into a [`DefinitionRegistry`] (IR), returning diangostics in the process.
+///
+/// This is the only entrypoint for converting the result of KDL's parser into
+/// the intermediate representation used by a [`Generator`](crate::generators::Generator).
+///
+/// # Errors
+///
+/// Returns [`Diagnostic`] on error if validation fails.
+/// In particular, this step checks and resolves every usage of a
+/// [`Definition`](crate::intermediate::Definition):
+/// a [`Diagnostic`] is returned if an unknown [`Definition`](crate::intermediate::Definition)
+/// is used.
 pub fn document_to_definitions(document: Document) -> Result<DefinitionRegistry, Diagnostic> {
     let mut registry = PartialDefinitionRegistry::new();
 
