@@ -89,9 +89,9 @@ fn get_glz_mapper(
         } => Ok(format!("glz::bools_as_numbers<&T::{name}>")),
         DataType::Datetime => Ok(format!("pkg::glaze::datetime<&T::{name}>()")),
         DataType::DatetimeUnix => Ok(format!("pkg::glaze::datetime_unix<&T::{name}>()")),
-        DataType::SingleElementArray {
-            inner_type: _,
-        } => Ok(format!("pkg::glaze::single_array<&T::{name}>()")),
+        DataType::SingleElementArray { inner_type: _ } => {
+            Ok(format!("pkg::glaze::single_array<&T::{name}>()"))
+        }
         DataType::StringArray {
             inner_type: _,
             separator,
@@ -103,7 +103,6 @@ fn get_glz_mapper(
         }
 
         // NOTE(arves) => For custom encoding one should override the specific concepts
-
         _ => Ok(format!("&T::{name}")),
     }
 }

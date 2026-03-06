@@ -364,6 +364,7 @@ impl PartialDefinitionRegistry {
     /// # Panics
     ///
     /// FIXME(anri): currently panics on the error conditions above.
+    #[allow(clippy::result_large_err, reason = "We can take the performance hit.")]
     pub fn finalize(mut self) -> Result<DefinitionRegistry, Diagnostic> {
         let all_nodes: Vec<_> = self.definitions.node_indices().collect();
         let mut missing_edges = vec![];

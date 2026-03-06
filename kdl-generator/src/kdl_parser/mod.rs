@@ -27,7 +27,7 @@ use crate::{
 
 pub use parser::raw_parse_kdl;
 
-/// Informations about the origin of a KDL document.
+/// Information about the origin of a KDL document.
 ///
 /// Used for generating correct [`Diagnostic`]s.
 #[derive(Debug, Clone)]
@@ -510,6 +510,7 @@ mod document_to_intermediate {
 }
 
 #[must_use = "Converting a `Document` to the IR representation implies that you want to use the resulting registry."]
+#[allow(clippy::result_large_err, reason = "We can take the performance hit.")]
 pub fn document_to_definitions(document: Document) -> Result<DefinitionRegistry, Diagnostic> {
     let mut registry = PartialDefinitionRegistry::new();
 
