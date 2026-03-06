@@ -36,7 +36,7 @@ pub fn parse_int_enum_definition(
                 "specify a `start` property to the int enum, for example `start=0`".into(),
             ),
             wrong_type_help: Some(
-                "the type inside the `start` property must be an integer, for exaple `start=0`"
+                "the type inside the `start` property must be an integer, for example `start=0`"
                     .into(),
             ),
         },

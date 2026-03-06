@@ -32,7 +32,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-   
+
     // end of new
 
     field send_banner_mst type="bool::int" {
@@ -40,8 +40,8 @@ json FeatureCheck {
         doc "Enables sending the Banner MST"
     }
 
-    
-   
+
+
     // new
     field reload_file_mst type="bool::int" {
         key "reload_file_mst"
@@ -53,7 +53,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-   
+
     // end of new
 
     field raid type="bool::int" {
@@ -61,8 +61,8 @@ json FeatureCheck {
         doc "Enables the raids"
     }
 
-    
-   
+
+
     // new
     field raid_beta type="bool::int" {
         key "raid_beta"
@@ -84,7 +84,7 @@ json FeatureCheck {
         doc "Allows restarting a raid battle"
     }
 
-   
+
     // end of new
 
     field enable_auto_battle type="bool::int" {
@@ -93,14 +93,14 @@ json FeatureCheck {
     }
 
 
-   
+
     // new
     field multi_summon type="bool::int" {
         key "multisummon"
         doc "Enables multisummoning"
     }
 
-   
+
     // end of new
 
     field multiaccept type="bool::int" {
@@ -119,7 +119,7 @@ json FeatureCheck {
     }
 
 
-   
+
     // new
     field randall_facility type="bool::int" {
         key "randall_facility"
@@ -136,7 +136,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-   
+
     // end of new
 
     field shop_friend type="bool::int" {
@@ -161,7 +161,7 @@ json FeatureCheck {
 
     // 1
 
-   
+
     // new
     field dlc_popup_android type="bool::int" {
         key "dlc_popup_android"
@@ -179,7 +179,7 @@ json FeatureCheck {
     }
 
     // 30.0
-   
+
     // end of new
 
     field battle_item_limit type="int" {
@@ -189,7 +189,7 @@ json FeatureCheck {
 
     // 500
 
-   
+
     // new
     field bb_timer type="int" {
         key "bb_timer"
@@ -202,7 +202,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-   
+
     //end of new
 
     field enable_cheats type="bool::int" {
@@ -211,14 +211,14 @@ json FeatureCheck {
     }
 
 
-   
+
     // new
     field arx_punish_enable type="bool::int" {
         key "arx_punish_enable"
         doc "TODO"
     }
 
-   
+
     // end of new
 
     field arx_popup_enable type="bool::int" {
@@ -232,7 +232,7 @@ json FeatureCheck {
     }
 
 
-   
+
     // new
     field randall_library_memories type="bool::int" {
         key "randall_library_memories"
@@ -244,7 +244,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-   
+
     // end of new
 
     field check_for_corrupted_mst type="bool::int" {
@@ -273,14 +273,14 @@ json FeatureCheck {
     }
 
 
-   
+
     // new
     field force_using_summon_tickets type="bool::int" {
         key "force_use_summon_tickets"
         doc "Forces the use of Summon tickets before Gems"
     }
 
-   
+
     // end of new
 
     field feature_gate type="bool::int" {
@@ -339,7 +339,7 @@ json FeatureCheck {
     }
 
 
-   
+
     // new
     field exclude_ca_fusion_unit type="bool::int" {
         key "exclude_ca_fusion_unit"
@@ -356,7 +356,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-   
+
     // end of new
 
     field guild_visible type="bool::int" {
@@ -370,14 +370,14 @@ json FeatureCheck {
     }
 
 
-   
+
     // new
     field enable_old_video_ads_slot type="bool::int" {
         key "old_video_ads_slot"
         doc "TODO"
     }
 
-   
+
     // end of new
 
     field daily_dungeon_list type="str" {

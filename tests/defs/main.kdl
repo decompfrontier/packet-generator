@@ -49,9 +49,9 @@ json Main {
     }
 
     // Removing the comment /- will make this not compile
-    /-field non-existant type="DoesNotExist" {
+    /-field non-existent type="DoesNotExist" {
         key "not_exists"
-        doc "Not existant type, should error"
+        doc "Not existent type, should error"
     }
 
     field a-single-element-array type="[i32::int]::size(1)" {
@@ -75,4 +75,3 @@ json Main {
         optional #true
     }
 }
-

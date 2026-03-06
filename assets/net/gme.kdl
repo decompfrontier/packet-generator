@@ -16,7 +16,7 @@ int-enum GmeErrorFlags start=0 {
         value 1
     }
 
-    variant ShouldHandleCommands { 
+    variant ShouldHandleCommands {
         doc "The custom command should be handled."
         value 2
     }
@@ -75,7 +75,7 @@ int-enum GmeErrorCommand start=0 {
 // keyjson(key_group = "F4q6i9xe")
 json GmeHeader {
     doc "Header of a game request/response."
-    
+
     field id type="str" {
         key "Hhgi79M1"
         doc "ID of the request"

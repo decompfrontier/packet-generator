@@ -15,7 +15,7 @@ json ArenaRankMst  {
     hash "6kWq78zx"
 
     field id type=i32::str {
-        key "JmFn3g9t" 
+        key "JmFn3g9t"
         doc "Ranking ID"
     }
 

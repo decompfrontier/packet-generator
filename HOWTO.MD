@@ -1,7 +1,7 @@
 # How to create a new packet or MST definition
 
 
-## Introduction 
+## Introduction
 As Brave Frontier JSON data is shared between multiple projects, recreating the exact same input/output data every single time becomes a long task, with the cost of implicitly understanding the meaning of the code.
 
 To address this issue, decompfrontier contains a simple KDL-based packet schema and a few generation utilities to automatically generate packet and MST information.
@@ -68,13 +68,13 @@ json Foo {
 
     // A field/property named `bar` with type string.
     field bar type="str" {
-        key "BaR"
+        key "bar-key-in-json"
 
         doc "Some other documentation that will be included in the generated source"
     }
 
     field baz type="i32::int" {
-        key "BaZ"
+        key "baz-key-in-json"
 
         doc "A 32-bit int represented as an integer."
 
@@ -86,8 +86,8 @@ The above translates to the following JSON:
 
 ```json
 {
-    "BaR": "a string value",
-    "BaZ": 42
+    "bar-key-in-json": "a string value",
+    "baz-key-in-json": 42
 }
 ```
 
@@ -159,7 +159,7 @@ While this is what the previous JSON would look like if the array property was s
 }
 ```
 
-This is very usefull for definitions that encapsulate more fields, like unit or items are usually an array JSON.
+This is very useful for definitions that encapsulate more fields, like unit or items are usually an array JSON.
 
 ## Writing a field
 
@@ -170,7 +170,7 @@ To write a field, simply do the following:
 `field_name = { "brave frontier encrypted key name" : python datatype }`
 
 Available data types to map to the JSON are:
-| python name | native map behavour | JSON map behavour |
+| python name | native map behaviour | JSON map behaviour |
 | ----------- | ------------------- | ----------------- |
 | int | 32-bit unsigned int | number |
 | str | string | string |
@@ -209,7 +209,7 @@ For a class and enums, simply write your documentation as you would for any pyth
 ```
 @json(array = False)
 class GmeAction:
-    "Main packet of interaction between client and server." 
+    "Main packet of interaction between client and server."
 ```
 
 For class fields, create a new key called `doc` and place your documentation there, for example:
@@ -223,8 +223,8 @@ As enumerators doesn't have a key-value to append the documentation string to, t
 dictionary called `__doc_fields__` which maps the *value* of the enumerator with it's documentation, for example:
 ```
 class GmeErrorFlags(Flag):
-    "Flags of the errors happend in the game."
-    
+    "Flags of the errors happened in the game."
+
     __doc_fields__ = {
         0: "No error oncurred.",
         1: "The server encountered an error.",

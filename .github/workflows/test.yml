@@ -12,9 +12,6 @@ on:
   push:
     branches: [main]
   pull_request:
-defaults:
-  run:
-    working-directory: kdl-generator
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true

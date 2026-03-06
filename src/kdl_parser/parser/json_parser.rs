@@ -16,7 +16,7 @@ const HASH_CHILD: &str = "hash";
 const DOC_CHILD: &str = "doc";
 const KEY_CHILD: &str = "key";
 
-const FIELD_DEFINITOIN: &str = "field";
+const FIELD_DEFINITION: &str = "field";
 
 const TRANSPARENT_PROPERTY_NAME: &str = "transparent";
 
@@ -72,7 +72,7 @@ pub fn parse_data_definition(
             source_info: source_code.clone(),
             span: definition.span(),
             help: Some(format!(
-                "specify children `{HASH_CHILD}`, `{DOC_CHILD}` and some `{FIELD_DEFINITOIN}`s"
+                "specify children `{HASH_CHILD}`, `{DOC_CHILD}` and some `{FIELD_DEFINITION}`s"
             )),
             label: None,
             related: vec![],
@@ -118,7 +118,7 @@ pub fn parse_data_definition(
     let fields: Vec<JsonField> = data_children
         .nodes()
         .iter()
-        .filter(|&node| node.name().value() == FIELD_DEFINITOIN)
+        .filter(|&node| node.name().value() == FIELD_DEFINITION)
         .enumerate()
         .map(|(index, node)| {
             parse_field(

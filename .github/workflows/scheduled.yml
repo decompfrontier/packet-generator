@@ -12,9 +12,6 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-defaults:
-  run:
-    working-directory: kdl-generator
 name: rolling
 jobs:
   # https://twitter.com/mycoliza/status/1571295690063753218
