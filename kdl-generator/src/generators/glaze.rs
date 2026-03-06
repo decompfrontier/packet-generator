@@ -118,7 +118,7 @@ fn generate_json_cxx(
         .iter()
         .map(|field| -> Result<String, GenerationError> {
             let mapper =
-                get_glz_mapper(/*&struct_name,*/ &field.name, &field.type_, registry)?;
+                get_glz_mapper(/* &struct_name, */ &field.name, &field.type_, registry)?;
             let key: &str = &field.key;
 
             Ok(format!("{TAB}{TAB}\"{key}\", {mapper}"))

@@ -247,7 +247,7 @@ impl KdlNodeUtilsExt for KdlNode {
         entry.value().as_string().ok_or_else(|| {
             ParsingError::from(Diagnostic {
                 message: format!(
-                    "property `{}` for {} does not cointain a string",
+                    "property `{}` for {} does not contain a string",
                     property_name.as_ref(),
                     error_context.context
                 ),
@@ -287,7 +287,7 @@ impl KdlNodeUtilsExt for KdlNode {
         entry.value().as_bool().ok_or_else(|| {
             ParsingError::from(Diagnostic {
                 message: format!(
-                    "property `{}` for {} does not cointain a boolean value (#true or #false)",
+                    "property `{}` for {} does not contain a boolean value (#true or #false)",
                     property_name.as_ref(),
                     error_context.context
                 ),
@@ -327,7 +327,7 @@ impl KdlNodeUtilsExt for KdlNode {
         entry.value().as_integer().ok_or_else(|| {
             ParsingError::from(Diagnostic {
                 message: format!(
-                    "property `{}` for {} does not cointain a string",
+                    "property `{}` for {} does not contain a string",
                     property_name.as_ref(),
                     error_context.context
                 ),
@@ -619,8 +619,9 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
 /// Parses a `document` (as string) to obtain [`RawDocument`] that can be
 /// inspected for further analysis.
 ///
-/// The [`RawDocument`] can be later converted to a [`Document`](super::Document) used for
-/// generating the IR by calling [`schema::validate`](super::validate).
+/// The [`RawDocument`] can be later converted to a
+/// [`Document`](super::Document) used for generating the IR by calling
+/// [`schema::validate`](super::validate).
 ///
 /// # Errors
 ///

@@ -435,25 +435,6 @@ mod combinators {
                 },
             )
             .parse_next(input)
-
-        //     .verify(|(name, _)| {
-        //         !matches!(
-        //             *name,
-        //             "int"
-        //                 | "intstr"
-        //                 | "boolint"
-        //                 | "boolstr"
-        //                 | "float"
-        //                 | "floatstr"
-        //                 | "double"
-        //                 | "doublestr"
-        //         )
-        //     })
-        // .context( MiniDiagnostic {
-        //     message: "Found an old Python datatype `int`, `intstr`, `boolint`, `boolstr`, `float`, `floatstr`, `double` or `doublestr`. Convert it to either `i32`, `bool`, `f32`, `f64`.".into(),
-        //     severity: miette::Severity::Error,
-        //     help: None,
-        // })
     }
 
     fn parse_map(input: &mut Input) -> PResult {
@@ -819,7 +800,7 @@ mod combinators {
         }
 
         #[test]
-        fn can_parse_ambigous_custom_type() {
+        fn can_parse_ambiguous_custom_type() {
             let vals = &[
                 "strange", // starts with "str"
                 "i32foo", "f64foo",

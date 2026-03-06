@@ -372,7 +372,8 @@ impl PartialDefinitionRegistry {
         }
     }
 
-    /// Validates the current incomplete registry to build a [`DefinitionRegistry`].
+    /// Validates the current incomplete registry to build a
+    /// [`DefinitionRegistry`].
     ///
     /// # Errors
     ///

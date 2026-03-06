@@ -47,7 +47,7 @@ use crate::{
 /// match packet_generator::parse_kdl(doc, &PathBuf::from("foo.kdl"), &opts) {
 ///     Ok((registry, _warnings)) => {
 ///         println!("{:#?}", registry.find("Foo"));
-///     },
+///     }
 ///
 ///     Err(e) => println!("Error: {e}"),
 /// }

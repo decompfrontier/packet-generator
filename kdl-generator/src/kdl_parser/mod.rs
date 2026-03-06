@@ -1,5 +1,4 @@
 //! Module for parsing the definitions (in KDL).
-//!
 // TODO(anri): rename the module.
 //! Continued
 
@@ -101,7 +100,8 @@ pub struct Diagnostic {
     ///
     /// # Example
     ///
-    /// Setting `label` to `Some(String::from("foo"))` will display the following:
+    /// Setting `label` to `Some(String::from("foo"))` will display the
+    /// following:
     ///
     /// ```text
     /// some error here
@@ -519,18 +519,20 @@ mod document_to_intermediate {
 
 #[must_use = "Converting a `Document` to the IR representation implies that you want to use the resulting registry."]
 #[allow(clippy::result_large_err, reason = "We can take the performance hit.")]
-/// Converts a [`Document`] into a [`DefinitionRegistry`] (IR), returning diangostics in the process.
+/// Converts a [`Document`] into a [`DefinitionRegistry`] (IR), returning
+/// diangostics in the process.
 ///
 /// This is the only entrypoint for converting the result of KDL's parser into
-/// the intermediate representation used by a [`Generator`](crate::generators::Generator).
+/// the intermediate representation used by a
+/// [`Generator`](crate::generators::Generator).
 ///
 /// # Errors
 ///
 /// Returns [`Diagnostic`] on error if validation fails.
 /// In particular, this step checks and resolves every usage of a
 /// [`Definition`](crate::intermediate::Definition):
-/// a [`Diagnostic`] is returned if an unknown [`Definition`](crate::intermediate::Definition)
-/// is used.
+/// a [`Diagnostic`] is returned if an unknown
+/// [`Definition`](crate::intermediate::Definition) is used.
 pub fn document_to_definitions(document: Document) -> Result<DefinitionRegistry, Diagnostic> {
     let mut registry = PartialDefinitionRegistry::new();
 

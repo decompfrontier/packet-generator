@@ -94,7 +94,8 @@ pub trait Addon: Debug {
 /// Error type concerning problem when generating source files.
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum GenerationError {
-    /// We needed to look into a [`Definition`](crate::intermediate::Definition),
+    /// We needed to look into a
+    /// [`Definition`](crate::intermediate::Definition),
     /// but the [`DefinitionRegistry`](crate::intermediate::DefinitionRegistry)
     /// expired in the meantime.
     ///

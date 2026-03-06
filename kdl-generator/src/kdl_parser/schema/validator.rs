@@ -7,7 +7,8 @@ use crate::kdl_parser::Diagnostic;
 ///
 /// # Errors
 ///
-/// Returns `Err` if after this post-processing the [`Document`] is still not valid.
+/// Returns `Err` if after this post-processing the [`Document`] is still not
+/// valid.
 #[allow(clippy::result_large_err)]
 pub const fn validate(document: RawDocument) -> Result<Document, Diagnostic> {
     // for struct_ in &document.data {

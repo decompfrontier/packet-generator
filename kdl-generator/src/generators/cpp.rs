@@ -182,9 +182,9 @@ fn convert_datatype(
 
         DataType::U64 { .. } => Ok(String::from("uint64_t")),
 
-        DataType::F32 { .. } => Ok(String::from("pkg::float32")), // for supporting C++20 floating point
-
-        DataType::F64 => Ok(String::from("pkg::float64")), // for supporting C++20 floating point
+        // Custom `float`/`double` to support C++20 floating point.
+        DataType::F32 { .. } => Ok(String::from("pkg::float32")),
+        DataType::F64 => Ok(String::from("pkg::float64")),
 
         DataType::Bool { .. } => Ok(String::from("bool")),
 
@@ -215,8 +215,9 @@ fn convert_datatype(
         }
 
         DataType::SingleElementArray { inner_type } => {
+            // TODO(arves): Can this be made a meta-data only generation step?
             let inner = convert_datatype(inner_type, registry)?;
-            Ok(inner) // TODO(arves): Can this be made a meta-data only generation step?
+            Ok(inner)
         }
 
         DataType::Definition(weak) => {

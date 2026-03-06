@@ -2,8 +2,8 @@
 
 use bpaf::Bpaf;
 
-/// The tool can generate bindings for one of the following programming languages.
-/// Make sure to select the one you care about.
+/// The tool can generate bindings for one of the following programming
+/// languages. Make sure to select the one you care about.
 #[derive(Debug, Clone, Bpaf)]
 pub enum CxxSerializer {
     /// Serialize in JSON with Glaze
@@ -22,8 +22,8 @@ pub struct CxxOptions {
     pub serializer: CxxSerializer,
 }
 
-/// The tool can generate bindings for one of the following programming languages.
-/// Make sure to select the one you care about.
+/// The tool can generate bindings for one of the following programming
+/// languages. Make sure to select the one you care about.
 #[derive(Debug, Clone, Bpaf)]
 pub enum RustSerializer {
     /// Serialize in JSON with Glaze
@@ -39,7 +39,8 @@ pub struct RustOptions {
     pub serializer: RustSerializer,
 }
 
-/// The tool can generate bindings for one of the following programming languages.
+/// The tool can generate bindings for one of the following programming
+/// languages.
 ///
 /// Make sure to select the one you care about.
 #[derive(Debug, Clone, Bpaf)]
@@ -53,7 +54,8 @@ pub enum ProgrammingLanguage {
 #[derive(Debug, Clone, Bpaf)]
 #[bpaf(options)]
 pub enum CliArgs {
-    /// Parses a KDL file and dumps its representation, without generating anything else.
+    /// Parses a KDL file and dumps its representation, without generating
+    /// anything else.
     #[bpaf(command("dump"))]
     DumpRepresentation {
         /// KDL definition file to parse.
@@ -99,7 +101,8 @@ pub mod commands {
         #[bpaf(positional("FILENAME"))]
         pub filename: String,
 
-        /// The directory were to generate implementations for the definitions provided in FILENAME.
+        /// The directory were to generate implementations for the definitions
+        /// provided in FILENAME.
         #[bpaf(short, long)]
         pub output_directory: String,
     }

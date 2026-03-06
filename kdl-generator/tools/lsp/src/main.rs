@@ -97,7 +97,6 @@ impl LanguageServer for Backend {
                 )),
                 // TODO(anri):
                 // Completions need heavy parser support.
-                //
                 completion_provider: Some(CompletionOptions {
                     resolve_provider: Some(false),
                     trigger_characters: None,
