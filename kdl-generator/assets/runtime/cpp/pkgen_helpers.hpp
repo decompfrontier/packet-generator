@@ -121,7 +121,7 @@ static auto int_to_str(T input, std::string& result, int base = 10) {
     return false;
 }
 
-    // -- meta function to support string list converion
+    // -- meta function to support string list conversion
 
 namespace detail {
 

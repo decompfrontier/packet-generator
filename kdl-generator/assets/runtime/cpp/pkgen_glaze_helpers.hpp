@@ -64,7 +64,7 @@ template <auto MemPtr> constexpr decltype(auto) datetime_unix() {
 template <typename ContainerType, auto MemPtr, char delimiter> requires pkg::detail::containerable<pkg::detail::decltype_real<MemPtr>>
 constexpr auto array_string = glz::custom<
     [](ContainerType& container_object, std::string_view in, glz::context& ctx) {
-    
+
     auto& data = glz::get_member(container_object, MemPtr);
 
     if (in.empty()) return;
