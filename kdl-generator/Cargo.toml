@@ -81,3 +81,8 @@ too-many-lines = "allow"
 needless-raw-string-hashes = "allow"
 pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }
+
+# Needed for -Zminimal-versions to pass.
+# The dependency is not used in the project itself.
+[target.'cfg(any())'.dependencies]
+ahash = { version = "0.7.8", optional = true }

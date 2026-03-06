@@ -96,8 +96,7 @@ pub trait Addon: Debug {
 pub enum GenerationError {
     /// We needed to look into a
     /// [`Definition`](crate::intermediate::Definition),
-    /// but the [`DefinitionRegistry`](crate::intermediate::DefinitionRegistry)
-    /// expired in the meantime.
+    /// but the [`DefinitionRegistry`] expired in the meantime.
     ///
     /// Use this when converting [`std::sync::Weak`] into [`std::sync::Arc`]
     /// through [`Weak::upgrade`](std::sync::Weak::upgrade).
@@ -111,7 +110,7 @@ pub enum GenerationError {
     },
 
     /// The type is not present in the
-    /// [`DefinitionRegistry`](crate::intermediate::DefinitionRegistry).
+    /// [`DefinitionRegistry`].
     #[error(
         "datatype `{queried_from:#?}` depended on type definition `{name}`, but the latter was not found"
     )]
@@ -124,7 +123,7 @@ pub enum GenerationError {
     },
 
     /// There is a cycle between definitions in the
-    /// [`DefinitionRegistry`](crate::intermediate::DefinitionRegistry).
+    /// [`DefinitionRegistry`].
     #[error("found a cycle in the definition registry: node #{0:?}")]
     CycleFound(Cycle<NodeIndex>),
 }
