@@ -140,7 +140,7 @@ json GmeAction {
         optional #true
     }
 
-    field field error type=GmeError {
+    field error type=GmeError {
         // "default": DefaultType.Omit,
         key "b5PH6mZa"
         doc "Error object in case of an error."
