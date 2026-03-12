@@ -108,7 +108,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-    field facebook_stories type="bool::int " {
+    field facebook_stories type="bool::int" {
         key "facebook_stories"
         doc TODO
     }
@@ -154,7 +154,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-    field dungeon_key_count_on_redeem type="int" {
+    field dungeon_key_count_on_redeem type="i32::int" {
         key "dungeon_key_cnt"
         doc "Sets the dungeon keys gave to the players everytime they redeem a key"
     }
@@ -173,7 +173,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-    field fps_low type="float" {
+    field fps_low type="f32::int" {
         key "fps_low"
         doc "TODO"
     }
@@ -182,7 +182,7 @@ json FeatureCheck {
 
     // end of new
 
-    field battle_item_limit type="int" {
+    field battle_item_limit type="i32::int" {
         key "battle_item_limit"
         doc "TODO"
     }
@@ -191,7 +191,7 @@ json FeatureCheck {
 
 
     // new
-    field bb_timer type="int" {
+    field bb_timer type="i32::int" {
         key "bb_timer"
         doc "TODO"
     }
@@ -401,7 +401,7 @@ json FeatureCheck {
         doc "TODO"
     }
 
-    field cooldown_timer type="int" {
+    field cooldown_timer type="i32::int" {
         key "cooldown_timer"
         doc "TODO"
     }
