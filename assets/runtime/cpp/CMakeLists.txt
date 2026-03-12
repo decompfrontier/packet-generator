@@ -12,7 +12,7 @@ add_library(${PROJECT_NAME} INTERFACE
     pkgen_helpers.hpp
 )
 
-target_include_directories(${PROJECT_NAME} INTERFACE .)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 
 if (MSVC)
     target_compile_options(${PROJECT_NAME} INTERFACE "/Zc:__cplusplus")
