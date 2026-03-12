@@ -1,0 +1,88 @@
+[package]
+name = "packet-generator"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.87"
+
+[workspace]
+members = ["packet-generator-cli", "tools/*"]
+default-members = ["packet-generator-cli", "."]
+resolver = "3"
+
+[workspace.dependencies]
+miette = { version = "7", features = ["fancy"] } # pretty diagnostics
+bpaf = { version = "0.9.20", features = ["derive"] }
+atomicow = "1.1.0"
+itertools = "0.14.0"
+thiserror = "2.0.17"
+
+[dependencies]
+atomicow = { workspace = true }
+miette = { workspace = true }
+itertools = { workspace = true }
+thiserror = { workspace = true }
+winnow = { version = "0.7.14", features = ["simd"] }
+stringcase = "0.4.0"
+clean-path = "0.2"
+petgraph = "0.8.3"
+kdl = "6.5.0"
+
+[dev-dependencies]
+criterion = { version = "0.8", features = ["html_reports"] }
+
+[[bench]]
+name = "parser"
+harness = false
+
+[profile.release]
+lto = true
+strip = true
+
+[profile.bench]
+debug = true
+
+[profile.profiling]
+inherits = "release"
+debug = true
+lto = false
+strip = false
+
+[lints]
+workspace = true
+
+[workspace.lints.clippy]
+unwrap-used = "deny"
+expect-used = "deny"
+expect-fun-call = "deny"
+unwrap-in-result = "forbid"
+unwrap-or-default = "forbid"
+get-unwrap = "forbid"
+missing-errors-doc = "forbid"
+missing-panics-doc = "forbid"
+missing-safety-doc = "forbid"
+explicit-iter-loop = "deny"
+items-after-statements = "deny"
+ref-option-ref = "deny"
+cast-lossless = "deny"
+semicolon-if-nothing-returned = "deny"
+ignored-unit-patterns = "deny"
+if-not-else = "deny"
+redundant-closure-for-method-calls = "deny"
+single-char-pattern = "deny"
+use-self = "deny"
+redundant-pub-crate = "deny"
+option-if-let-else = "allow"
+unnecessary-wraps = "allow"
+future-not-send = "warn"
+# cognitive-complexity = "warn"
+uninlined-format-args = "allow"
+wildcard-imports = "allow"
+too-many-lines = "allow"
+needless-raw-string-hashes = "allow"
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+
+# Needed for -Zminimal-versions to pass.
+# The dependency is not used in the project itself.
+[target.'cfg(any())'.dependencies]
+ahash = { version = "0.7.8", optional = true }

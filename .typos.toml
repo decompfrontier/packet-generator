@@ -1,0 +1,19 @@
+[files]
+extend-exclude = [
+    "*.kdl",
+    "tests/*.cpp",
+]
+
+[default]
+extend-ignore-re = [
+    # Ignore lines that end with `# spellchecker:disable-line`
+    "(?Rm)^.*(#|//)\\s*spellchecker:disable-line$",
+    # Ignore the line after `# spellchecker:ignore-next-line`:
+    "(#|//)\\s*spellchecker:ignore-next-line\\n.*",
+    # Ignore blocks between `# spellchecker:off` and `# spellchecker:on`
+    "(?s)(#|//)\\s*spellchecker:off.*?\\n\\s*(#|//)\\s*spellchecker:on",
+]
+extend-ignore-identifiers-re = [
+    # Ignore identifiers that look like SSL cipher suites:
+    "\\bTLS_[A-Z0-9_]+(_anon_[A-Z0-9_]+)?\\b",
+]

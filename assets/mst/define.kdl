@@ -1,0 +1,350 @@
+// @keyjson(key_group = "VkoZ5t3K", array=ArrayStep.Single)
+json DefineMst {
+    doc "TODO"
+
+    field max_zel type="i64::str" {
+        key "DXm2W8vY"
+        doc "TODO"
+    }
+
+    field max_karma type="i64::str" {
+        key "jSxdlwqd"
+        doc "TODO"
+    }
+
+    field max_friend_points type="i64::str" {
+        key "4YCzox9t"
+        doc "TODO"
+    }
+
+    field max_team_lv type="i32::str" {
+        key "Kt8H4LN7"
+        doc "TODO"
+    }
+
+    field max_arena_rank type="i32::str" {
+        key "tzCfGX83"
+        doc "TODO"
+    }
+
+    field max_unit_count type="i32::str" {
+        key "ouXxIY63"
+        doc "TODO"
+    }
+
+    field max_warehouse_count type="i32::str" {
+        key "5pjoGBC4"
+        doc "TODO"
+    }
+
+    field default_unit_count type="i32::str" {
+        key "k0xrd38b"
+        doc "TODO"
+    }
+
+    // // number of free unit slots when creating an account
+    field default_warehouse_count type="i32::str" {
+        key "8U93zxsf"
+        doc "TODO"
+    }
+
+    // // number of free warehouse slot when creating an account
+    // // TODO: what's this ?
+    field friendpoint_rein_friend type="i32::str" {
+        key "2oD1fmuX"
+        doc "TODO"
+    }
+
+    field friendpoint_rein_friend_rate type="f32::str" {
+        key "PnE6xo93"
+        doc "TODO"
+    }
+
+    field friendpoint_rein_friend_my type="i32::str" {
+        key "86sx4FfJ"
+        doc "TODO"
+    }
+
+    field friendpoint_rein_friend_my_rate type="f32::str" {
+        key "JBR0Po3b"
+        doc "TODO"
+    }
+
+    field friendpoint_rein_other type="i32::str" {
+        key "K10QSeuj"
+        doc "TODO"
+    }
+
+    field friendpoint_rein_other_rate type="f32::str" {
+        key "6p4YW7oc"
+        doc "TODO"
+    }
+
+    field friendpoint_rein_other_my type="i32::str" {
+        key "VkA3nu0b"
+        doc "TODO"
+    }
+
+    field friendpoint_rein_other_my_rate type="f32::str" {
+        key "mI1jW0X7"
+        doc "TODO"
+    }
+
+    field permit_invitation type="i32::str" {
+        key "02IgM6ib"
+        doc "TODO"
+    }
+
+    field ext_plus_max_count type="i32::str" {
+        key "4t3qX2kT"
+        doc "TODO"
+    }
+
+
+    field action_point_heal_count type="i32::str" {
+        key "C8KkHGa7"
+        doc "TODO"
+    }
+ // energy
+    field fight_point_heal_count type="i32::str" {
+        key "sy9G24Su"
+        doc "TODO"
+    }
+ // arena points
+    field unit_box_ext_count type="i32::str" {
+        key "I73XkAQi"
+        doc "TODO"
+    }
+ // TODO: eh? number of gems?
+    field item_box_ext_count type="i32::str" {
+        key "CA01vo2Q"
+        doc "TODO"
+    }
+  // TODO: eh?
+    field continue_dia_count type="i32::str" {
+        key "QW3HiNv8"
+        doc "TODO"
+    }
+
+    // // TODO: number of continues?
+    field initial_unit type="str" {
+        key "21ovwqYT"
+        doc "TODO"
+    }
+
+    // // TODO: I'm sure this is not JUST a string
+    field tutorial_dungeon_id type="i32::str" {
+        key "91nRcYWT"
+        doc "TODO"
+    }
+
+
+    // // TODO: what's this?
+    field recover_time_action type="i32::str" {
+        key "Ieq49JDy"
+        doc "TODO"
+    }
+
+    field recover_time_fight type="i32::str" {
+        key "0BPn68DG"
+        doc "TODO"
+    }
+
+    field arena_battle_time_limit type="i32::str" {
+        key "YR4HI56k"
+        doc "TODO"
+    }
+
+    field arena_need_mission_id type="i32::str" {
+        key "yFRYDj67"
+        doc "TODO"
+    }
+ // mission to unlock the arena
+    field max_party_deck_count type="i32::str" {
+        key "WHy3BSm9"
+        doc "TODO"
+    }
+
+    field arena_tutorial_npc_info type="str" {
+        key "6W4PdoJY"
+        doc "TODO"
+    }
+ // TODO: I'm sure this is not JUST a string
+    field verify_flag type="i32::str" {
+        key "6GXx4LgZ"
+        doc "TODO"
+    }
+
+    field unit_mix_great_exp_rate type="f32::str" {
+        key "2inP0tCg"
+        doc "TODO"
+    }
+
+    field unit_mix_super_exp_rate type="f32::str" {
+        key "zn65EXYF"
+        doc "TODO"
+    }
+
+    field recover_time_frohun type="i32::str" {
+        key "3xAsgHL8"
+        doc "TODO"
+    }
+
+    field recover_time_raid type="i32::str" {
+        key "zkD98Hfy"
+        doc "TODO"
+    }
+
+    field raid_max_p type="i32::str" {
+        key "S92Hcor3"
+        doc "TODO"
+    }
+
+    field raid_bag_count type="i32::str" {
+        key "09EbcDmX"
+        doc "TODO"
+    }
+
+    field friend_ext_count type="i32::str" {
+        key "3Ep5akHJ"
+        doc "TODO"
+    }
+
+    field medal_max_num type="i32::str" {
+        key "xq0fSrw3"
+        doc "TODO"
+    }
+
+     // // which one?
+    field compaign_flag type="str" {
+        key "MFz8YRS6"
+        doc "TODO"
+    }
+
+    // // note: are this the conversion rates?
+    field max_achieve_point type="i32::str" {
+        key "1JFcDr05"
+        doc "TODO"
+    }
+
+    field zel_per_achieve_point type="i32::str" {
+        key "SAb3m9wo"
+        doc "TODO"
+    }
+
+    field karma_per_achieve_point type="i32::str" {
+        key "KCG5f1AN"
+        doc "TODO"
+    }
+
+    field max_achieve_point_zel_per_day type="i32::str" {
+        key "4ARtfF7x"
+        doc "TODO"
+    }
+
+    field max_achieve_point_karma_per_day type="i32::str" {
+        key "K0sUIn8R"
+        doc "TODO"
+    }
+
+    field max_achieve_point_item_per_day type="i32::str" {
+        key "M1AJuFU6"
+        doc "TODO"
+    }
+
+    field max_achievement_challenge_accept_count type="i32::str" {
+        key "p3pXbuHA"
+        doc "TODO"
+    }
+
+    field max_achievement_record_challenge_accept_count type="i32::str" {
+        key "kmxPgJu9"
+        doc "TODO"
+    }
+
+    field tutorial_gatcha_id type="i32::str" {
+        key "uALQnngx"
+        doc "TODO"
+    }
+
+    field parse_overdrive_param type="str" {
+        key "QylsZTpE"
+        doc "TODO"
+    }
+
+    // this is NOT just a string
+    field colosseum_shop_ticket type="i32::str" {
+        key "OjAiNSoh"
+        doc "TODO"
+    }
+
+    field max_colosseum_ticket type="i32::str" {
+        key "924iwrJ9"
+        doc "TODO"
+    }
+
+    field max_cbp type="i32::str" {
+        key "woxAcRoH"
+        doc "TODO"
+    }
+
+    // ??
+    field reset_fe_skill_dia_count type="i32::str" {
+        key "5csFoG1G"
+        doc "TODO"
+    }
+
+    field max_blacklist_count type="i32::str" {
+        key "DYMUxgt8"
+        doc "TODO"
+    }
+
+    // bf chapter 3?
+    field init_summoner_arm_id type="[i32::str]::sep(comma)"  {
+        key "deYOowYJ"
+        doc "TODO"
+    }
+
+    field max_summoner_sp type="i64::str" {
+        key "QhV0G2zu"
+        doc "TODO"
+    }
+
+    field max_summoner_friend_point type="i64::str" {
+        key "W9bwut7Q"
+        doc "TODO"
+    }
+
+    field max_multi_p type="i32::str" {
+        key "6id2v7eN"
+        doc "TODO"
+    }
+
+    field dbb_crystal_values type="str" {
+        key "jFdW1ipx"
+        doc "TODO"
+    }
+
+    // this is NOT just a string
+    field dbb_fixed_settings_value type="str" {
+        key "7o6lcc66"
+        doc "TODO"
+    }
+
+    // this is NOT just a string
+    field action_point_recover_fixed type="i32::int" {
+        key "hAiXsSPF"
+        doc "TODO"
+        optional #true
+        // TODO(anri): look at this
+        // "default": DefaultType.Omit
+    }
+
+    field action_point_threshold type="i32::int" {
+        key "eRQvzLeF"
+        doc "TODO"
+        // TODO(anri): look at this
+        // "default": DefaultType.Omit
+        optional #true
+    }
+}

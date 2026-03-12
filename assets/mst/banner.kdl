@@ -1,0 +1,59 @@
+str-enum BannerOperativeSystem {
+    doc "Types of operative systems"
+
+    // TODO: discover the others
+    variant Android {
+        doc "Android System"
+        value "2"
+    }
+}
+
+// @keyjson(key_group = "Pk5F1vhx", array=ArrayStep.Array)
+json BannerInfoMst {
+    doc "Banner configuration in the links page"
+
+    field id type="i32::str" {
+        doc "ID of the banner"
+        key "oL71Fz3a"
+    }
+
+    field name type="str" {
+        key "NyYKc1A5"
+        doc "Internal name of the banner"
+     }
+
+    field target_os type="[BannerOperativeSystem]::sep(comma)" {
+        key "aL70hVYQ"
+        doc "List of operative systems allowed"
+    }
+
+    field display_order type="i32::str" {
+        key "XuJL4pc5"
+        doc "Order which to display the banner"
+    }
+
+    field url type=str {
+        key "jsRoN50z"
+        doc "TODO"
+    }
+
+    field image type=str {
+        key "1gDkL6XR"
+        doc "URL of the image to display"
+    }
+
+    field param type=str {
+        key "t5R47iwj"
+        doc "TODO"
+    }
+
+    field page_type type=str {
+        key "LM34kfVC"
+        doc "This parameter seems unused in the last version of the game"
+    }
+
+    field read_count type=i32::int {
+        key "d36D1g8T"
+        doc "Number of times the page was read"
+    }
+}

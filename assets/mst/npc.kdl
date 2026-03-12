@@ -1,0 +1,138 @@
+// @json
+json NpcPartyInfo {
+    doc "TODO"
+
+    field id  type="i32::int" {
+        key "P_USER_UNIT_ID"
+        doc "TODO"
+    }
+
+    field type type="i32::int" {
+        key "P_MEMBER_TYPE"
+        doc "TODO"
+    }
+
+    field disp_order type="i32::int" {
+        key "P_DISPORDER"
+        doc "TODO"
+    }
+}
+
+// @json
+json NpcTeamInfo {
+    doc "TODO"
+
+    field user_id type=str {
+        key "P_USER_ID"
+        doc "TODO"
+    }
+
+    field lv type="i32::int" {
+        key "P_LV"
+        doc "TODO"
+    }
+
+    field friend_message type=str {
+        key "P_FRIEND_MESSAGE"
+        doc "TODO"
+    }
+}
+
+// @json
+json NpcUnitInfo {
+    doc "TODO"
+
+    field id type="i32::int" {
+        key "P_UNIT_ID"
+        doc "TODO"
+    }
+
+    field party_id type="i32::int" {
+        key "P_USER_UNIT_ID"
+        doc "TODO"
+    }
+
+    field type type="i32::int" {
+        key "P_UNIT_TYPE_ID"
+        doc "TODO"
+    }
+
+    field lv type="i32::int" {
+        key "P_LV"
+        doc "TODO"
+    }
+
+    field hp type="i32::int" {
+        key "P_HP"
+        doc "TODO"
+    }
+
+    field atk type="i32::int" {
+        key "P_ATK"
+        doc "TODO"
+    }
+
+    field deff type="i32::int" {
+        key "P_DEF"
+        doc "TODO"
+    }
+
+    field hel type="i32::int" {
+        key "P_HEL"
+        doc "TODO"
+    }
+
+    field skill_id type="i32::int" {
+        key "P_SKILL_LV"
+        doc "TODO"
+    }
+
+    field skill_lv type="i32::int" {
+        key "P_SKILL_ID"
+        doc "TODO"
+    }
+
+    field equip_item_id type="i32::int" {
+        key "P_EQP_ITEM_ID"
+        doc "TODO"
+    }
+}
+
+// @hashjson(hash_group = , array=ArrayStep.Array)
+json NpcMst {
+    hash "hV5vWu6C"
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "7zyHb5h9"
+        doc "TODO"
+    }
+
+    field handle_name type=str {
+        key "B5JQyV8j"
+        doc "TODO"
+    }
+
+    field arena_rank_id type="i32::str" {
+        key "JmFn3g9t"
+        doc "TODO"
+    }
+
+    field team type=NpcTeamInfo {
+        key "g94bDiaS"
+        doc "TODO"
+        // string #true
+    }
+
+    field parties type=NpcPartyInfo {
+        key "oPsmRC18"
+        doc "TODO"
+        // string #true
+    }
+
+    field units type=NpcUnitInfo {
+        key "bS9s4GCp"
+        doc "TODO"
+        // string #true
+    }
+}

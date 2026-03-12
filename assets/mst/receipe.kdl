@@ -1,0 +1,60 @@
+json ReceipeMst default-encoding=int {
+    hash "8f0bCciN"
+
+    doc """
+    Multiline document string.
+
+    # Example
+    """
+
+    // encoding=str overrides i32 encoding defined as default above
+    field id type="i32::str"  {
+        key "4HqhTf3a"
+        doc "TODO"
+    }
+
+    field item_id type="i32::int"  {
+        key "kixHbe54"
+        doc "TODO"
+    }
+
+    field item_count type="i32::int"  {
+        key "wgV86x1q"
+        doc "TODO"
+    }
+
+    field materials type="[str]" {
+        key "75YV2q1i"
+        doc "TODO"
+    }
+
+    field karma type="i32::int" {
+        key "HTVh8a65"
+        doc "TODO"
+    }
+
+    field keyitem_ids type=str {
+        key "7dEB1Kwj"
+        doc "TODO"
+    }
+
+    field unk type=str {
+        key "XuJL4pc5"
+        doc "TODO"
+    }
+
+    field unk2 type="i32::int" {
+        key "H6k1LIxC"
+        doc "TODO"
+    }
+
+    field unk3 type=datetime {
+        key "qA7M9EjP"
+        doc "TODO"
+    }
+
+    field unk4 type=datetime {
+        key "SzV0Nps7"
+        doc "TODO"
+    }
+}

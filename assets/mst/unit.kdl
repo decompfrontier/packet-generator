@@ -1,0 +1,321 @@
+// @keyjson(array=ArrayStep.Array)
+json UnitExpPatternMst {
+    hash "JYFGe9y6"
+    doc "TODO"
+
+    field id type="i32::int" {
+        key "5UvTp7q1"
+        doc "TODO"
+    }
+
+    field lv type="i32::int" {
+        key "D9wXQI2V"
+        doc "TODO"
+    }
+
+    field need_exp type="i32::int" {
+        key "grKTq15A"
+        doc "TODO"
+    }
+}
+
+json UnitMst {
+    hash "2r9cNSdt"
+    doc "F_UNIT_MST"
+
+    field id  type="i32::int" {
+        key "pn16CNah"
+        doc "TODO"
+    }
+
+    field unit_name  type=str {
+        key "utP1c0CD"
+        doc "TODO"
+    }
+
+    field rarity  type="i32::int" {
+        key "7ofj5xa1"
+        doc "TODO"
+    }
+
+    field cost  type="i32::int" {
+        key "gvT2ds0Q"
+        doc "TODO"
+    }
+
+    field kind  type="i32::int" {
+        key "xP9oi5Z2"
+        doc "TODO"
+    }
+
+    field max_lv  type="i32::int" {
+        key "EI1DF8Yt"
+        doc "TODO"
+    }
+
+    field min_hp  type="i32::int" {
+        key "UZ1Bj7w2"
+        doc "TODO"
+    }
+
+    field max_hp  type="i32::int" {
+        key "3WMz78t6"
+        doc "TODO"
+    }
+
+    field min_atk  type="i32::int" {
+        key "i9Tn7kYr"
+        doc "TODO"
+    }
+
+    field max_atk  type="i32::int" {
+        key "omuyP54D"
+        doc "TODO"
+    }
+
+    field min_def  type="i32::int" {
+        key "q78KoWsg"
+        doc "TODO"
+    }
+
+    field max_def  type="i32::int" {
+        key "32INDST4"
+        doc "TODO"
+    }
+
+    field min_rec  type="i32::int" {
+        key "92ij6UGB"
+        doc "TODO"
+    }
+
+    field max_rec  type="i32::int" {
+        key "X9P3AN5d"
+        doc "TODO"
+    }
+
+    field param_max  type="[str]" {
+        key "imQJdg64"
+        doc "TODO"
+    }
+
+    field arousal  type="i32::int" {
+        key "2SH6YsJi"
+        doc "TODO"
+    }
+
+    field element  type="i32::int" {
+        key "iNy0ZU5M"
+        doc "TODO"
+    }
+
+    field sex  type="i32::int" {
+        key "9i2xhMaJ"
+        doc "TODO"
+    }
+
+    field tribe  type="i32::int" {
+        key "07nTrLdD"
+        doc "TODO"
+    }
+
+    field effect_frame  type=str {
+        key "eyUo6a8c"
+        doc "TODO"
+    }
+
+    field damage_frame  type=str {
+        key "6Aou5M9r"
+        doc "TODO"
+    }
+
+    field drop_check_count  type="i32::int" {
+        key "n9h7p02P"
+        doc "TODO"
+        doc "TODO"
+    }
+
+    field leader_skill_id  type="i32::int" {
+        key "oS3kTZ2W"
+        doc "TODO"
+    }
+
+    field skill_id  type="i32::int" {
+        key "nj9Lw7mV"
+        doc "TODO"
+    }
+
+    field extra_skill_id  type="i32::int" {
+        key "iEFZ6H19"
+        doc "TODO"
+    }
+
+    field ultimate_skill_id  type="i32::int" {
+        key "cb0P4mp1"
+        doc "TODO"
+    }
+
+    field unknown  type="[i32::str]" {
+        key "5SUvj4tM"
+        doc "TODO"
+    }
+
+    field extra_passive_skill_id  type="i32::int" {
+        key "cP83zNsv"
+        doc "TODO"
+    }
+
+    field anim_cgg  type=str {
+        key "QqfI9mM4"
+        doc "TODO"
+    }
+
+    field sell_price  type="i32::int" {
+        key "eKtE6k0n"
+        doc "TODO"
+    }
+
+    field caution_type  type="bool::str" {
+        key "y4jAZ9nI"
+        doc "TODO"
+    }
+
+    field description_type  type="i32::int" {
+        key "qp37xTDh"
+        doc "TODO"
+    }
+
+    field move_speed  type="i32::int" {
+        key "J2hPXGo5"
+        doc "TODO"
+    }
+
+    field attack_move_type  type="i32::int" {
+        key "mv4o39Uz"
+        doc "TODO"
+    }
+
+    field back_move_type  type="i32::int" {
+        key "h2L1YI90"
+        doc "TODO"
+    }
+
+    field skill_move_type  type="i32::int" {
+        key "XE7Yi5c3"
+        doc "TODO"
+    }
+
+    field ai_id  type="i32::int" {
+        key "i74vGUFa"
+        doc "TODO"
+    }
+
+    field exp_pattern_id  type="i32::int" {
+        key "5UvTp7q1"
+        doc "TODO"
+    }
+
+    field bad_state_resists  type="[i32::str]::sep(colon)" {
+        key "CEeqs63b"
+        doc "TODO"
+    }
+
+    field adjust_exp  type="i32::int" {
+        key "Gd4NS7H6"
+        doc "TODO"
+    }
+
+    field home_img_pos  type="[i32::str]::sep(comma)" {
+        key "1W9CxaFK"
+        doc "TODO"
+    }
+
+    field detail_img_pos  type="[i32::str]::sep(comma)" {
+        key "6z54rgb3"
+        doc "TODO"
+    }
+
+    field confirm_img_pos  type="[i32::str]::sep(comma)" {
+        key "MYK1fq6c"
+        doc "TODO"
+    }
+
+    field summon_image_pos  type="[i32::str]::sep(comma)" {
+        key "KC3Jk8Br"
+        doc "TODO"
+    }
+
+    field skill_cut_image_pos  type="[i32::str]::sep(comma)" {
+        key "7hLR6pDN"
+        doc "TODO"
+    }
+
+    field hp_disp_pos  type="[i32::str]::sep(comma)" {
+        key "3BpHN6VD"
+        doc "TODO"
+    }
+
+    field disp_order  type="i32::int" {
+        key "XuJL4pc5"
+        doc "TODO"
+    }
+
+    field move_offset  type="[i32::str]::sep(comma)" {
+        key "jFX0a7qe"
+        doc "TODO"
+    }
+
+    field category  type="i32::int" {
+        key "9PsmH7tz"
+        doc "TODO"
+    }
+
+    field skill_up_adjust  type="i32::int" {
+        key "PXD4v2KY"
+        doc "TODO"
+    }
+
+    field character_voice  type="[i32::str]::sep(comma)" {
+        key "QwN4hqJ2"
+        doc "TODO"
+    }
+
+    field getting_type  type="i32::int" {
+        key "6yHMXYv1"
+        doc "TODO"
+    }
+
+    field ext_home_img_pos  type=str {
+        key "jyj6bl9P"
+        doc "TODO"
+    }
+
+    field ext_detail_img_pos  type=str {
+        key "QHhOLCuk"
+        doc "TODO"
+    }
+
+    field ext_confirm_img_pos  type=str {
+        key "S0BjxW1F"
+        doc "TODO"
+    }
+
+    field ext_summon_img_pos  type=str {
+        key "psOjpTAv"
+        doc "TODO"
+    }
+
+    field ext_skill_cutin_img_pos  type=str {
+        key "9y1vaEJk"
+        doc "TODO"
+    }
+
+    field cursor_disp_pos  type="[i32::str]::sep(comma)" {
+        key "Lkh6gYkT"
+        doc "TODO"
+    }
+
+    field disp_dict_flag  type="bool::str" {
+        key "S4ezp6uK"
+        doc "TODO"
+    }
+}

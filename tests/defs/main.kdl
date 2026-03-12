@@ -1,0 +1,77 @@
+import "nested/included-3.kdl"
+import "http.kdl"
+import "xml.kdl"
+import "plist.kdl"
+import "empty.kdl"
+
+int-enum Foo start=0 {
+    doc "A Foo"
+
+    variant bar {
+        doc "The bar of a Foo"
+        value 123
+    }
+}
+
+str-enum Baz {
+    doc "A Baz"
+
+    variant foo {
+        doc "The foo of a Baz"
+        value "a"
+    }
+
+    variant bar {
+        doc "The bar of a Baz"
+        value "a"
+    }
+}
+
+
+json Main {
+    doc """
+    Main definition for the E2E test files.
+
+    # For example
+
+    This is a long documentation comment that spans multiple lines.
+    """
+
+    field included-2 type="Included2" {
+        key "inc2"
+        doc "An included definition"
+        optional #true
+    }
+
+    field included-3 type="Included3" {
+        key "inc3"
+        doc "An included definition"
+    }
+
+    // Removing the comment /- will make this not compile
+    /-field non-existent type="DoesNotExist" {
+        key "not_exists"
+        doc "Not existent type, should error"
+    }
+
+    field a-single-element-array type="[i32::int]::size(1)" {
+        key "sea"
+        doc "A single element array of ints"
+    }
+
+    field a-map type="%{i32::str => u64::int}" {
+        key "a_map"
+        doc "A map from i32 to u64"
+    }
+
+    field a-complex-map type="%{i32::str => %{str => [f32::str]::sep(comma)}}" {
+        key "a_complex_map"
+        doc "A map to a map"
+    }
+
+    field a-string type="str" {
+        key "a_string"
+        doc "An optional string"
+        optional #true
+    }
+}

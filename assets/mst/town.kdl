@@ -1,0 +1,134 @@
+// @keyjson(key_group = "d0EkJ4TB", array=ArrayStep.Array)
+json TownFacilityLvMst {
+    doc "TODO"
+    field id type="i32::int" {
+        key "y9ET7Aub"
+        doc "TODO"
+    }
+
+    field lv type="i32::int" {
+        key "D9wXQI2V"
+        doc "TODO"
+    }
+
+    field karma type="i32::int" {
+        key "HTVh8a65"
+        doc "TODO"
+    }
+
+    field release_receipe type="[i32::int]::sep(comma)" {
+        key "rGoJ6Ty9"
+        doc "TODO"
+    }
+
+}
+
+// @keyjson(key_group = "9ekQ4tZq", array=ArrayStep.Array)
+json TownLocationLvMst {
+    doc "TODO"
+    field id type="i32::str" {
+        key "y9ET7Aub"
+        doc "TODO"
+    }
+
+    field lv type="i32::str" {
+        key "D9wXQI2V"
+        doc "TODO"
+    }
+
+    field karma type="i32::str" {
+        key "HTVh8a65"
+        doc "TODO"
+    }
+
+    field release_receipe type="[i32::int]::sep(comma)" {
+        key "rGoJ6Ty9"
+        doc "TODO"
+    }
+
+}
+
+// @keyjson(key_group = "Lh1I3dGo", array=ArrayStep.Array)
+json TownFacilityMst {
+    doc "TODO"
+    field id type="i32::str" {
+        key "y9ET7Aub"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "aAFI6S5w"
+        doc "TODO"
+    }
+
+    field pos_x type="i32::str" {
+        key "SnNtTh51"
+        doc "TODO"
+    }
+
+    field pos_y type="i32::str" {
+        key "M6C1aXfR"
+        doc "TODO"
+    }
+
+    field width type="i32::str" {
+        key "dRhvW13q"
+        doc "TODO"
+    }
+
+    field height type="i32::str" {
+        key "FCzW4g6P"
+        doc "TODO"
+    }
+
+    field need_mission_id type="i32::str" {
+        key "HSRhkf70"
+        doc "TODO"
+    }
+
+}
+
+// @keyjson(key_group = "1y2JDv79", array=ArrayStep.Array)
+json TownLocationMst {
+    doc "TODO"
+    field id type="i32::str" {
+        key "un80kW9Y"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "6ntp4rMV"
+        doc "TODO"
+    }
+
+    field pos_x type="i32::str" {
+        key "SnNtTh51"
+        doc "TODO"
+    }
+
+    field pos_y type="i32::str" {
+        key "M6C1aXfR"
+        doc "TODO"
+    }
+
+    field width type="i32::str" {
+        key "dRhvW13q"
+        doc "TODO"
+    }
+
+    field height type="i32::str" {
+        key "FCzW4g6P"
+        doc "TODO"
+    }
+
+    field need_mission_id type="i32::str" {
+        key "HSRhkf70"
+        doc "TODO"
+    }
+
+    field effect_type type="i32::str" {
+        key "jeR2rN3V"
+        doc "TODO"
+    }
+
+}

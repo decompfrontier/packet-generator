@@ -1,0 +1,201 @@
+// @keyjson(key_group = "Pf97SzVw", array=ArrayStep.Array)
+json GachaEffectMst {
+    doc TODO
+
+    field id type="i32::str" {
+        key "u0vkt9yH"
+        doc "TODO"
+    }
+
+    field gatcha_id type="i32::str" {
+        key "7Ffmi96v"
+        doc "TODO"
+    }
+
+    field rare type="i32::str" {
+        key "7ofj5xa1"
+        doc "TODO"
+    }
+
+    field rate type="f32::str" {
+        key "ug9xV4Fz"
+        doc "TODO"
+    }
+
+    field effect_before type="str" {
+        key "7ZNcmYS2"
+        doc "TODO"
+    }
+
+    field effect_after type="str" {
+        key "tj0i9JhC"
+        doc "TODO"
+    }
+
+    field effect type="str" {
+        key "YTx3c1jQ"
+        doc "TODO"
+    }
+}
+
+// @keyjson(key_group = "IBs49NiH", array=ArrayStep.Array)
+json GachaCategory {
+    doc TODO
+
+    field id type="i32::int" {
+        key "vx9uyQVQ"
+        doc "TODO"
+    }
+
+    field img type="str" {
+        key "In7lGGLn"
+        doc "TODO"
+    }
+
+    field disp_order type="i32::int" {
+        key "2r4EoNt4"
+        doc "TODO"
+    }
+
+    field gatcha_id_list type="str" {
+        key "3rCmq58M"
+        doc "TODO"
+    }
+
+    field start_date type="datetime-unix" {
+        key "qA7M9EjP"
+        doc "TODO"
+    }
+
+    field end_date type="datetime-unix" {
+        key "SzV0Nps7"
+        doc "TODO"
+    }
+}
+
+// @keyjson(key_group = "5Y4GJeo3", array=ArrayStep.Array)
+json GachaMst {
+    doc TODO
+
+    field id type="i32::str" {
+        key "7Ffmi96v"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "4N27mkt1"
+        doc "TODO"
+    }
+
+    field type type="i32::str" {
+        key "S1oz60Hc"
+        doc "TODO"
+    }
+
+    // TODO: an enum?
+    field priority type="i32::str" {
+        key "yu18xScw"
+        doc "TODO"
+    }
+
+    field start_date type="datetime" {
+        key "qA7M9EjP"
+        doc "TODO"
+    }
+
+    // (2017-10-24 08:00:00)
+    field end_date type="datetime" {
+        key "SzV0Nps7"
+        doc "TODO"
+    }
+
+    // (2017-10-24 08:00:00)
+    field start_hour type="str" {
+        key "2HY3jpgu"
+        doc "TODO"
+    }
+
+    field end_hour type="str" {
+        key "v9TR3cDz"
+        doc "TODO"
+    }
+
+    field need_friend_point type="i32::str" {
+        key "J3stQ7jd"
+        doc "TODO"
+    }
+
+    field need_gems type="i32::str" {
+        key "03UGMHxF"
+        doc "TODO"
+    }
+
+    field once_day_flag type="bool::str" {
+        key "4tswNoV9"
+        doc "TODO"
+    }
+
+    field bg_img type="str" {
+        key "1Dg0vUX3"
+        doc "TODO"
+    }
+
+    field btn_img type="str" {
+        key "W9ABuJj2"
+        doc "TODO"
+    }
+
+    field door_img type="str" {
+        key "uKYf13AH"
+        doc "TODO"
+    }
+
+    field caption_msg type="str" {
+        key "3sdHQb69"
+        doc "TODO"
+    }
+
+    field detail_msg type="str" {
+        key "W2c9g0Je"
+        doc "TODO"
+    }
+
+    field comment_msg type="str" {
+        key "gVSj32QH"
+        doc "TODO"
+    }
+
+    field gatcha_group_id type="i32::str" {
+        key "TCnm1F4v"
+        doc "TODO"
+    }
+
+    field description type="str" {
+        key "qp37xTDh"
+        doc "TODO"
+    }
+
+    field gatcha_detail_id type=str {
+        key "8Z9CYQDq"
+        doc TODO
+        optional #true
+        // "default": DefaultType.Omit
+    }
+
+    field contents_banner_img type=str {
+        key "sA9dDAqB"
+        doc TODO
+        optional #true
+        // "default": DefaultType.Omit
+    }
+}
+
+// keyjson(key_group = "da3qD39b")
+json ResummonGachaMst {
+    doc TODO
+}
+
+// @keyjson(key_group = "hE1d083b")
+json SummonTicketV2Mst {
+    doc TODO
+}

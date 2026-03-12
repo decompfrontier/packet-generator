@@ -1,0 +1,3 @@
+json Included2 {
+    doc "An included file from a lower directory"
+}

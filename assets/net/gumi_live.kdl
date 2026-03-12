@@ -1,0 +1,168 @@
+// This module contains the data for the gumi live api
+
+// # API V3 (DLS API): api-sl.bfww.gumi.sg
+
+// processable
+str-enum StatusEnum {
+    doc "Result of the login status"
+
+    variant Success {
+        doc "Operation completed successfully"
+        value "successful"
+    }
+
+    variant Error {
+        doc "Operation failed"
+        value "error"
+    }
+}
+
+str-enum PlatformEnum {
+    doc "Platforms that runs the game"
+
+    variant Android {
+        doc "Android platform"
+        value "Android"
+    }
+
+    variant Windows {
+        doc "Windows platform"
+        value "Windows"
+    }
+}
+
+
+// json
+json GuestLogin {
+    doc "Gumi API login"
+
+    field status type="StatusEnum" {
+        key "status"
+        doc "Status of the operation"
+    }
+
+    field token type="str" {
+        key "token"
+        doc "Login token"
+    }
+
+    field user_id type="str" {
+        key "game_user_id"
+        doc "ID of the game to perform the login"
+    }
+
+    field status_number type="i32::str" {
+        key "status_no"
+        doc "ID of the error"
+    }
+
+ // TODO: make an enum out of this
+ // #servers = { "servers": list[str], "doc": "Unknown" } # TODO: this is a list of IP?
+}
+
+// # TODO: PHP something
+json GuestLoginReq {
+    doc "Gumi API login request"
+
+    field deviceModel type="str" {
+        key "dn"
+        doc "Device model"
+    }
+
+    field devicePlatform type="PlatformEnum" {
+        key "dp"
+        doc "Device platform"
+    }
+
+    field deviceAdId type="str" {
+        key "vid"
+        doc "Device Advertising ID (this can be either the Google Play ID or the Microsoft Ad ID)"
+    }
+
+    field deviceVersion type="str" {
+        key "v"
+        doc "Device version"
+    }
+
+    field altVid type="str" {
+        key "altvid"
+        doc "A random alternative UUID to identify the device"
+    }
+
+    field ak type="str" {
+        key "ak"
+        doc "TODO"
+    }
+
+    field identifiers type="str" {
+        key "identifiers"
+        doc "TODO"
+    }
+}
+
+// json
+json GameDls {
+    doc "Game dynamic configuration"
+
+    field game_ip type="str" {
+        key "game"
+        doc "Game server address"
+    }
+
+    field resource_ip type="str" {
+        key "resource"
+        doc "CDN server address where resources will be downloaded"
+    }
+
+    field version type="i32::str" {
+        key "mstv"
+        doc "Game version"
+    }
+
+    field gumilive_ip type="str" {
+        key "gumilive"
+        doc "Gumi live API login server address"
+    }
+
+    field bg_image type="str" {
+        key "bgimage"
+        doc "Dynamic background image to show during login"
+    }
+
+    field force type=bool {
+        key "force"
+        // "default": DefaultType.Omit
+        doc "Block the client login attempt and force it to close"
+        optional #true
+    }
+
+    field msg type=str {
+        key "force_msg"
+        //"default": DefaultType.Omit
+        doc "Message to show when the login attempt was blocked (only valid when force is true)"
+        optional #true
+    }
+}
+
+// json
+json SREE {
+    doc """
+        This object is a container of encrypted JSON data used in DLS API.
+
+        The content of the SREE is encrypted with AES/CBC (No padding) and encoded with Base64.
+
+        AES Key: 7410958164354871
+        AES IV: Bfw4encrypedPass
+    """
+
+    field body type="str" {
+        key "SREE"
+        doc "Crypted data"
+    }
+
+}
+
+// @processable
+json GumiLiveInfo {
+    doc TODO
+}

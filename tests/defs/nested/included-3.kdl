@@ -1,0 +1,11 @@
+import "../included-2.kdl"
+
+json Included3 {
+    doc "An included file that includes a file from the upper directory"
+
+    field foo type="Included2" {
+        key "Inc2"
+        doc "The field included from above."
+    }
+
+}

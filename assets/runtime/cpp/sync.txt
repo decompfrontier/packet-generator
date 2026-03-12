@@ -1,0 +1,5 @@
+This project uses:
+
+- "date" by Howard Hinnant, available at https://github.com/HowardHinnant/date
+    Synced version: 45d45413ab89eb23b980aceab4c843fcc0cb9d4a (master)
+- "glaze" by Stephen Berry, available at https://github.com/stephenberry/glaze

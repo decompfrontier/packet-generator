@@ -1,0 +1,35 @@
+// @keyjson(key_group = "h23iRjGN")
+json BadgeInfo {
+    doc "TODO"
+
+    field scenario_num type="i32::str" {
+        key "u7Htm9P4"
+        doc "TODO"
+    }
+
+    field unit_dict_num type="i32::str" {
+        key "yCLEs28F"
+        doc "TODO"
+    }
+
+    field item_dict_num type="i32::str" {
+        key "iakSd6m8"
+        doc "TODO"
+    }
+
+    field new_frohun type="i32::str" {
+        key "4AjsNu0m"
+        doc "TODO"
+    }
+
+    field dungeon_key_num type="i32::str" {
+        key "dD40xrsh"
+        doc "TODO"
+    }
+
+    field badge_data type="str" {
+        key "dUujjBBK"
+        doc "TODO"
+    }
+
+}

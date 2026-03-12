@@ -1,0 +1,68 @@
+// from schema import *
+
+// @keyjson(key_group = "z5U7utsm", array=ArrayStep.Array)
+json ExtraPassiveSkillMst {
+    doc TODO
+
+    field id type="i32::str" {
+        key "cP83zNsv"
+        doc "TODO"
+    }
+
+    field skill_name type="str" {
+        key "0nxpBDz2"
+        doc "TODO"
+    }
+
+    field skill_name_s type="str" {
+        key "UVN5bGoD"
+        doc "TODO"
+    }
+
+    field group_id type="i32::str" {
+        key "outas79f"
+        doc "TODO"
+    }
+
+    field priority type="i32::str" {
+        key "yu18xScw"
+        doc "TODO"
+    }
+
+    field process_id type="str" {
+        key "hjAy9St3"
+        doc "TODO"
+    }
+
+    field process_param type="str" {
+        key "2Smu5Mtq"
+        doc "TODO"
+    }
+
+    // TODO: list[str]
+    field term_param type="str" {
+        key "s2gM3deu"
+        doc "TODO"
+    }
+
+    // TODO: list[str]
+    field target type="i32::str" {
+        key "moWQ30GH"
+        doc "TODO"
+    }
+
+    field description type="str" {
+        key "qp37xTDh"
+        doc "TODO"
+    }
+
+    field skill_type type="i32::str" {
+        key "h6UL9A1B"
+        doc "TODO"
+    }
+
+    field rare type="i32::str" {
+        key "7ofj5xa1"
+        doc "TODO"
+    }
+}

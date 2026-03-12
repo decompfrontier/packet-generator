@@ -1,0 +1,30 @@
+// @keyjson(key_group = "KeC10fuL", array=ArrayStep.Array)
+json VersionInfo {
+    doc TODO
+
+    field id type="str" {
+        key "moWQ30GH"
+        doc "TODO"
+    }
+
+    field description type="str" {
+        key "e3QNsuZ8"
+        doc "TODO"
+    }
+
+    field version type="i32::str" {
+        key "d2RFtP8T"
+        doc "TODO"
+    }
+
+    field unknown type="i32::str" {
+        key "H6k1LIxC"
+        doc "TODO"
+    }
+
+    field subversion type="i32::str" {
+        key "5kbnkTp0"
+        doc "TODO"
+    }
+
+}

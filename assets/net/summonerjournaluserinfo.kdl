@@ -1,0 +1,19 @@
+// @keyjson(key_group = "M3dw18eB")
+json SummonerJournalUserInfo {
+    doc TODO
+
+    field user_id type="str" {
+        key "h7eY3sAK"
+        doc "TODO"
+    }
+
+    field points type="i32::int" {
+        key "9hH0neGa"
+        doc "TODO"
+    }
+
+    field journal_flag type="i32::int" {
+        key "da365dB8"
+        doc "TODO"
+    }
+}

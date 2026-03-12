@@ -1,3 +1,9 @@
+# Rust-specific
+target/
+perf*
+profile*
+flamegraph*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

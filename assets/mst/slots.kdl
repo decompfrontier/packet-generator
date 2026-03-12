@@ -1,0 +1,186 @@
+json SlotGameInfo {
+    doc "TODO"
+    field id type="i32::int" {
+        key "zS45RFGb"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "I1Cki7Pb"
+        doc "TODO"
+    }
+
+    field reel_pos type="str" {
+        key "h1PSnk5t"
+        doc "TODO"
+    }
+
+    field use_medal type="[str]::sep(at)" {
+        key "b5yeVr61"
+        doc "TODO"
+    }
+
+    field slot_help_url type="str" {
+        key "jsRoN50z"
+        doc "TODO"
+    }
+
+    field slot_image type="str" {
+        key "TX98PnpE"
+        doc "TODO"
+    }
+
+}
+
+json SlotGamePictureInfo {
+    doc "TODO"
+    field id type="i32::int" {
+        key "sE6tyI9i"
+        doc "TODO"
+    }
+
+    field picture_name type="str" {
+        key "iQM9dH0F"
+        doc "TODO"
+    }
+}
+
+
+json SlotGameInfoR {
+    doc "TODO"
+    field info type="SlotGameInfo" {
+        key "C38FmiUn"
+        doc "TODO"
+    }
+
+    field pictures type="[SlotGamePictureInfo]" {
+        key "rY6j0Jvs"
+        doc "TODO"
+    }
+}
+
+
+// @json
+json SlotGameReelInfo {
+    doc "TODO"
+    field id type="i32::int" {
+        key "PINm2pM5"
+        doc "TODO"
+    }
+
+    field reel_data type="str" {
+        key "Z8eJi4pq"
+        doc "TODO"
+    }
+}
+
+
+// @keyjson(key_group = "j129kD6r", array=ArrayStep.Array)
+json VideoAdInfo {
+    doc "TODO"
+    field id type="i32::int" {
+        key "k3ab6D82"
+        doc "TODO"
+    }
+
+    field available_value type="i32::int" {
+        key "Diwl3b56"
+        doc "TODO"
+    }
+
+    field region_id type="i32::int" {
+        key "Y3de0n2p"
+        doc "TODO"
+    }
+
+    field video_enabled type="bool::int" {
+        key "26adZ1iy"
+        doc "TODO"
+    }
+
+    field next_available_time_left type="i64::int" {
+        key "oohpPLCt"
+        doc "TODO"
+    }
+}
+
+
+// @keyjson(key_group = "bpD29eiQ", array=ArrayStep.Array)
+json VideoAdRegion {
+    doc "TODO"
+    field id type="i32::int" {
+        key "k3ab6D82"
+        doc "TODO"
+    }
+
+    field country_code type="str" {
+        key "j3d6E2ia"
+        doc "TODO"
+    }
+
+}
+
+// @json
+json VideoAdsSlotGameStandInfo {
+    doc "TODO"
+    field ads_count type="i32::int" {
+        key "wRIgGCHh"
+        doc "TODO"
+    }
+
+    field max_ads_count type="i32::int" {
+        key "JwBrVzIZ"
+        doc "TODO"
+    }
+
+    field current_bouns type="i32::int" {
+        key "BrMgnCaT"
+        doc "TODO"
+    }
+
+    field max_bouns_count type="i32::int" {
+        key "E9gMeBW0"
+        doc "TODO"
+    }
+
+    field ads_bonus_flag type="i32::int" {
+        key "qqdr4HlW"
+        doc "TODO"
+    }
+
+    field next_day_timer type="i32::int" {
+        key "er8Ups6U"
+        doc "TODO"
+    }
+}
+
+// @keyjson(key_group = "mebW7mKD", array=ArrayStep.Single)
+json VideoAdsSlotGameInfo {
+    doc "TODO"
+
+    field game_info type="SlotGameInfo::str" {
+        key "C38FmiUn"
+        doc "TODO"
+    }
+
+    field reel_info type="SlotGameReelInfo::str" {
+        key "iW62Scdg"
+        doc "TODO"
+    }
+
+    field picture_info type="SlotGamePictureInfo::str" {
+        key "rY6j0Jvs"
+        doc "TODO"
+    }
+
+    field game_stand_info type="VideoAdsSlotGameStandInfo::str" {
+        key "tclBMiv2"
+        doc "TODO"
+    }
+
+
+    // game_info = { "C38FmiUn": str, "string": True }
+    // reel_info = { "iW62Scdg": str, "string": True }
+    // picture_info = { "rY6j0Jvs": str, "string": True }
+    // game_stand_info = { "tclBMiv2": str, "string": True }
+}
