@@ -31,6 +31,8 @@ fn create_file(path: impl AsRef<Path>, content: &str) {
 }
 
 fn generic_e2e_cxx_glaze_harness(path_entrypoint: PathBuf, test_name: &str) {
+    let glaze_version = std::env::var("GLAZE_VERSION").unwrap_or_else(|_| String::from("v7.2.0"));
+
     let (defs, _) = setup_e2e_registry(path_entrypoint);
 
     let generation_basepath =
@@ -56,9 +58,9 @@ fn generic_e2e_cxx_glaze_harness(path_entrypoint: PathBuf, test_name: &str) {
         let test_name = test_name.to_snake_case();
         let cmake_file_content = format!(
             r#"
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.31)
 project(kdl_generator_e2e_{test_name}_test_suite)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
@@ -66,7 +68,7 @@ include(FetchContent)
 FetchContent_Declare(
   glaze
   GIT_REPOSITORY https://github.com/stephenberry/glaze.git
-  GIT_TAG main
+  GIT_TAG {glaze_version}
   GIT_SHALLOW TRUE
 )
 
@@ -78,11 +80,13 @@ else()
     set(CMAKE_CXX_FLAGS "${{CMAKE_CXX_FLAGS}} -Wall -fno-permissive")
 endif()
 
+add_subdirectory("${{CMAKE_CURRENT_SOURCE_DIR}}/../../assets/runtime/cpp" "${{CMAKE_CURRENT_BINARY_DIR}}/pkgen")
+
 add_executable(${{PROJECT_NAME}}
     main.cpp
 )
-target_include_directories(${{PROJECT_NAME}} PRIVATE "{runtime_dir}")
-target_link_libraries(${{PROJECT_NAME}} PRIVATE glaze::glaze)
+target_link_libraries(${{PROJECT_NAME}} PRIVATE glaze::glaze pkgen_cpp)
+target_compile_features(${{PROJECT_NAME}} PUBLIC cxx_std_23)
     "#
         );
 

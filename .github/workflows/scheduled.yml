@@ -26,11 +26,16 @@ jobs:
         uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # branch=master
         with:
           toolchain: nightly
-      - name: cargo generate-lockfile
+      - name: cargo +nightly generate-lockfile
         if: hashFiles('Cargo.lock') == ''
-        run: cargo generate-lockfile
+        run: cargo +nightly generate-lockfile
+      - name: Install CMake
+        run: |
+          sudo apt update && sudo apt install -y cmake gcc-14 g++-14
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 20
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 20
       - name: cargo test --locked
-        run: cargo test --locked --all-features --all-targets
+        run: cargo +nightly test --locked --all-features --all-targets
   # https://twitter.com/alcuadrado/status/1571291687837732873
   update:
     # This action checks that updating the dependencies of this crate to the latest available that
@@ -54,9 +59,14 @@ jobs:
           toolchain: beta
       - name: cargo update
         if: hashFiles('Cargo.lock') != ''
-        run: cargo update
+        run: cargo +beta update
+      - name: Install CMake
+        run: |
+          sudo apt update && sudo apt install -y cmake gcc-14 g++-14
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 20
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 20
       - name: cargo test
         if: hashFiles('Cargo.lock') != ''
-        run: cargo test --locked --all-features --all-targets
+        run: cargo +beta test --locked --all-features --all-targets
         env:
           RUSTFLAGS: -D deprecated
