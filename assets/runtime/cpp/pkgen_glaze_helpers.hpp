@@ -3,7 +3,22 @@
 #include "pkgen_helpers.hpp"
 #include <glaze/glaze.hpp>
 
+
 namespace pkg::glaze {
+
+
+#if __STDCPP_FLOAT32_T__ > 0
+    #define glz_write_f32(memptr) glz::write_float32<memptr>;
+#else
+    #define glz_write_f32(memptr) memptr
+#endif
+
+#if __STDCPP_FLOAT64_T__ > 0 // for compatibility with Clang for Android NDK
+    #define glz_write_f64(memptr) glz::write_float64<T>;
+#else
+    #define glz_write_f64(memptr) memptr
+#endif
+
 
 struct my_ops : glz::opts {
   bool minified = true; // Also skip whitespace parsing for smaller code

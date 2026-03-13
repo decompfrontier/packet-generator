@@ -14,8 +14,7 @@
 #include "date.h" // now standard in c++20 ^^
 #endif
 
-#if __STDCPP_FLOAT32_T__ > 0 ||                                                \
-    __STDCPP_FLOAT64_T__ > 0 // for compatibility with Clang for Android NDK
+#if __has_include("stdfloat")
 #include <stdfloat>
 #endif
 

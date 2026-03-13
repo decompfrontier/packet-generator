@@ -79,8 +79,8 @@ fn get_glz_mapper(
 
         DataType::F32 {
             encoding: Encoding::Int,
-        } => Ok(format!("glz::write_float32_t(&T::{name})")),
-        DataType::F64 => Ok(format!("glz::write_float64_t(&T::{name})")),
+        } => Ok(format!("glz_write_f32(&T::{name})")),
+        DataType::F64 => Ok(format!("glz_write_f64(&T::{name})")),
         DataType::Bool {
             encoding: BoolEncoding::String,
         } => Ok(format!("pkg::glaze::bool_as_string<&T::{name}>()")),
