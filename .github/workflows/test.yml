@@ -36,13 +36,18 @@ jobs:
       - name: cargo generate-lockfile
         # enable this ci template to run regardless of whether the lockfile is checked in or not
         if: hashFiles('Cargo.lock') == ''
-        run: cargo generate-lockfile
+        run: cargo +${{ matrix.toolchain }} generate-lockfile
+      - name: Install CMake
+        run: |
+          sudo apt update && sudo apt install -y cmake gcc-14 g++-14
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 20
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 20
       # https://twitter.com/jonhoo/status/1571290371124260865
       - name: cargo test --locked
-        run: cargo test --locked --all-features --all-targets
+        run: cargo +${{ matrix.toolchain }} test --locked --all-features --all-targets
       # https://github.com/rust-lang/cargo/issues/6669
       - name: cargo test --doc
-        run: cargo test --locked --all-features --doc
+        run: cargo +${{ matrix.toolchain }} test --locked --all-features --doc
   minimal:
     # This action chooses the oldest version of the dependencies permitted by Cargo.toml to ensure
     # that this crate is compatible with the minimal version that this crate and its dependencies
@@ -84,8 +89,13 @@ jobs:
         run: rustup default stable
       - name: cargo update -Zminimal-versions
         run: cargo +nightly update -Zminimal-versions
+      - name: Install CMake
+        run: |
+          sudo apt update && sudo apt install -y cmake gcc-14 g++-14
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 20
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 20
       - name: cargo test
-        run: cargo test --locked --all-features --all-targets
+        run: cargo +stable test --locked --all-features --all-targets
   os-check:
     # run cargo test on mac and windows
     runs-on: ${{ matrix.os }}
@@ -110,9 +120,9 @@ jobs:
           toolchain: stable
       - name: cargo generate-lockfile
         if: hashFiles('Cargo.lock') == ''
-        run: cargo generate-lockfile
+        run: cargo +stable generate-lockfile
       - name: cargo test
-        run: cargo test --locked --all-features --all-targets
+        run: cargo +stable test --locked --all-features --all-targets
   # coverage:
   #   # use llvm-cov to build and collect coverage and outputs in a format that
   #   # is compatible with codecov.io

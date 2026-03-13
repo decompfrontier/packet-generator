@@ -16,7 +16,7 @@ miette = { workspace = true }
 itertools = { workspace = true }
 thiserror = { workspace = true }
 
-mimalloc = { version = "*", optional = true }
+mimalloc = { version = "0.1.37", optional = true }
 
 [features]
 mimalloc = ["dep:mimalloc"]

@@ -33,8 +33,8 @@ jobs:
         with:
           toolchain: stable
           components: rustfmt
-      - name: cargo fmt --check
-        run: cargo fmt --check
+      - name: cargo +stable fmt --check
+        run: cargo +stable fmt --check
   clippy:
     runs-on: ubuntu-latest
     name: ${{ matrix.toolchain }} / clippy
@@ -55,25 +55,26 @@ jobs:
         with:
           toolchain: ${{ matrix.toolchain }}
           components: clippy
-      - name: cargo clippy
+      - name: cargo +${{ matrix.toolchain }} clippy
         uses: giraffate/clippy-action@13b9d32482f25d29ead141b79e7e04e7900281e0 # tag=v1.0.1
         with:
           reporter: "github-pr-check"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-  semver:
-    runs-on: ubuntu-latest
-    name: semver
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # tag=v6.0.2
-        with:
-          submodules: true
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # branch=master
-        with:
-          toolchain: stable
-          components: rustfmt
-      - name: cargo-semver-checks
-        uses: obi1kenobi/cargo-semver-checks-action@5b298c9520f7096a4683c0bd981a7ac5a7e249ae # tag=v2.8
+  # TODO(anri): the crate is not public, so this check will always fail.
+  # semver:
+  #   runs-on: ubuntu-latest
+  #   name: semver
+  #   steps:
+  #     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # tag=v6.0.2
+  #       with:
+  #         submodules: true
+  #     - name: Install stable
+  #       uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # branch=master
+  #       with:
+  #         toolchain: stable
+  #         components: rustfmt
+  #     - name: cargo-semver-checks
+  #       uses: obi1kenobi/cargo-semver-checks-action@5b298c9520f7096a4683c0bd981a7ac5a7e249ae # tag=v2.8
   doc:
     # run docs generation on nightly rather than stable. This enables features like
     # https://doc.rust-lang.org/beta/unstable-book/language-features/doc-cfg.html which allows an
@@ -112,7 +113,7 @@ jobs:
       # intentionally no target specifier; see https://github.com/jonhoo/rust-ci-conf/pull/4
       # --feature-powerset runs for every combination of features
       - name: cargo hack
-        run: cargo hack --feature-powerset check
+        run: cargo +stable hack --feature-powerset check
   msrv:
     # check that we can build using the minimal rust version that is specified by this crate
     runs-on: ubuntu-latest
@@ -134,5 +135,5 @@ jobs:
         with:
           path: ~/.cargo
           key: ${{ runner.os }}-cargo
-      - name: cargo +${{ matrix.msrv }} check
-        run: cargo check
+      - name: cargo check
+        run: cargo +${{ matrix.msrv }} check

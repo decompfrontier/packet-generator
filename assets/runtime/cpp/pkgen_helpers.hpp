@@ -9,8 +9,12 @@
 #include <sstream>
 #include <array>
 #include <unordered_map>
+#include <vector>
 
-#if __cplusplus <= 201703L
+#include <charconv>
+#include <version>
+
+#if  __cpp_lib_chrono < 201907L
 #include "date.h" // now standard in c++20 ^^
 #endif
 
@@ -47,7 +51,7 @@ static bool string_to_chrono(std::string_view in,
   std::string a = std::string(in);
   std::istringstream iss(a);
 
-#if __cplusplus <= 201703L
+#if __cpp_lib_chrono < 201907L
   iss >> date::parse("%F %T", out);
 #else
   iss >> std::chrono::parse("%F %T", out);
@@ -59,7 +63,7 @@ static bool string_to_chrono(std::string_view in,
 static bool chrono_to_string(const chrono_time &in,
                                        std::string &out) {
   try {
-#if __cplusplus <= 201703L
+#if __cpp_lib_chrono < 201907L
     const auto floor = date::floor<std::chrono::seconds>(in);
     out = date::format("%F %T", floor);
 #else
