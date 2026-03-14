@@ -454,5 +454,9 @@ build.ninja
 *.cmake
 
 cmake-build-*/
-# TODO: Remove this later
-unit_tests_android/
+
+*.vcxproj
+*.sln
+*.vcxproj.filters
+*.vcproj
+cmake_test_discovery_*
