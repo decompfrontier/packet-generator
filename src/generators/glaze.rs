@@ -75,6 +75,9 @@ fn get_glz_mapper(
         }
         | DataType::F32 {
             encoding: Encoding::String,
+        }
+        | DataType::I64 {
+            encoding: Encoding::String,
         } => Ok(format!("glz::quoted_num<&T::{name}>")),
 
         DataType::F32 {
