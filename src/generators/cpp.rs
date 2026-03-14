@@ -215,7 +215,6 @@ fn convert_datatype(
         }
 
         DataType::SingleElementArray { inner_type } => {
-            // TODO(arves): Can this be made a meta-data only generation step?
             let inner = convert_datatype(inner_type, registry)?;
             Ok(inner)
         }
@@ -257,7 +256,12 @@ fn generate_json_cxx(
         .fields
         .iter()
         .map(|field| -> Result<String, GenerationError> {
-            let datatype = convert_datatype(&field.type_, registry)?;
+            let mut datatype = convert_datatype(&field.type_, registry)?;
+
+            if field.optional {
+                datatype = format!("std::optional<{datatype}>");
+            }
+
             let name = field_format(&field.name);
             let doc = split_documentation(&field.doc, 0);
 
