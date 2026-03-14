@@ -56,7 +56,7 @@ json DailyTaskMst {
     }
 
     field times_completed type="i32::int" {
-        hash "9cKyb15U"
+        key "9cKyb15U"
         doc "Number of times the task was completed"
     }
 }

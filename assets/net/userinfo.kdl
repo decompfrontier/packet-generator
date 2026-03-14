@@ -139,7 +139,7 @@ json UserInfoResp {
         doc "TODO"
     }
 
-    field early_bird_end type="i64::int" {
+    field early_bird_end type="i64::str" {
         key "iN7cYU9i"
         doc "Time in seconds until the Gem banner sale ends."
     }
@@ -182,14 +182,15 @@ json UserInfoResp {
     }
 
     // # v["32k0ahkD"] = "773c9af44721a014c7ed"; // TODO: discover what's this
-   field service_request_endpoint_param type="str" {
+
+   /*field service_request_endpoint_param type="str" {
         key "ABh7acL2"
         doc "Extra parameters that are passed to the DLS API server in the request object EXTRA_PARAMS."
-    }
+    }*/
 
 
     // # GUMI LIVE API V1/V2
-    field gumi_live_userid type="str" {
+    /*field gumi_live_userid type="str" {
         key "iN7buP2h"
         doc "Gumi live API User ID. (used for example in IAP)"
     }
@@ -207,7 +208,7 @@ json UserInfoResp {
     field associated_user_id type="str" {
         key "uJP4aeg9"
         doc "TODO"
-    }
+    }*/
 
 }
 
@@ -746,6 +747,11 @@ json UserUnitInfo {
 json UserInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not support right now....
     doc TODO
 
+    field handle_name type="str" {
+        key "B5JQyV8j"
+        doc "Username shown in-game."
+    }
+
     field user_id type="str" {
         key "h7eY3sAK"
         doc "TODO"
@@ -778,7 +784,7 @@ json UserInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not supp
 
     field device_id type="str" {
         key "Ma5GnU0H"
-        doc "Device advertisement ID (the same as vid in the gumi api login"
+        doc "Device advertisement ID (the same as vid in the gumi api login)"
     }
 
     field pointer_name type="str" {

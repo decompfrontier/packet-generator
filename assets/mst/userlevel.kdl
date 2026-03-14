@@ -2,32 +2,32 @@
 json UserLevelMst {
     doc TODO
 
-    field level type="i32::int" {
+    field level type="i32::str" {
         key "D9wXQI2V"
         doc "TODO"
     }
 
-    field exp type="i64::int" {
+    field exp type="i64::str" {
         key "d96tuT2E"
         doc "TODO"
     }
 
-    field action_points type="i32::int" {
+    field action_points type="i32::str" {
         key "0P9X1YHs"
         doc "TODO"
     }
 
-    field deck_cost type="i32::int" {
+    field deck_cost type="i32::str" {
         key "ziex06DY"
         doc "TODO"
     }
 
-    field friend_count type="i32::int" {
+    field friend_count type="i32::str" {
         key "oFQ3mbS6"
         doc "TODO"
     }
 
-    field add_friend_count type="i32::int" {
+    field add_friend_count type="i32::str" {
         key "GZ2rKW90"
         doc "TODO"
     }

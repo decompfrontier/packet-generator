@@ -23,7 +23,7 @@ import "../net/userinfo.kdl"
 json InitializeReq {
     doc "Initialization command"
 
-    field userInfo type=UserInfoReq {
+    field userInfo type="[UserInfoReq]::size(1)" {
         key IKqx1Cn9
         doc "User information request"
     }

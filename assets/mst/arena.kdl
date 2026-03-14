@@ -43,8 +43,7 @@ json ArenaRankMst  {
         doc "Type of reward"
     }
 
-    // list[int]: ArrayType.DOUBLEDOT
-    field reward_param type="[i32::str]::sep(doubledot)" {
+    field reward_param type="[i32::str]::sep(colon)" {
         key "empaR60j"
         doc  "Configuration of the reward"
     }

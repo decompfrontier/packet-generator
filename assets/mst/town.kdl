@@ -1,17 +1,17 @@
 // @keyjson(key_group = "d0EkJ4TB", array=ArrayStep.Array)
 json TownFacilityLvMst {
     doc "TODO"
-    field id type="i32::int" {
+    field id type="i32::str" {
         key "y9ET7Aub"
         doc "TODO"
     }
 
-    field lv type="i32::int" {
+    field lv type="i32::str" {
         key "D9wXQI2V"
         doc "TODO"
     }
 
-    field karma type="i32::int" {
+    field karma type="i32::str" {
         key "HTVh8a65"
         doc "TODO"
     }
@@ -81,7 +81,7 @@ json TownFacilityMst {
         doc "TODO"
     }
 
-    field need_mission_id type="i32::str" {
+    field need_mission_id type="i32::int" {
         key "HSRhkf70"
         doc "TODO"
     }
@@ -121,7 +121,7 @@ json TownLocationMst {
         doc "TODO"
     }
 
-    field need_mission_id type="i32::str" {
+    field need_mission_id type="i32::int" {
         key "HSRhkf70"
         doc "TODO"
     }
