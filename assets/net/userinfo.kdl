@@ -1,48 +1,5 @@
 import "gumi_live.kdl"
 
-// # '''
-// # @keyjson(key_group = "Bnc4LpM8")
-// # class UserAchievementInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "8jBJ7uKR")
-// # class UserArenaInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "6C0kzwM5")
-// # class UserBraveMedalInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "UT1SVg59")
-// # class UserClearMissionInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "eFU7Qtb0")
-// # class UserDungeonKeyInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "nAligJSQ")
-// # class UserEquipBoostItemInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "71U5wzhI")
-// # class UserEquipItemInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "3kcmQy7B")
-// # class UserFavorite:
-// #     pass
-// #
-// # @keyjson(key_group = "30uygM9m")
-// # class UserGiftInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "bd5Rj6pN")
-// # class UserItemDictionaryInfo:
-// #     pass
-// # '''
-
-// @processable
 str-enum GameTargetOs {
     doc "Supported operative systems"
 
@@ -57,7 +14,6 @@ str-enum GameTargetOs {
     }
 }
 
-// @processable
 str-enum GameLanguages {
     doc "Supported game languages"
 
@@ -67,9 +23,7 @@ str-enum GameLanguages {
     }
 }
 
-
-// @keyjson(key_group = "IKqx1Cn9", array=ArrayStep.Single)
-json UserInfoResp {
+json LoginInfoResp {
     doc "Main object that holds all the player information."
 
     field user_id type="str" {
@@ -212,9 +166,8 @@ json UserInfoResp {
 
 }
 
-// @keyjson(key_group = "dX7S2Lc1", array=ArrayStep.Array)
 json UserPartyDeckInfo {
-    doc TODO
+    doc "TODO"
 
     field deck_type type="i32::int" {
         key "U9ABSYEp"
@@ -226,82 +179,23 @@ json UserPartyDeckInfo {
         doc "TODO"
     }
 
-    field user_unit_id type="i32::int" {
+    field user_unit_id type="i32::str" {
         key "edy7fq3L"
         doc "TODO"
     }
 
-    field member_type type="i32::int" {
+    field member_type type="i32::str" {
         key "gr48vsdJ"
         doc "TODO"
     }
 
-    field disp_order type="i32::int" {
+    field disp_order type="i32::str" {
         key "XuJL4pc5"
         doc "TODO"
     }
 
 }
 
-// # '''
-// # @keyjson(key_group = "4W6EhXLS", array = False)
-// # class UserPurchaseInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "Dp0MjKAf")
-// # class UserReleaseInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "d98mjNDc")
-// # class UserSoundInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "dhMmbm5p")
-// # class UserSUmmonerArmsInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "n5mdIUqj")
-// # class UserSummonerInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "zI2tJB7R")
-// # class UserTeamArchive:
-// #     pass
-// #
-// # @keyjson(key_group = "PQ56vbkI")
-// # class UserTeamArenaArchive:
-// #     pass
-// #
-// # @keyjson(key_group = "YRgx49WG")
-// # class UserTownFacilityInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "s8TCo2MS")
-// # class UserTownLocationDetail:
-// #     pass
-// #
-// # @keyjson(key_group = "yj46Q2xw")
-// # class UserTownLocationInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "sxorQ3Mb")
-// # class UserUnitDbbInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "tR4katob")
-// # class UserUnitDbbLevelInfo:
-// #     pass
-// #
-// # @keyjson(key_group = "GV81ctzR")
-// # class UserUnitDictionary:
-// #     pass
-// #
-// # @keyjson(key_group = "9wjrh74P")
-// # class UserWarehouseInfo:
-// #     pass
-// # '''
-
-// @json
 json UserTeamInfo {
     doc TODO
 
@@ -310,77 +204,77 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field level type="i32::int" {
+    field level type="i32::str" {
         key "D9wXQI2V"
         doc "TODO"
     }
 
-    field exp type="i64::int" {
+    field exp type="i64::str" {
         key "d96tuT2E"
         doc "TODO"
     }
 
-    field max_action_point type="i32::int" {
+    field max_action_point type="i32::str" {
         key "YnM14RIP"
         doc TODO
     }
 
-    field action_point type="i32::int" {
+    field action_point type="i32::str" {
         key "0P9X1YHs"
         doc TODO
     }
 
-    field max_fight_point type="i32::int" {
+    field max_fight_point type="i32::str" {
         key "9m5FWR8q"
         doc TODO
     }
 
-    field fight_point type="i32::int" {
+    field fight_point type="i32::str" {
         key "YS2JG9no"
         doc TODO
     }
 
-    field max_unit_count type="i32::int" {
+    field max_unit_count type="i32::str" {
         key "ouXxIY63"
         doc TODO
     }
 
-    field add_unit_count type="i32::int" {
+    field add_unit_count type="i32::str" {
         key "Px1X7fcd"
         doc TODO
     }
 
-    field deck_cost type="i32::int" {
+    field deck_cost type="i32::str" {
         key "QYP4kId9"
         doc TODO
     }
 
-    field max_equip_slot_count type="i32::int" {
+    field max_equip_slot_count type="i32::str" {
         key "gEX30r1b"
         doc TODO
     }
 
-    field max_friend_count type="i32::int" {
+    field max_friend_count type="i32::str" {
         key "3u41PhR2"
         doc TODO
     }
 
-    field add_friend_count type="i32::int" {
+    field add_friend_count type="i32::str" {
         key "2rR5s6wn"
         doc TODO
     }
 
-    field friend_point type="i32::int" {
+    field friend_point type="i32::str" {
         key "J3stQ7jd"
         doc "TODO"
     }
 
-    field zel type="i64::int" {
+    field zel type="i64::str" {
         key "Najhr8m6"
         doc TODO
     }
 
-    field karma type="i64::int" {
+    field karma type="i64::str" {
         key "HTVh8a65"
         doc TODO
     }
@@ -395,12 +289,12 @@ json UserTeamInfo {
         doc TODO
     }
 
-    field warehouse_count type="i32::int" {
+    field warehouse_count type="i32::str" {
         key "5pjoGBC4"
         doc TODO
     }
 
-    field add_warehouse_count type="i32::int" {
+    field add_warehouse_count type="i32::str" {
         key "iI7Wj6pM"
         doc TODO
     }
@@ -410,27 +304,27 @@ json UserTeamInfo {
         doc TODO
     }
 
-    field present_count type="i32::int" {
+    field present_count type="i32::str" {
         key "EfinBo65"
         doc TODO
     }
 
-    field friend_agree_count type="i32::int" {
+    field friend_agree_count type="i32::str" {
         key "qVBx7g2c"
         doc TODO
     }
 
-    field gift_receive_count type="i32::int" {
+    field gift_receive_count type="i32::str" {
         key "1RQT92uE"
         doc "TODO"
     }
 
-    field action_rest_timer type="i32::int" {
+    field action_rest_timer type="i32::str" {
         key "f0IY4nj8"
         doc TODO
     }
 
-    field fight_rest_timer type="i32::int" {
+    field fight_rest_timer type="i32::str" {
         key "jp9s8IyY"
         doc TODO
     }
@@ -440,12 +334,12 @@ json UserTeamInfo {
         doc TODO
     }
 
-    field active_deck type="i32::int" {
+    field active_deck type="i32::str" {
         key "Z0Y4RoD7"
         doc TODO
     }
 
-    field summon_ticket type="i32::int" {
+    field summon_ticket type="i32::str" {
         key "9r3aLmaB"
         doc TODO
     }
@@ -455,17 +349,17 @@ json UserTeamInfo {
         doc TODO
     }
 
-    field rainbow_coin type="i32::int" {
+    field rainbow_coin type="i32::str" {
         key "KAZmxkgy"
         doc TODO
     }
 
-    field brave_points_total type="i32::int" {
+    field brave_points_total type="i32::str" {
         key "bya9a67k"
         doc TODO
     }
 
-    field colosseum_ticket type="i32::int" {
+    field colosseum_ticket type="i32::str" {
         key "lKuj3Ier"
         doc TODO
     }
@@ -475,7 +369,7 @@ json UserTeamInfo {
         doc TODO
     }
 
-    field reinforcement_deck type="str" {
+    field reinforcement_deck type="[i32::int]::sep(comma)" { // TODO(arves): Force array (size 3) with comma
         key "TwqMChon"
         doc TODO
     }
@@ -492,7 +386,7 @@ json UserTeamInfo {
         doc TODO
     }
 
-    field completed_task_count type="i32::int" {
+    field completed_task_count type="i32::str" {
         key "3a8b9D8i"
         doc TODO
     }
@@ -502,14 +396,12 @@ json UserTeamInfo {
         doc TODO
     }
 
-    field current_brave_points type="i32::int" {
+    field current_brave_points type="i32::str" {
         key "22rqpZTo"
         doc TODO
     }
 }
 
-
-// @keyjson(key_group = "4ceMWH6k", array=ArrayStep.Array)
 json UserUnitInfo {
     doc TODO
 
@@ -518,12 +410,12 @@ json UserUnitInfo {
         doc TODO
     }
 
-    field user_unit_id type="i32::int" {
+    field user_unit_id type="i32::str" {
         key "edy7fq3L"
         doc TODO
     }
 
-    field unit_id type="i32::int" {
+    field unit_id type="i32::str" {
         key "pn16CNah"
         doc TODO
     }
@@ -633,7 +525,7 @@ json UserUnitInfo {
         doc TODO
     }
 
-    field leader_skill_id type="i32::int" {
+    field leader_skill_id type="i32::str" {
         key "oS3kTZ2W"
         doc TODO
     }
@@ -649,7 +541,7 @@ json UserUnitInfo {
         doc TODO
     }
 
-    field extra_skill_id type="i32::int" {
+    field extra_skill_id type="i32::str" {
         key "iEFZ6H19"
         doc TODO
     }
@@ -669,22 +561,22 @@ json UserUnitInfo {
         doc TODO
     }
 
-    field equipitem_frame_id type="i32::int" {
+    field equipitem_frame_id type="i32::str" {
         key "0R3qTPK9"
         doc TODO
     }
 
-    field equipitem_id type="i32::int" {
+    field equipitem_id type="i32::str" {
         key "Ge8Yo32T"
         doc TODO
     }
 
-    field equipitem_frame_id2 type="i32::int" {
+    field equipitem_frame_id2 type="i32::str" {
         key "RXfC31FA"
         doc TODO
     }
 
-    field equipitem_id2 type="i32::int" {
+    field equipitem_id2 type="i32::str" {
         key "mZA7fH2v"
         doc TODO
     }
@@ -694,17 +586,17 @@ json UserUnitInfo {
         doc TODO
     }
 
-    field extra_passive_skill_id type="i32::int" {
+    field extra_passive_skill_id type="i32::str" {
         key "cP83zNsv"
         doc TODO
     }
 
-    field extra_passive_skill_id2 type="i32::int" {
+    field extra_passive_skill_id2 type="i32::str" {
         key "LjY4DfRg"
         doc "TODO"
     }
 
-    field add_extra_passive_skill_id type="i32::int" {
+    field add_extra_passive_skill_id type="i32::str" {
         key "T4rewHa9"
         doc TODO
     }
@@ -743,8 +635,7 @@ json UserUnitInfo {
 
 // ## --- request
 
-// @keyjson(key_group = "IKqx1Cn9", array=ArrayStep.Single)
-json UserInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not support right now....
+json LoginInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not support right now....
     doc TODO
 
     field handle_name type="str" {
@@ -830,7 +721,6 @@ json UserInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not supp
 
 }
 
-// @processable
 json MstUrlList {
     doc TODO
 
@@ -844,4 +734,85 @@ json MstUrlList {
         doc "Saved MST version in the game"
     }
 
+}
+
+json UserUnitDictionary {
+	doc "TODO"
+	
+	field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+	}
+}
+
+json UserFavorite {
+	doc "TODO"
+	
+	field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+	}
+}
+
+json UserClearMissionInfo {
+	doc "TODO"
+	
+	field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+	}
+}
+
+json UserWarehouseInfo {
+	doc "TODO"
+	
+	field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+	}
+}
+
+json UserGiftInfo {
+	doc "TODO"
+	
+	field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+	}
+}
+
+json UserItemDictionaryInfo {
+	doc "TODO"
+	
+	field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+	}
+}
+
+json UserArenaInfo {
+	doc "TODO"
+	
+	field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+	}
+}
+
+json UserTeamArchive {
+    doc "TODO"
+
+    field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+    }
+}
+
+json UserTeamArenaArchive {
+    doc "TODO"
+
+    field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+    }
 }

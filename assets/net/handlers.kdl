@@ -19,13 +19,14 @@ import "../net/guild.kdl"
 import "../net/daily_login.kdl"
 import "../net/summonerjournaluserinfo.kdl"
 import "../net/userinfo.kdl"
+import "../net/items.kdl"
 
 json InitializeReq {
     doc "Initialization command"
 
-    field userInfo type="[UserInfoReq]::size(1)" {
+    field loginInfo type="[LoginInfoReq]::size(1)" {
         key IKqx1Cn9
-        doc "User information request"
+        doc "TODO"
     }
 
     field mstRequests type="[MstUrlList]" {
@@ -171,9 +172,160 @@ json InitializeResp {
         doc TODO
     }
 
-    field userInfo type="[UserInfoResp]::size(1)" {
+    field loginInfo type="[LoginInfoResp]::size(1)" {
         key "IKqx1Cn9"
-        doc "User information"
+        doc "TODO"
     }
 
+}
+
+json UnkUserInfoNetReq {
+    doc "TODO"
+
+    field unk type="i32::str" {
+        key "ad37Bdr1"
+        doc "TODO"
+    }
+}
+
+json UserInfoReq {
+    doc "TODO"
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc TODO
+    }
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "TODO"
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST that should be sent"
+    }
+
+    field unk type="[UnkUserInfoNetReq]::size(1)" {
+        key "563Dtye3"
+        doc "TODO"
+    }
+}
+
+json UserInfoResp {
+    doc "TODO"
+
+    // TODO: PQ56vbkI ??
+
+    field loginInfo type="[LoginInfoResp]::size(1)" {
+        key "IKqx1Cn9"
+        doc "TODO"
+    }
+
+    field teamInfo type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "TODO"
+    }
+    
+	field unitInfo type="[UserUnitInfo]" {
+        key "4ceMWH6k"
+        doc "TODO"
+    }
+    field partyDeckInfo type="[UserPartyDeckInfo]" {
+        key "dX7S2Lc1"
+        doc "TODO"
+    }
+    field unitDictionary type="[UserUnitDictionary]" {
+        key "GV81ctzR"
+        doc "TODO"
+    }
+    field favorite type="[UserFavorite]" {
+        key "3kcmQy7B"
+        doc "TODO"
+    }
+    field clearMissionInfo type="[UserClearMissionInfo]" {
+        key "UT1SVg59"
+        doc "TODO"
+    }
+    field warehouseInfo type="[UserWarehouseInfo]" {
+        key "9wjrh74P"
+        doc "TODO"
+    }
+    field itemFavorite type="[ItemFavorite]" {
+        key "VSRPkdId"
+        doc "TODO"
+    }
+    field itemDictionaryInfo type="[UserItemDictionaryInfo]" {
+        key "bd5Rj6pN"
+        doc "TODO"
+    }
+    field arenaInfo type="[UserArenaInfo]" {
+        key "8jBJ7uKR"
+        doc "TODO"
+    }
+    field archive type="[UserTeamArchive]" {
+        key "zI2tJB7R"
+        doc "TODO"
+    }
+    field arena_archive type="[UserTeamArenaArchive]" {
+        key "PQ56vbkI"
+        doc "TODO"
+    }
+    field giftInfo type="[UserGiftInfo]" {
+        key "30uygM9m"
+        doc "TODO"
+    }
+    field campaignInfo type="[UserLoginCampaignInfo]::size(1)" {
+        key "3da6bd0a"
+        doc "TODO"
+    }
+    field summonerJournal type="SummonerJournalUserInfo" {
+        key "M3dw18eB"
+        doc "TODO"
+    }
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "TODO"
+    }
+
+    // Cachable!
+
+    field gachaInfo type="[GachaInfo]" {
+        key "1IR86sAv"
+        doc "TODO"
+    }
+    field videoAdInfo type="[VideoAdInfo]" {
+        key "j129kD6r"
+        doc "TODO"
+    }
+    field videoAdRegion type="[VideoAdRegion]" {
+        key "bpD29eiQ"
+        doc "TODO"
+    }
+    field noticeInfo type="NoticeInfo" {
+        key "Pj6zDW3m"
+        doc "Configuration of notices"
+    }
+    field excludedDungeonMissions type="[ExcludedDungeonMissionMst]" {
+        key "3aDk1xk7"
+        doc "TODO"
+    }
+}
+
+json ReinforcementInfo {
+    doc "TODO"
+
+    field mock type="str" {
+        doc "TODO"
+        key "INVALID"
+    }
+}
+
+json FriendGetResp {
+    doc "TODO"
+
+    field info type="[ReinforcementInfo]" {
+        key "xZH6EIQ7"
+        doc "TODO"
+    }
 }
