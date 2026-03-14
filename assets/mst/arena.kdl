@@ -1,6 +1,10 @@
 int-enum RewardType start=0 {
     doc "TODO"
 
+    variant Type0 {
+        doc "TODO"
+    }
+
     variant Type1 {
         doc "TODO"
     }
@@ -34,13 +38,13 @@ json ArenaRankMst  {
         doc "Points when this rank ends (included)"
     }
 
-    field reward_type type=RewardType  {
+    field reward_type type=i32::str  { // TODO: fix to RewardType::str
         key "IkmC8gG2"
         doc "Type of reward"
     }
 
     // list[int]: ArrayType.DOUBLEDOT
-    field reward_param type="[i32::str]::sep(comma)" {
+    field reward_param type="[i32::str]::sep(doubledot)" {
         key "empaR60j"
         doc  "Configuration of the reward"
     }

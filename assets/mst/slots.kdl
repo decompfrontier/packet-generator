@@ -158,22 +158,24 @@ json VideoAdsSlotGameStandInfo {
 json VideoAdsSlotGameInfo {
     doc "TODO"
 
-    field game_info type="SlotGameInfo::str" {
+    // TODO(arves): Fix...
+
+    field game_info type=/*"SlotGameInfo::str"*/"str" {
         key "C38FmiUn"
         doc "TODO"
     }
 
-    field reel_info type="SlotGameReelInfo::str" {
+    field reel_info type=/*"SlotGameReelInfo::str"*/"str" {
         key "iW62Scdg"
         doc "TODO"
     }
 
-    field picture_info type="SlotGamePictureInfo::str" {
+    field picture_info type=/*"SlotGamePictureInfo::str"*/"str" {
         key "rY6j0Jvs"
         doc "TODO"
     }
 
-    field game_stand_info type="VideoAdsSlotGameStandInfo::str" {
+    field game_stand_info type=/*"VideoAdsSlotGameStandInfo::str"*/"str" {
         key "tclBMiv2"
         doc "TODO"
     }

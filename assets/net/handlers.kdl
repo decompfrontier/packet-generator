@@ -40,62 +40,62 @@ json InitializeResp {
     doc "Response of the initialize command"
 
     // # cachable
-    field loginCampagin  type=LoginCampaignMst {
+    field loginCampagin  type="[LoginCampaignMst]::size(1)" {
         key Bd29Pqw0
-        doc TODO
+        doc "Configuration about the current login progression"
     }
 
-    field loginCampaignReward type=LoginCampaignReward {
+    field loginCampaignReward type="[LoginCampaignReward]" {
         key "bD18x9Ti"
-        doc TODO
+        doc "Configuration about each day of the login campaign"
     }
 
-    field progression type=UserLevelMst {
+    field progression type="[UserLevelMst]" {
         key "YDv9bJ3s"
         doc "Configuration of the user stats progression"
     }
 
-    field mst type=VersionInfo {
+    field mst type="[VersionInfo]" {
         key "KeC10fuL"
         doc "Configuration of the versions of the MSTs"
     }
 
-    field townFacility type=TownFacilityMst {
+    field townFacility type="[TownFacilityMst]" {
         key "Lh1I3dGo"
         doc TODO
     }
 
-    field townFacilityLv type=TownFacilityLvMst {
+    field townFacilityLv type="[TownFacilityLvMst]" {
         key "d0EkJ4TB"
         doc TODO
     }
 
-    field townLocation type=TownLocationMst {
+    field townLocation type="[TownLocationMst]" {
         key "1y2JDv79"
         doc TODO
     }
 
-    field townLocationLv type=TownLocationLvMst {
+    field townLocationLv type="[TownLocationLvMst]" {
         key "9ekQ4tZq"
         doc TODO
     }
 
-    field dungeonKeys type=DungeonKeyMst {
+    field dungeonKeys type="[DungeonKeyMst]" {
         key "4NG79sX1"
         doc "Configuration of the Vortex dungeon with keys"
     }
 
-    field arenaRanks type=ArenaRankMst {
+    field arenaRanks type="[ArenaRankMst]" {
         key "6kWq78zx"
         doc "PVP Arena rankings"
     }
 
-    field gachaEffects type=GachaEffectMst {
+    field gachaEffects type="[GachaEffectMst]" {
         key "Pf97SzVw"
         doc TODO
     }
 
-    field gachas type="GachaMst" {
+    field gachas type="[GachaMst]" {
         key "5Y4GJeo3"
         doc "Configuration of current Gacha banners"
     }
@@ -105,17 +105,17 @@ json InitializeResp {
         doc "Configuration of the server"
     }
 
-    field npcs type=NpcMst {
+    field npcs type="[NpcMst]" {
         key "hV5vWu6C"
         doc TODO
     }
 
-    field bannerInfo type=BannerInfoMst {
+    field bannerInfo type="[BannerInfoMst]" {
         key "Pk5F1vhx"
         doc TODO
     }
 
-    field extraPassiveSkills type=ExtraPassiveSkillMst {
+    field extraPassiveSkills type="[ExtraPassiveSkillMst]" {
         key "z5U7utsm"
         doc TODO
     }
@@ -126,32 +126,32 @@ json InitializeResp {
     }
 
     // # user specific
-    field signalKey type=SignalKey {
+    field signalKey type="[SignalKey]::size(1)" {
         key "6FrKacq7"
         doc TODO
     }
 
-    field challengeArenaUserInfo type="ChallengeArenaUserInfo" {
+    field challengeArenaUserInfo type="[ChallengeArenaUserInfo]::size(1)" {
         key "XGmGpmYW"
         doc "User current progression in Challenge Arena"
     }
 
-    field dailyTaskBonuses type=DailyTaskBonusMst {
+    field dailyTaskBonuses type="[DailyTaskBonusMst]::size(1)" {
         key "p283g07d"
         doc TODO
     }
 
-    field dailyTaskPrizes type=DailyTaskPrizeMst {
+    field dailyTaskPrizes type="[DailyTaskPrizeMst]" {
         key "a739yK18"
         doc TODO
     }
 
-    field dailyTasks type=DailyTaskMst {
+    field dailyTasks type="[DailyTaskMst]" {
         key "k23D7d43"
         doc TODO
     }
 
-    field dailyLoginRewards type=DailyLoginRewardsUserInfo {
+    field dailyLoginRewards type="DailyLoginRewardsUserInfo" {
         key "Drudr2w5"
         doc TODO
     }
@@ -161,17 +161,17 @@ json InitializeResp {
         doc "Guild information"
     }
 
-    field videoAdSlots type=VideoAdsSlotGameInfo {
+    field videoAdSlots type="[VideoAdsSlotGameInfo]::size(1)" {
         key "mebW7mKD"
         doc TODO
     }
 
-    field summonerJournal type=SummonerJournalUserInfo {
+    field summonerJournal type="SummonerJournalUserInfo" {
         key "M3dw18eB"
         doc TODO
     }
 
-    field userInfo type="UserInfoResp" {
+    field userInfo type="[UserInfoResp]::size(1)" {
         key "IKqx1Cn9"
         doc "User information"
     }

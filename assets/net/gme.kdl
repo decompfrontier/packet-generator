@@ -1,6 +1,3 @@
-// from enum import Enum, Flag
-// from schema import *
-
 // This module contains the basic game request/response.
 
 int-enum GmeErrorFlags start=0 {

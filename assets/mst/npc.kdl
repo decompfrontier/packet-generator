@@ -118,19 +118,21 @@ json NpcMst {
         doc "TODO"
     }
 
-    field team type=NpcTeamInfo {
+    // TODO(arves): Fix...
+
+    field team /*type=NpcTeamInfo*/ type="str" {
         key "g94bDiaS"
         doc "TODO"
         // string #true
     }
 
-    field parties type=NpcPartyInfo {
+    field parties /*type=NpcPartyInfo*/ type="str" {
         key "oPsmRC18"
         doc "TODO"
         // string #true
     }
 
-    field units type=NpcUnitInfo {
+    field units /*type=NpcUnitInfo*/ type="str" {
         key "bS9s4GCp"
         doc "TODO"
         // string #true

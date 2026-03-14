@@ -55,7 +55,7 @@ json DailyTaskMst {
         doc "TODO"
     }
 
-    times_completed type="i32::int" {
+    field times_completed type="i32::int" {
         hash "9cKyb15U"
         doc "Number of times the task was completed"
     }
@@ -110,7 +110,7 @@ json DailyTaskPrizeMst {
         doc "TODO"
     }
 
-    field max_claim_count type="i32::str" {
+    field max_claim_count type="i64::str" {
         key "D2BlS89M"
         doc "TODO"
     }

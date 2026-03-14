@@ -145,7 +145,7 @@ json GameDls {
 }
 
 // json
-json SREE {
+json Sree {
     doc """
         This object is a container of encrypted JSON data used in DLS API.
 
