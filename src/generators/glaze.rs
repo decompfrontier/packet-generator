@@ -33,12 +33,12 @@ impl Addon for GlazeGenerator {
 
                 let content = format!(
                     "// Auto-generated Glaze definitions
-// #if __has_include(<glaze/glaze.hpp>)
+#if __has_include(<glaze/glaze.hpp>)
 #include <pkgen_glaze_helpers.hpp>
 
 {inner}
 
-// #endif // __has_include(<glaze/glaze.hpp>)
+#endif // __has_include(<glaze/glaze.hpp>)
         "
                 );
 
