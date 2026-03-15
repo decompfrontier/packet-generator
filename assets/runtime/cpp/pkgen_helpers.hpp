@@ -51,6 +51,11 @@ static bool string_to_chrono(std::string_view in,
   std::string a = std::string(in);
   std::istringstream iss(a);
 
+  if (in == "0000-00-00 00:00:00") { // bugfix date that starts from 0
+      out = chrono_time();
+      return true;
+  }
+
 #if __cpp_lib_chrono < 201907L
   iss >> date::parse("%F %T", out);
 #else

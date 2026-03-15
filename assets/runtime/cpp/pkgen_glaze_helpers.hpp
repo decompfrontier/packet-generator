@@ -173,8 +173,12 @@ template <> struct from<JSON, pkg::glaze::datetime_helper> {
 template <> struct to<JSON, pkg::glaze::datetime_helper> {
   template <auto Opts, class B>
   static void op(auto &&value, auto &&ctx, B &&b, auto &&ix) noexcept {
-    pkg::chrono_to_string(value.val, value.as_str);
-    serialize<JSON>::op<Opts>(value.as_str, ctx, b, ix);
+    if (!pkg::chrono_to_string(value.val, value.as_str)) {
+        ctx.error = error_code::invalid_variant_string;
+    }
+    else {
+        serialize<JSON>::op<Opts>(value.as_str, ctx, b, ix);
+    }
   }
 };
 
@@ -196,8 +200,12 @@ template <> struct from<JSON, pkg::glaze::datetime_unix_helper> {
 template <> struct to<JSON, pkg::glaze::datetime_unix_helper> {
   template <auto Opts, class B>
   static void op(auto &&value, auto &&ctx, B &&b, auto &&ix) noexcept {
-    pkg::chrono_to_unix(value.val, value.timestamp);
-    serialize<JSON>::op<Opts>(value.timestamp, ctx, b, ix);
+    if (!pkg::chrono_to_unix(value.val, value.timestamp)) {
+          ctx.error = error_code::invalid_variant_string;
+    }
+    else {
+        serialize<JSON>::op<Opts>(value.timestamp, ctx, b, ix);
+    }
   }
 };
 
