@@ -102,7 +102,8 @@ json VideoAdInfo {
 
 json VideoAdRegion {
     doc "TODO"
-    field id type="i32::int" {
+    
+    field id type="i32::str" {
         key "Y3de0n2p"
         doc "TODO"
     }

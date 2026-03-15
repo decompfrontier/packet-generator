@@ -93,12 +93,12 @@ json LoginInfoResp {
         doc "TODO"
     }
 
-    field early_bird_end type="i64::str" {
+    field early_bird_end type="i64::int" {
         key "iN7cYU9i"
         doc "Time in seconds until the Gem banner sale ends."
     }
 
-    field debug_mode type="bool::str" {
+    field debug_mode type="bool::int" {
         key "5MPcr0sp"
         doc "Enables several debug features (like skipping summoning animation) on the account."
     }
@@ -125,7 +125,7 @@ json LoginInfoResp {
         optional #true
     }
 
-    field feature_gate type="str" {
+    field feature_gate type="int" {
         key "a37D29iJ"
         doc "TODO"
     }
@@ -135,7 +135,7 @@ json LoginInfoResp {
         doc "TODO"
     }
 
-    // # v["32k0ahkD"] = "773c9af44721a014c7ed"; // TODO: discover what's this
+    // # v["32k0ahkD"] = ""; // TODO: discover what's this
 
    /*field service_request_endpoint_param type="str" {
         key "ABh7acL2"
@@ -817,11 +817,135 @@ json UserTeamArenaArchive {
     }
 }
 
-json PermitPlace {
+json UserSoundInfo {
     doc "TODO"
 
-    field mock type="str" {
-		key "INVALID"
-		doc "TODO"
+    field user_id type="str" {
+        key "h7eY3sAK"
+        doc "TODO"
+        optional #true
     }
+
+    field sound_id type="i32::str" {
+        key "k7Lf0jTt"
+        doc "TODO"
+    }
+
+}
+
+json UserBraveMedalInfo {
+    field user_id type="str" {
+        key "h7eY3sAK"
+        doc "TODO"
+    }
+
+    field medal_id type="i32::str" {
+        key "8ZSQ5F2V"
+        doc "TODO"
+    }
+
+    field possession type="i32::str" {
+        key "wgV86x1q"
+        doc "TODO"
+    }
+
+    field last_receipt_day type="i32::str" {
+        key "KI42FwRt"
+        doc "TODO"
+        // NOTE: unused in last version
+    }
+}
+
+json UserAchievementInfo {
+    field id type="i32::str" {
+        key "idfCDG70"
+        doc "TODO"
+    }
+
+    field unk3 type="i32::str" {
+        key "HjgTfx8A"
+        doc "TODO"
+    }
+
+    field unk2 type="str" { // TODO(arves): This is an i32::str with omit as empty
+        key "CjaJUSrs"
+        doc "TODO"
+        // NOTE: unused in last version
+    }
+
+    field unk type="str" { // TODO(arves): This is an i32::str with omit as empty
+        key "LHQZuau1"
+        doc "TODO"
+        // NOTE: unused in last version
+    }
+}
+
+json UserTownFacilityInfo {
+    field user_id type="str" {
+        key "h7eY3sAK"
+        doc "ID of the user for this session."
+    }
+
+    field facility_id type="i32::str" {
+        key "y9ET7Aub"
+        doc "TODO"
+    }
+
+    field lv type="i32::str" {
+        key "D9wXQI2V"
+        doc "TODO"
+    }
+
+    field karma type="i32::str" {
+        key "HTVh8a65"
+        doc "TODO"
+    }
+
+}
+
+json UserTownLocationInfo {
+    field user_id type="str" {
+        key "h7eY3sAK"
+        doc "ID of the user for this session."
+    }
+
+    field location_id type="i32::str" {
+        key "un80kW9Y"
+        doc "TODO"
+    }
+
+    field lv type="i32::str" {
+        key "D9wXQI2V"
+        doc "TODO"
+    }
+
+    field karma type="i32::str" {
+        key "HTVh8a65"
+        doc "TODO"
+    }
+
+}
+
+json UserLoginCampaignInfo {
+    doc TODO
+    field id type="i32::str" {
+        key "H1Dkq93v"
+        doc "TODO"
+    }
+
+    field current_day type="i32::int" {
+        key "ad6i23pO"
+        doc "TODO"
+    }
+
+    field total_days type="i32::str" {
+        key "1adb38d5"
+        doc "TODO"
+    }
+
+    field first_for_the_day type="bool::int" {
+        key "4tswNoV9"
+        doc "TODO"
+    }
+
 }

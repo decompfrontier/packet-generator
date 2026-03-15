@@ -27,7 +27,7 @@ import "../net/daily_login.kdl"
 import "../net/summonerjournaluserinfo.kdl"
 import "../net/userinfo.kdl"
 import "../net/items.kdl"
-import "../net/logincampaign.kdl"
+import "../net/permitplace.kdl"
 
 json InitializeReq {
     doc "Initialization command"
@@ -302,8 +302,6 @@ json UserInfoReq {
 json UserInfoResp {
     doc "TODO"
 
-    // TODO: PQ56vbkI ??
-
     field loginInfo type="[LoginInfoResp]::size(1)" {
         key "IKqx1Cn9"
         doc "TODO"
@@ -378,6 +376,44 @@ json UserInfoResp {
         key "yXNM8kL3"
         doc "TODO"
     }
+    field permitPlaceSP type="[PermitPlaceSP]" {
+        key "Y73tHKS8"
+        doc "TODO"
+    }
+    field permitPlaceML type="[PermitPlaceML]" {
+        key "Y73mHKS8"
+        doc "TODO"
+    }
+    field soundInfo type="[UserSoundInfo]::size(1)" {
+        key "d98mjNDc"
+        doc "TODO"
+    }
+    field medalInfo type="[UserBraveMedalInfo]" {
+        key "6C0kzwM5"
+        doc "TODO"
+    }
+    field achievementInfo type="UserAchievementInfo" {
+        key "Bnc4LpM8"
+        doc "TODO"
+        optional #true
+    }
+    field townFacilityInfo type="[UserTownFacilityInfo]" {
+        key "YRgx49WG"
+        doc "TODO"
+    }
+    field townLocationInfo type="[UserTownLocationInfo]" {
+        key "yj46Q2xw"
+        doc "TODO"
+    }
+
+    /* 
+    NOTE(arves): this appears in the server resp but the client doesn't care?
+        - I think it's this type
+    field settings type="UserSettings" {
+        key "4ZfpSQv1"
+        doc "TODO"
+    }
+    */
 
     // Cachable!
 
