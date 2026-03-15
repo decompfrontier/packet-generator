@@ -347,4 +347,117 @@ json DefineMst {
         // "default": DefaultType.Omit
         optional #true
     }
+
+    field unk type="i32::str" {
+        key "hx87WCbQ"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk2 type="i32::str" {
+        key "Z76WIr8m"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk3 type="f32::str" {
+        key "xv1Lyw9h"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk4 type="i32::str" {
+        key "p1TQ6XhR"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk5 type="f32::str" {
+        key "nwXMZ3Q1"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk6 type="str" {
+        key "sRjt0k2L"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk7 type="str" {
+        key "h2C6eFm8"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk8 type="str" {
+        key "bi4gV4Ki"
+        doc "TODO"
+    }
+
+    field unk9 type="i32::str" {
+        key "7enK28Q5"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk10 type="i32::str" {
+        key "mE81UBVk"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk11 type="str" {
+        key "t8Cc0uMo"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk12 type="i32::str" {
+        key "A8L9VERN"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk13 type="str" {
+        key "s79JGu2M"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk14 type="str" {
+        key "gEn3GX4C"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk15 type="i32::str" {
+        key "SziK4Xg1"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk16 type="i32::str" {
+        key "j1zaSBm7"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk18 type="i32::str" {
+        key "CjaJUSrs"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk19 type="str" {
+        key "CeTSDBO2"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk20 type="i32::str" {
+        key "25aTznBk"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
 }

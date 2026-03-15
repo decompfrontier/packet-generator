@@ -65,4 +65,14 @@ json DungeonKeyMst {
         doc "TODO"
     }
 
+    field unk type="str" {
+        key "fK15a73g"
+        doc "TODO"
+    }
+
+    field unk2 type="i32::str" {
+        key "zfdw7Ry1"
+        doc "TODO"
+    }
+
 }

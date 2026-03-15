@@ -1,6 +1,5 @@
 // This module contains the configuration of the server and enabled contents.
 
-// @json
 json FeatureCheck {
     doc "Features of the server"
 

@@ -1,0 +1,16 @@
+json MissionBreakInfo {
+    doc "TODO"
+    
+    field serial_id type="str" {
+        key "k9cxD7Ba"
+        doc "TODO"
+    }
+    field state type="i32::str" {
+        doc "TODO"
+        key "j0Uszek2"
+    }
+    field break_info type="str" {
+        key "K2gIYm0h"
+        doc "TODO"
+    }
+}

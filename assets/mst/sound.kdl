@@ -1,0 +1,33 @@
+json SoundMst {
+    doc "TODO"
+    
+    field id type="i32::str" {
+        key "k7Lf0jTt"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "xIRA58fC"
+        doc "TODO"
+    }
+    
+    field file type="str" {
+        key "8R5wDyXb"
+        doc "TODO"
+    }
+    
+    field need_mission_id type="i32::str" {
+        key "HSRhkf70"
+        doc "TODO"
+    }
+    
+    field description type="str" {
+        key "qp37xTDh"
+        doc "TODO"
+    }
+    
+    field amount type="i32::str" {
+        key "Rs7bCE3t"
+        doc "TODO"
+    }
+}

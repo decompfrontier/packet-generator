@@ -957,3 +957,82 @@ json UserLoginCampaignInfo {
     }
 
 }
+
+json UserSettings {
+    doc "TODO"
+
+    field user_id type="str" {
+        key "h7eY3sAK"
+        doc "ID of the user for this session."
+    }
+
+    field bgm_vol type="i32::str" {
+        key "Tgw5ua04"
+        doc "TODO"
+    }
+
+    field sfx_vol type="i32::str" {
+        key "Dw5hick9"
+        doc "TODO"
+    }
+}
+
+json UserTownLocationDetail {
+    doc "TODO"
+
+    field mock type="str" {
+        key "INVALID"
+        doc "TODO"
+    }
+}
+
+json UserDungeonKeyInfo {
+    doc "TODO"
+    
+    field mock type="str" {
+        key "INVALID"
+        doc "TODO"
+    }
+}
+
+json UserReleaseInfo {
+    doc "TODO"
+    
+    field mock type="str" {
+        key "INVALID"
+        doc "TODO"
+    }
+}
+
+json UserEquipItemInfo {
+    doc "TODO"
+    
+    field mock type="str" {
+        key "INVALID"
+        doc "TODO"
+    }
+}
+
+json UserEquipBoostItemInfo {
+    doc "TODO"
+    
+    field mock type="str" {
+        key "INVALID"
+        doc "TODO"
+    }
+}
+
+
+json SummonTicketV2UserInfo {
+    doc "TODO"
+
+    field id type="i32::str" {
+        doc "TODO"
+        key "b0D2iq2d"
+    }
+
+    field amount type="i32::str" {
+        doc "TODO"
+        key "Rs7bCE3t"
+    }
+}

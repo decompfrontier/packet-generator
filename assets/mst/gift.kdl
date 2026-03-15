@@ -1,4 +1,32 @@
-// @keyjson(key_group = "Bm1WNDQ0", array=ArrayStep.Array)
 json GiftItemMst {
-    doc TODO
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "eDj82kMN"
+        doc "TODO"
+    }
+    field type type="i32::str" {
+        key "2bvT9hKt"
+        doc "TODO"
+    }
+    field item_id type="i32::str" {
+        key "kixHbe54"
+        doc "TODO"
+    }
+    field possession type="i32::str" {
+        key "wgV86x1q"
+        doc "TODO"
+    }
+    field start_date type="datetime" {
+        key "qA7M9EjP"
+        doc "TODO"
+    }
+    field end_date type="datetime" {
+        key "SzV0Nps7"
+        doc "TODO"
+    }
+    field description type="str" {
+        key "qp37xTDh"
+        doc "TODO"
+    }
 }

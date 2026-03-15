@@ -196,6 +196,60 @@ json GachaInfoMst {
         doc "TODO"
     }
 
+    field unk type="str" {
+        key "s35idar9"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+
+    field unk2 type="str" {
+        key "2T4c7YRb"
+        doc "TODO"
+        // NOTE: not in last game version
+    }
+
+    field unk3 type="str" {
+        key "c7U6RwNH"
+        doc "TODO"
+        // NOTE: not in last game version
+    }
+
+    field unk4 type="str" {
+        key "Ss7Pdc2w"
+        doc "TODO"
+        // NOTE: not in last game version
+    }
+
+    field unk5 type="i32::int" {
+        key "Qm5oN7XM"
+        doc "TODO"
+        // NOTE: not in last game version
+    }
+
+    field unk6 type="i32::int" {
+        key "d04gRmkE"
+        doc "TODO"
+        // NOTE: not in last game version
+    }
+
+    field unk7 type="str" {
+        key "S6bqJqpA"
+        doc "TODO"
+        // NOTE: not in last game version
+    }
+
+    field unk8 type="str" {
+        key "a329kbl8"
+        doc "TODO"
+        // NOTE: not in last game version
+    }
+
+    field unk9 type="i32::int" {
+        key "324b023k"
+        doc "TODO"
+        // NOTE: not in last game version
+    }
+
     field campaign_info type="str" {
         key "8HM3v3gg"
         doc "TODO"
@@ -251,7 +305,7 @@ json GachaInfoMst {
         doc "TODO"
     }
 
-    field end_date type="str" {
+    field end_date type="datetime-unix" {
         key "SzV0Nps7"
         doc "TODO"
     }
@@ -310,17 +364,77 @@ json GachaInfoMst {
 json ResummonGachaMst {
     doc "TODO"
 
-    field mock type="str" {
+    field replay_id type="i32::str" {
         doc "TODO"
-        key "INVALID"
+        key "K38bjq03"
+    }
+
+    field gacha_id type="i32::str" {
+        doc "TODO"
+        key "7Ffmi96v"
+    }
+
+    field replay_total type="str" {
+        doc "TODO"
+        key "l2eBi10g"
+    }
+
+    field replay_count type="i32::str" {
+        doc "TODO"
+        key "vD19a03b"
+    }
+
+    field replay_tries type="i32::int" {
+        doc "TODO"
+        key "82k7Ai2u"
+    }
+
+    field replay_cost type="i32::str" {
+        doc "TODO"
+        key "j4Dw3bx5"
+    }
+
+    field replay_cost_type type="i32::str" {
+        doc "TODO"
+        key "m5hYcd39"
+    }
+
+    field replay_cost_id type="i32::str" {
+        doc "TODO"
+        key "Bz3jEse6"
     }
 }
 
 json SummonTicketV2Mst {
     doc "TODO"
 
-    field mock type="str" {
+    field image type="i32::str" {
         doc "TODO"
-        key "INVALID"
+        key "b0D2iq2d"
+        optional #true
+    }
+
+    field target_gacha type="str" { // should be i32::str with omit=empty
+        doc "TODO"
+        key "7Ffmi96v"
+        optional #true
+    }
+
+    field name type="str" {
+        doc "TODO"
+        key "s35idar9"
+        optional #true
+    }
+
+    field id type="str" {
+        doc "TODO"
+        key "b38adb8i"
+        optional #true
+    }
+
+    field required_tickets type="i32::str" {
+        doc "TODO"
+        key "JRqU2bS6"
+        optional #true
     }
 }

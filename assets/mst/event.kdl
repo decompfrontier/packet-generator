@@ -1,0 +1,20 @@
+json GeneralEventMst {
+    doc "TODO"
+    
+    field event_id type="i32::str" {
+        doc "TODO"
+        key "v80VfcXr"
+    }
+    field event_type type="i32::str" {
+        doc "TODO"
+        key "b4D63uav"
+    }
+    field event_kbn type="i32::str" {
+        doc "TODO"
+        key "1wHpzcy5"
+    }
+    field params type="str" {
+        doc "TODO"
+        key "t5R47iwj"
+    }
+}

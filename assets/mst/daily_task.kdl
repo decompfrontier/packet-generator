@@ -1,5 +1,4 @@
 
-// keyjson(key_group = "p283g07d", array=ArrayStep.Single)
 json DailyTaskBonusMst {
     doc "TODO"
     field bonus_brave_points type="i32::str" {
@@ -9,7 +8,6 @@ json DailyTaskBonusMst {
 
 }
 
-// keyjson(key_group = "k23D7d43", array=ArrayStep.Array)
 json DailyTaskMst {
     doc "TODO"
 

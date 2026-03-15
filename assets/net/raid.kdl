@@ -1,4 +1,9 @@
-// @keyjson(key_group = "1ry6BKoe")
+
 json RaidUserInfo {
-    doc TODO
+    doc "TODO"
+    
+    field mock type="str" {
+        key "INVALID"
+        doc "TODO"
+    }
 }

@@ -23,11 +23,10 @@ json TownFacilityLvMst {
 
 }
 
-// @keyjson(key_group = "9ekQ4tZq", array=ArrayStep.Array)
 json TownLocationLvMst {
     doc "TODO"
     field id type="i32::str" {
-        key "y9ET7Aub"
+        key "un80kW9Y"
         doc "TODO"
     }
 
@@ -41,14 +40,57 @@ json TownLocationLvMst {
         doc "TODO"
     }
 
-    field release_receipe type="[i32::int]::sep(comma)" {
-        key "rGoJ6Ty9"
+    field tap_cnt_start type="i32::str" {
+        key "Q43bK0zN"
         doc "TODO"
     }
 
+    field tap_cnt_end type="i32::str" {
+        key "dDYX75JR"
+        doc "TODO"
+    }
+
+    field item_info type="str" {
+        key "8fjZN6Mx"
+        doc "TODO"
+    }
+
+    field zel_rate type="i32::str" {
+        key "NC1Lq7b4"
+        doc "TODO"
+    }
+
+    field zel_start type="i32::str" {
+        key "U0Y8phRm"
+        doc "TODO"
+    }
+
+    field zel_end type="i32::str" {
+        key "TV7SB9rh"
+        doc "TODO"
+    }
+
+    field karma_rate type="i32::str" {
+        key "PKa13dH7"
+        doc "TODO"
+    }
+
+    field karma_start type="i32::str" {
+        key "u8tsAe9F"
+        doc "TODO"
+    }
+
+    field karma_end type="i32::str" {
+        key "GRFYaC71"
+        doc "TODO"
+    }
+
+    field lvup_description type="str" {
+        key "pb5dRMj0"
+        doc "TODO"
+    }
 }
 
-// @keyjson(key_group = "Lh1I3dGo", array=ArrayStep.Array)
 json TownFacilityMst {
     doc "TODO"
     field id type="i32::str" {
@@ -81,7 +123,7 @@ json TownFacilityMst {
         doc "TODO"
     }
 
-    field need_mission_id type="i32::int" {
+    field need_mission_id type="i32::str" {
         key "HSRhkf70"
         doc "TODO"
     }
@@ -121,7 +163,7 @@ json TownLocationMst {
         doc "TODO"
     }
 
-    field need_mission_id type="i32::int" {
+    field need_mission_id type="i32::str" {
         key "HSRhkf70"
         doc "TODO"
     }

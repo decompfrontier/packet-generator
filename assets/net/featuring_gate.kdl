@@ -1,4 +1,3 @@
-// @keyjson(key_group = "2375D38i", array = ArrayStep.Single)
 json FeatureGatingInfo {
     doc TODO
 }

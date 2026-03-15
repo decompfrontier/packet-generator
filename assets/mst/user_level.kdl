@@ -1,6 +1,5 @@
-// @keyjson(key_group = "YDv9bJ3s", array=ArrayStep.Array)
 json UserLevelMst {
-    doc TODO
+    doc "TODO"
 
     field level type="i32::str" {
         key "D9wXQI2V"
@@ -15,6 +14,12 @@ json UserLevelMst {
     field action_points type="i32::str" {
         key "0P9X1YHs"
         doc "TODO"
+    }
+
+    field unk type="i32::str" {
+        key "YS2JG9no"
+        doc "TODO"
+        // NOTE: not used in last version
     }
 
     field deck_cost type="i32::str" {

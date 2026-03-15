@@ -1,33 +1,39 @@
-import "../mst/versioninfo.kdl"
-import "../mst/logincampaign.kdl"
-import "../mst/userlevel.kdl"
+import "../mst/version_info.kdl"
+import "../mst/login_campaign.kdl"
+import "../mst/user_level.kdl"
 import "../mst/town.kdl"
-import "../mst/dungeonkey.kdl"
+import "../mst/dungeon_key.kdl"
 import "../mst/arena.kdl"
 import "../mst/gacha.kdl"
 import "../mst/define.kdl"
 import "../mst/npc.kdl"
 import "../mst/slots.kdl"
 import "../mst/banner.kdl"
-import "../mst/excludeddungeon.kdl"
-import "../mst/passiveskill.kdl"
-import "../mst/noticeinfo.kdl"
-import "../mst/dailytaskbonus.kdl"
+import "../mst/excluded_dungeon.kdl"
+import "../mst/passive_skill.kdl"
+import "../mst/notice_info.kdl"
+import "../mst/daily_task.kdl"
+import "../mst/gift.kdl"
 import "../mst/unit.kdl"
 import "../mst/receipe.kdl"
 import "../mst/info.kdl"
 import "../mst/trophy.kdl"
 import "../mst/help.kdl"
 import "../mst/url.kdl"
+import "../mst/event.kdl"
+import "../mst/sound.kdl"
+import "../mst/first_desc.kdl"
 import "../mst/frontier_hunter.kdl"
-import "../net/signalkey.kdl"
+import "../net/signal_key.kdl"
 import "../net/challenge_arena.kdl"
 import "../net/guild.kdl"
 import "../net/daily_login.kdl"
-import "../net/summonerjournaluserinfo.kdl"
-import "../net/userinfo.kdl"
+import "../net/summoner_journal.kdl"
+import "../net/user.kdl"
 import "../net/items.kdl"
-import "../net/permitplace.kdl"
+import "../net/permit_place.kdl"
+import "../net/mission.kdl"
+import "../net/raid.kdl"
 
 json InitializeReq {
     doc "Initialization command"
@@ -204,20 +210,22 @@ json InitializeResp {
         doc "TODO"
     }
 
+    field sound type="[SoundMst]" {
+        key "36Sd0Aub"
+        doc "TODO"
+    }
+
     // # user specific
     field signalKey type="[SignalKey]::size(1)" {
         key "6FrKacq7"
         doc "TODO"
     }
 
-    /* 
-    NOTE(arves): this appears in the server resp but the client doesn't care?
-        - I think it's this type
-    field settings type="UserSettings" {
+    field settings type="[UserSettings]::size(1)" {
         key "4ZfpSQv1"
         doc "TODO"
+        // NOTE: not used in last version
     }
-    */
 
     field challengeArenaUserInfo type="[ChallengeArenaUserInfo]::size(1)" {
         key "XGmGpmYW"
@@ -405,18 +413,74 @@ json UserInfoResp {
         key "yj46Q2xw"
         doc "TODO"
     }
-
-    /* 
-    NOTE(arves): this appears in the server resp but the client doesn't care?
-        - I think it's this type
-    field settings type="UserSettings" {
-        key "4ZfpSQv1"
+    field townLocationDetail type="[UserTownLocationDetail]" {
+        key "s8TCo2MS"
         doc "TODO"
     }
-    */
+    field permitReceipes type="[PermitReceipe]" {
+        key "51yQrDBR"
+        doc "TODO"
+    }
+    field settings type="[UserSettings]::size(1)" {
+        key "4ZfpSQv1"
+        doc "TODO"
+        // NOTE: not used in last version
+    }
+    field dungeonKeyInfo type="[UserDungeonKeyInfo]" {
+        key "eFU7Qtb0"
+        doc "TODO"
+    }
+    field missionBreak type="[MissionBreakInfo]::size(1)" {
+        key "5PR2VmH1"
+        doc "TODO"
+    }
+    /*field raidUserInfo type="RaidUserInfo" {
+        doc "TODO"
+        key "1ry6BKoe"
+    }
+    field purchaseInfo type="UserPurchaseInfo" {
+        doc "TODO"
+        key "4W6EhXLS"
+    }*/
+    field releaseInfo type="[UserReleaseInfo]" {
+        doc "TODO"
+        key "Dp0MjKAf"
+    }
+    field equipInfo type="[UserEquipItemInfo]" {
+        doc "TODO"
+        key "71U5wzhI"
+    }
+    field equipBoostItemInfo type="[UserEquipBoostItemInfo]" {
+        doc "TODO"
+        key "nAligJSQ"
+    }
+    field summonTicketV2User type="[SummonTicketV2UserInfo]" {
+        doc "TODO"
+        key "a3d5d12i"
+    }
 
     // Cachable!
 
+    field summonTicketV2 type="[SummonTicketV2Mst]" {
+        doc "TODO"
+        key "hE1d083b"
+    }
+    field resummonGacha type="[ResummonGachaMst]" {
+        doc "TODO"
+        key "da3qD39b"
+    }
+    field firstDesc type="[FirstDescMst]" {
+        key "8UawtzHw"
+        doc "TODO"
+    }
+    field generalEvent type="[GeneralEventMst]" {
+        key "Md9gG3c0"
+        doc "TODO"
+    }
+    field gift type="[GiftItemMst]" {
+        key "Bm1WNDQ0"
+        doc "TODO"
+    }
     field gachaInfo type="[GachaInfoMst]" {
         key "1IR86sAv"
         doc "TODO"

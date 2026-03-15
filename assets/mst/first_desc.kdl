@@ -1,0 +1,46 @@
+
+json FirstDescMst {
+    doc "TODO"
+
+    field length type="i32::str" {
+        key "Kn51uR4Y"
+        doc "Total length of the data"
+        optional #true
+    }
+    
+    field id type="i32::str" {
+        key "4fYP5SZq"
+        doc "TODO"
+        optional #true
+    }
+
+    field title type="str" {
+        key "Ia9Sm1Kx"
+        doc "TODO"
+        optional #true
+    }
+
+    field type type="i32::str" {
+        key "fXouGo9i"
+        doc "TODO"
+        optional #true
+    }
+
+    field param type="str" {
+        key "t5R47iwj"
+        doc "TODO"
+        optional #true
+    }
+
+    field img type="str" {
+        key "b5VveUd8"
+        doc "TODO"
+        optional #true
+    }
+
+    field script_name type="str" {
+        key "tw0vkye4"
+        doc "TODO"
+        optional #true
+    }
+}

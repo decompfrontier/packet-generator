@@ -2,8 +2,8 @@ json PermitPlace {
     doc "TODO"
 
     field mock type="str" {
-		key "INVALID"
-		doc "TODO"
+      key "INVALID"
+      doc "TODO"
     }
 }
 
@@ -11,8 +11,8 @@ json PermitPlaceML {
     doc "TODO"
 
     field mock type="str" {
-		key "INVALID"
-		doc "TODO"
+      key "INVALID"
+      doc "TODO"
     }
 }
 
@@ -20,7 +20,16 @@ json PermitPlaceSP {
     doc "TODO"
 
     field mock type="str" {
-		key "INVALID"
-		doc "TODO"
+      key "INVALID"
+      doc "TODO"
     }
+}
+
+json PermitReceipe {
+  doc "TODO"
+
+  field mock type="str" {
+    key "INVALID"
+    doc "TODO"
+  }
 }
