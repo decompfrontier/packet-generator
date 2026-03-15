@@ -118,14 +118,14 @@ json LoginInfoResp {
         doc "TODO"
     }
 
-    field dlc_url type=str {
+    field dlc_url type="str" {
         key "23t3D28i"
         doc TODO
         // "default": DefaultType.Omit
         optional #true
     }
 
-    field feature_gate type="int" {
+    field feature_gate type="i32::int" {
         key "a37D29iJ"
         doc "TODO"
     }
@@ -834,6 +834,8 @@ json UserSoundInfo {
 }
 
 json UserBraveMedalInfo {
+    doc "TODO"
+
     field user_id type="str" {
         key "h7eY3sAK"
         doc "TODO"
@@ -857,6 +859,8 @@ json UserBraveMedalInfo {
 }
 
 json UserAchievementInfo {
+    doc "TODO"
+
     field id type="i32::str" {
         key "idfCDG70"
         doc "TODO"
@@ -881,6 +885,8 @@ json UserAchievementInfo {
 }
 
 json UserTownFacilityInfo {
+    doc "TODO"
+
     field user_id type="str" {
         key "h7eY3sAK"
         doc "ID of the user for this session."
@@ -904,6 +910,8 @@ json UserTownFacilityInfo {
 }
 
 json UserTownLocationInfo {
+    doc "TODO"
+
     field user_id type="str" {
         key "h7eY3sAK"
         doc "ID of the user for this session."

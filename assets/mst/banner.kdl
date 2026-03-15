@@ -75,7 +75,7 @@ json InteractiveBannerInfoMst {
         doc "TODO"
     }
 
-    field param type="[i32::int]" { // [i32::int]::size(2)
+    field param type="str" { // TODO(arves): [i32::int]::size(2)
         key "t5R47iwj"
         doc "TODO"
     }
