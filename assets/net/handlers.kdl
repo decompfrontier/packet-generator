@@ -4,7 +4,7 @@ import "../mst/userlevel.kdl"
 import "../mst/town.kdl"
 import "../mst/dungeonkey.kdl"
 import "../mst/arena.kdl"
-import "../mst/gatcha.kdl"
+import "../mst/gacha.kdl"
 import "../mst/define.kdl"
 import "../mst/npc.kdl"
 import "../mst/slots.kdl"
@@ -13,6 +13,13 @@ import "../mst/excludeddungeon.kdl"
 import "../mst/passiveskill.kdl"
 import "../mst/noticeinfo.kdl"
 import "../mst/dailytaskbonus.kdl"
+import "../mst/unit.kdl"
+import "../mst/receipe.kdl"
+import "../mst/info.kdl"
+import "../mst/trophy.kdl"
+import "../mst/help.kdl"
+import "../mst/url.kdl"
+import "../mst/frontier_hunter.kdl"
 import "../net/signalkey.kdl"
 import "../net/challenge_arena.kdl"
 import "../net/guild.kdl"
@@ -126,11 +133,90 @@ json InitializeResp {
         doc "Configuration of notices"
     }
 
+    field expPattern type="[UnitExpPatternMst]" {
+        key "JYFGe9y6"
+        doc "TODO"
+    }
+
+    field receipe type="[ReceipeMst]" {
+        key "8f0bCciN"
+        doc "TODO"
+    }
+
+    field trophy type="[TrophyGroupMst]" {
+        key "1NTG2oVZ"
+        doc "TODO"
+    }
+
+    field trophy_grade type="[TrophyGradeMst]" {
+        key "Ked15IpH"
+        doc "TODO"
+    }
+
+    field information type="[InformationMst]" {
+        key "5nBa3CAe"
+        doc "TODO"
+    }
+
+    field help type="[HelpMst]" {
+        key "9x4zZCeN"
+        doc "TODO"
+    }
+
+    field url type="[UrlMst]" {
+        key "At7Gny2V"
+        doc "TODO"
+    }
+
+    field challenge type="[ChallengeMst]" {
+        key "mQC4s5ka"
+        doc "TODO"
+    }
+
+    field challenge_hr type="[ChallengeHrMst]" {
+        key "h09mEvDR"
+        doc "TODO"
+    }
+
+    field challenge_mis type="[ChallengeMisMst]" {
+        key "5M8jI4cP"
+        doc "TODO"
+    }
+
+    field challenge_grade type="[ChallengeGradeMst]" {
+        key "zW1i02aG"
+        doc "TODO"
+    }
+
+    field challenge_reward type="[ChallengeRewardMst]" {
+        key "4C1Wt8sS"
+        doc "TODO"
+    }
+
+    field challenge_item type="[ChallengeItemMst]" {
+        key "dn0NfRy1"
+        doc "TODO"
+    }
+
+    field interactive_banner type="[InteractiveBannerInfoMst]" {
+        key "B8lchAPr"
+        doc "TODO"
+    }
+
     // # user specific
     field signalKey type="[SignalKey]::size(1)" {
         key "6FrKacq7"
-        doc TODO
+        doc "TODO"
     }
+
+    /* 
+    NOTE(arves): this appears in the server resp but the client doesn't care?
+        - I think it's this type
+    field settings type="UserSettings" {
+        key "4ZfpSQv1"
+        doc "TODO"
+    }
+    */
 
     field challengeArenaUserInfo type="[ChallengeArenaUserInfo]::size(1)" {
         key "XGmGpmYW"
@@ -294,7 +380,7 @@ json UserInfoResp {
 
     // Cachable!
 
-    field gachaInfo type="[GachaInfo]" {
+    field gachaInfo type="[GachaInfoMst]" {
         key "1IR86sAv"
         doc "TODO"
     }

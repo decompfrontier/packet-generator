@@ -1,0 +1,42 @@
+
+json TrophyGroupMst {
+    doc "TODO"
+
+    field group_id type="i32::str" {
+        key "b96suLJ4"
+        doc "TODO"
+    }
+    field group_name type="str" {
+        key "6u5BD9ZA"
+        doc "TODO"
+    }
+    field font_color /*type="[i32]::size(3)::sep(colon)"*/ type="[i32::int]::sep(colon)" {
+        key "iKY6cC3z"
+        doc "TODO"
+    }
+    field disp_order type="i32::str" {
+        key "XuJL4pc5"
+        doc "TODO"
+    }
+}
+
+json TrophyGradeMst {
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "ARn3u96q"
+        doc "TODO"
+    }
+    field trophy_id type="i32::str" {
+        key "0xkdJSX7"
+        doc "TODO"
+    }
+    field grade type="i32::str" { // TODO(arves): Enum?
+        key "Moub12sU"
+        doc "TODO"
+    }
+    field clear_cond type="i32::str" {
+        key "nVI70ie2"
+        doc "TODO"
+    }
+}

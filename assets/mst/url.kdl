@@ -1,8 +1,7 @@
-// @keyjson(key_group = "At7Gny2V", array=ArrayStep.Single)
 json UrlMst {
-    doc TODO
+    doc "TODO"
 
-    field id type="str" {
+    field id type="i32::str" {
         key "ut3nd0yV"
         doc "TODO"
     }

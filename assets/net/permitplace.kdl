@@ -1,14 +1,11 @@
-// @keyjson(key_group = "yXNM8kL3", array=ArrayStep.Array)
 json PermitPlace {
     doc TODO
 }
 
-// @keyjson(key_group = "Y73mHKS8", array=ArrayStep.Array)
 json PermitPlaceML {
     doc TODO
 }
 
-// @keyjson(key_group = "Y73tHKS8", array=ArrayStep.Array)
 json PermitPlaceSP {
     doc TODO
 }

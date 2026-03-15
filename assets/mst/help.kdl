@@ -1,0 +1,13 @@
+json HelpMst {
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "v9dyS8fi"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "v4QT2gbL"
+        doc "TODO"
+    }
+}

@@ -8,7 +8,6 @@ str-enum BannerOperativeSystem {
     }
 }
 
-// @keyjson(key_group = "Pk5F1vhx", array=ArrayStep.Array)
 json BannerInfoMst {
     doc "Banner configuration in the links page"
 
@@ -55,5 +54,39 @@ json BannerInfoMst {
     field read_count type=i32::int {
         key "d36D1g8T"
         doc "Number of times the page was read"
+    }
+}
+
+json InteractiveBannerInfoMst {
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "XIvaD6Jp"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "s35idar9"
+        doc "TODO"
+    }
+
+    field banner_image type="str" {
+        key "b38adb8i"
+        doc "TODO"
+    }
+
+    field param type="[i32::str]" { // [i32::str]::size(2)
+        key "t5R47iwj"
+        doc "TODO"
+    }
+
+    field start_date type="datetime" {
+        key "qA7M9EjP"
+        doc "TODO"
+    }
+
+    field end_date type="datetime" {
+        key "SzV0Nps7"
+        doc "TODO"
     }
 }

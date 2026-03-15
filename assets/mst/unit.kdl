@@ -1,19 +1,18 @@
-// @keyjson(array=ArrayStep.Array)
 json UnitExpPatternMst {
     hash "JYFGe9y6"
     doc "TODO"
 
-    field id type="i32::int" {
+    field id type="i32::str" {
         key "5UvTp7q1"
         doc "TODO"
     }
 
-    field lv type="i32::int" {
+    field lv type="i32::str" {
         key "D9wXQI2V"
         doc "TODO"
     }
 
-    field need_exp type="i32::int" {
+    field need_exp type="i32::str" {
         key "grKTq15A"
         doc "TODO"
     }

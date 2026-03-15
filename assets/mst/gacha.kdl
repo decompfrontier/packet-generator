@@ -1,6 +1,5 @@
-// @keyjson(key_group = "Pf97SzVw", array=ArrayStep.Array)
 json GachaEffectMst {
-    doc TODO
+    doc "TODO"
 
     field id type="i32::str" {
         key "u0vkt9yH"
@@ -38,9 +37,8 @@ json GachaEffectMst {
     }
 }
 
-// @keyjson(key_group = "IBs49NiH", array=ArrayStep.Array)
 json GachaCategory {
-    doc TODO
+    doc "TODO"
 
     field id type="i32::int" {
         key "vx9uyQVQ"
@@ -73,9 +71,8 @@ json GachaCategory {
     }
 }
 
-// @keyjson(key_group = "5Y4GJeo3", array=ArrayStep.Array)
 json GachaMst {
-    doc TODO
+    doc "TODO"
 
     field id type="i32::str" {
         key "7Ffmi96v"
@@ -175,27 +172,155 @@ json GachaMst {
         doc "TODO"
     }
 
-    field gatcha_detail_id type=str {
+    field gatcha_detail_id type="str" {
         key "8Z9CYQDq"
-        doc TODO
+        doc "TODO"
         optional #true
         // "default": DefaultType.Omit
     }
 
-    field contents_banner_img type=str {
+    field contents_banner_img type="str" {
         key "sA9dDAqB"
-        doc TODO
+        doc "TODO"
         optional #true
         // "default": DefaultType.Omit
     }
 }
 
-// keyjson(key_group = "da3qD39b")
-json ResummonGachaMst {
-    doc TODO
+
+json GachaInfoMst {
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "7Ffmi96v"
+        doc "TODO"
+    }
+
+    field campaign_info type="str" {
+        key "8HM3v3gg"
+        doc "TODO"
+    }
+
+    field brave_coin type="i32::str" {
+        key "03UGMHxF"
+        doc "TODO"
+    }
+
+    field button_img type="str" {
+        key "W9ABuJj2"
+        doc "TODO"
+    }
+
+    field background_img type="str" {
+        key "1Dg0vUX3"
+        doc "TODO"
+    }
+
+    field caption_msg type="str" {
+        key "3sdHQb69"
+        doc "TODO"
+    }
+
+    field detail_msg type="str" {
+        key "W2c9g0Je"
+        doc "TODO"
+    }
+
+    field resummon_gacha_flag type="bool::str" {
+        key "a632bkyQ"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "4N27mkt1"
+        doc "TODO"
+    }
+
+    field type type="i32::str" {
+        key "S1oz60Hc"
+        doc "TODO"
+    }
+
+    field priority type="i32::str" {
+        key "yu18xScw"
+        doc "TODO"
+    }
+
+    field start_date type="str" { // TODO(arves): Fix type...
+        key "qA7M9EjP"
+        doc "TODO"
+    }
+
+    field end_date type="str" {
+        key "SzV0Nps7"
+        doc "TODO"
+    }
+
+    field start_hour type="str" { // TODO(arves): Fix type...
+        key "2HY3jpgu"
+        doc "TODO"
+    }
+
+    field end_hour type="str" {
+        key "v9TR3cDz"
+        doc "TODO"
+    }
+
+    field need_friends_point type="i32::str" {
+        key "J3stQ7jd"
+        doc "TODO"
+    }
+
+    field once_day_flag type="bool::str" {
+        key "4tswNoV9"
+        doc "TODO"
+    }
+
+    field door_img type="str" {
+        key "uKYf13AH"
+        doc "TODO"
+    }
+
+    field description type="str" {
+        key "qp37xTDh"
+        doc "TODO"
+    }
+
+    field group_id type="i32::str" {
+        key "TCnm1F4v"
+        doc "TODO"
+    }
+
+    field comment type="str" {
+        key "gVSj32QH"
+        doc "TODO"
+    }
+
+    field detail_id type="str" {
+        key "8Z9CYQDq"
+        doc "TODO"
+    }
+
+    field content_banner_img type="str" {
+        key "sA9dDAqB"
+        doc "TODO"
+    }
 }
 
-// @keyjson(key_group = "hE1d083b")
+json ResummonGachaMst {
+    doc "TODO"
+
+    field mock type="str" {
+        doc "TODO"
+        key "INVALID"
+    }
+}
+
 json SummonTicketV2Mst {
-    doc TODO
+    doc "TODO"
+
+    field mock type="str" {
+        doc "TODO"
+        key "INVALID"
+    }
 }

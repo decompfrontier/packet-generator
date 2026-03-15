@@ -1,0 +1,13 @@
+json InformationMst {
+    doc "TODO"
+
+    field key type="str" {
+        key "K89GWSY1"
+        doc "TODO"
+    }
+
+    field text type="str" {
+        key "1ziVyEI9"
+        doc "TODO"
+    }
+}

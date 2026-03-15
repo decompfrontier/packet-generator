@@ -1,0 +1,222 @@
+json ChallengeMst {
+    doc "TODO" // NOTE: Relative to frontier hunter
+
+    field id type="i32::str" {
+        key "c5yZnpB4"
+        doc "TODO"
+    }
+
+    field dungeon_id type="i32::str" {
+        key "MHx05sXt"
+        doc "TODO"
+    }
+
+    field start_data type="datetime" {
+        key "qA7M9EjP"
+        doc "TODO"
+    }
+
+    field end_data type="datetime" {
+        key "SzV0Nps7"
+        doc "TODO"
+    }
+
+    field cnt_start_data type="datetime" {
+        key "7S5tL21M"
+        doc "TODO"
+    }
+
+    field cnt_end_data type="datetime" {
+        key "1JZuvmo7"
+        doc "TODO"
+    }
+
+    field rank_start_data type="datetime" {
+        key "4nq0Zoau"
+        doc "TODO"
+    }
+
+    field rank_end_data type="datetime" {
+        key "6dWR3qrQ"
+        doc "TODO"
+    }
+
+    field description type="str" {
+        key "qp37xTDh"
+        doc "TODO"
+    }
+
+    field comment_1 type="str" {
+        key "Xoj83HJn"
+        doc "TODO"
+    }
+
+    field comment_2 type="str" {
+        key "T5KjuN1d"
+        doc "TODO"
+    }
+
+    field comment_3 type="str" {
+        key "jSI1aCJ9"
+        doc "TODO"
+    }
+
+    field url type="str" {
+        key "jsRoN50z"
+        doc "TODO"
+    }
+}
+
+json ChallengeHrMst {
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "Sv80kL5r"
+        doc "TODO"
+    }
+    field rank_name type="i32::str" {
+        key "h6V4weL2"
+        doc "TODO"
+    }
+    field present_typ type="i32::str" {
+        key "30Kw4WBa"
+        doc "TODO"
+    }
+    field target_id type="i32::str" {
+        key "TdDHf59J"
+        doc "TODO"
+    }
+    field target_cnt type="i32::str" {
+        key "wJsB35iH"
+        doc "TODO"
+    }
+    field reward_param type="str" { // TODO(arves): Is this [i32::str]::sep(colon) ?
+        key "37moriMq"
+        doc "TODO"
+    }
+}
+
+json ChallengeMisMst {
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "c5yZnpB4"
+        doc "TODO"
+    }
+    field mission_id type="i32::str" {
+        key "j28VNcUW"
+        doc "TODO"
+    }
+    field entry_termt type="str" {
+        key "c6fVJ9qR"
+        doc "TODO"
+    }
+    field score_rate type="[i32::int]::sep(comma)" {
+        key "Q1z2IFjZ"
+        doc "TODO"
+    }
+    field score_limit type="str" { // [i32::int]::sep(comma)
+        // TODO(arves): We need nullable types support (sigh)
+        key "gNEbgjmh"
+        doc "TODO"
+        optional #true
+    }
+    field item_flag type="i32::str" {
+        key "d9RLTqo7"
+        doc "TODO"
+    }
+    field url type="str" {
+        key "jsRoN50z"
+        doc "TODO"
+        optional #true
+    }
+    field description type="str" {
+        key "qp37xTDh"
+        doc "TODO"
+    }
+    field bonus_param type="[i32::int]::sep(comma)" {
+        key "59b1eE6N"
+        doc "TODO"
+    }
+    field fix_pt type="str" { // [i32::int]::sep(comma)
+        // TODO(arves): We need nullable types support (sigh)
+        key "RlFWcCqN"
+        doc "TODO"
+        optional #true
+    }
+    field comment type="str" {
+        key "WDUyI85C"
+        doc "TODO"
+    }
+}
+
+json ChallengeGradeMst {
+    doc "TODO"
+
+    field mission_id type="i32::str" {
+        key "j28VNcUW"
+        doc "TODO"
+    }
+    field grade_id type="i32::str" {
+        key "Cdv07KEU"
+        doc "TODO"
+    }
+    field scope type="i32::str" {
+        key "TPR79fyI"
+        doc "TODO"
+    }
+}
+
+json ChallengeItemMst {
+    doc "TODO"
+
+    field mission_id type="i32::str" {
+        key "j28VNcUW"
+        doc "TODO"
+    }
+    field set_id type="i32::str" {
+        key "gUvjqu39"
+        doc "TODO"
+    }
+    field set_name type="str" {
+        key "s35idar9"
+        doc "TODO"
+    }
+    field param type="str" {
+        key "NsZIP0d8"
+        doc "TODO"
+    }
+}
+
+json ChallengeRewardMst {
+    doc "TODO"
+
+    field reward_id type="i32::str" {
+        key "N1b6SUW4"
+        doc "TODO"
+    }
+    field mission_id type="i32::str" {
+        key "j28VNcUW"
+        doc "TODO"
+    }
+    field point_start type="i32::str" {
+        key "TPR79fyI"
+        doc "TODO"
+    }
+    field reward_type type="i32::str" {
+        key "30Kw4WBa"
+        doc "TODO"
+    }
+    field target_id type="i32::str" {
+        key "TdDHf59J"
+        doc "TODO"
+    }
+    field target_cnt type="i32::str" {
+        key "wJsB35iH"
+        doc "TODO"
+    }
+    field reward_param type="str" { // TODO(arves): Discover this
+        key "37moriMq"
+        doc "TODO"
+    }
+}
