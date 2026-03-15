@@ -59,8 +59,6 @@ json SlotGameInfoR {
     }
 }
 
-
-// @json
 json SlotGameReelInfo {
     doc "TODO"
     field id type="i32::int" {
@@ -74,11 +72,9 @@ json SlotGameReelInfo {
     }
 }
 
-
-// @keyjson(key_group = "j129kD6r", array=ArrayStep.Array)
 json VideoAdInfo {
     doc "TODO"
-    field id type="i32::int" {
+    field id type="i32::str" {
         key "k3ab6D82"
         doc "TODO"
     }
@@ -88,7 +84,7 @@ json VideoAdInfo {
         doc "TODO"
     }
 
-    field region_id type="i32::int" {
+    field region_id type="i32::str" {
         key "Y3de0n2p"
         doc "TODO"
     }
@@ -104,12 +100,10 @@ json VideoAdInfo {
     }
 }
 
-
-// @keyjson(key_group = "bpD29eiQ", array=ArrayStep.Array)
 json VideoAdRegion {
     doc "TODO"
     field id type="i32::int" {
-        key "k3ab6D82"
+        key "Y3de0n2p"
         doc "TODO"
     }
 
@@ -120,7 +114,6 @@ json VideoAdRegion {
 
 }
 
-// @json
 json VideoAdsSlotGameStandInfo {
     doc "TODO"
     field ads_count type="i32::int" {
@@ -154,7 +147,6 @@ json VideoAdsSlotGameStandInfo {
     }
 }
 
-// @keyjson(key_group = "mebW7mKD", array=ArrayStep.Single)
 json VideoAdsSlotGameInfo {
     doc "TODO"
 

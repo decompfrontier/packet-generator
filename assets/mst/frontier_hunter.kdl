@@ -111,7 +111,7 @@ json ChallengeMisMst {
         key "c6fVJ9qR"
         doc "TODO"
     }
-    field score_rate type="[i32::int]::sep(comma)" {
+    field score_rate type="str" { // TODO(arves): IDK ??
         key "Q1z2IFjZ"
         doc "TODO"
     }
@@ -134,7 +134,7 @@ json ChallengeMisMst {
         key "qp37xTDh"
         doc "TODO"
     }
-    field bonus_param type="[i32::int]::sep(comma)" {
+    field bonus_param type="str" { // TODO(arves): IDK??
         key "59b1eE6N"
         doc "TODO"
     }

@@ -226,7 +226,7 @@ json GachaInfoMst {
         doc "TODO"
     }
 
-    field resummon_gacha_flag type="bool::str" {
+    field resummon_gacha_flag type="bool::int" {
         key "a632bkyQ"
         doc "TODO"
     }
