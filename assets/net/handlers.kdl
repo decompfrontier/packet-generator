@@ -287,6 +287,10 @@ json UserInfoResp {
         key "6FrKacq7"
         doc "TODO"
     }
+    field permitPlace type="[PermitPlace]" {
+        key "yXNM8kL3"
+        doc "TODO"
+    }
 
     // Cachable!
 
