@@ -6,7 +6,7 @@ use miette::Severity;
 use crate::kdl_parser::{
     Diagnostic, ParsingError, SourceInfo,
     parser::{ErrorContext, KdlDocumentUtilsExt, KdlNodeUtilsExt, type_parser::generic_parse},
-    schema::{JsonDefinition, JsonField, TypeEncoding},
+    schema::{IntLikeEncoding, JsonDefinition, JsonField},
 };
 
 const DEFAULT_ENCODING_PROPERTY: &str = "default-encoding";
@@ -51,7 +51,7 @@ pub fn parse_data_definition(
             })
         })
         .transpose()?
-        .map(TypeEncoding::from_str)
+        .map(IntLikeEncoding::from_str)
         .transpose()
         .map_err(|e| {
             ParsingError::from(Diagnostic {
@@ -146,7 +146,7 @@ fn parse_field(
     node: &KdlNode,
     source_code: Arc<SourceInfo>,
     data_name: &str,
-    maybe_default_encoding: Option<TypeEncoding>,
+    maybe_default_encoding: Option<IntLikeEncoding>,
     index: usize,
 ) -> Result<JsonField, ParsingError> {
     let field_node = node.extract_argument_string(
@@ -162,7 +162,7 @@ fn parse_field(
     let maybe_encoding = node
         .get("encoding")
         .and_then(|v| v.as_string())
-        .map(TypeEncoding::from_str)
+        .map(IntLikeEncoding::from_str)
         .transpose()
         .map_err(|e| {
             ParsingError::from(Diagnostic {

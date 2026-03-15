@@ -7,7 +7,7 @@ use stringcase::Caser;
 use crate::generators::{Addon, GeneratedSource, GenerationError, Generator, WithAddons};
 
 use crate::intermediate::{
-    DataType, Definition, DefinitionRegistry, IntEnum, Json, JsonField, StringEnum,
+    ArraySize, DataType, Definition, DefinitionRegistry, IntEnum, Json, JsonField, StringEnum,
 };
 
 const AUTOGENERATION_NOTICE: &str = "
@@ -190,15 +190,6 @@ fn convert_datatype(
 
         DataType::String => Ok(String::from("std::string")),
 
-        DataType::StringArray {
-            inner_type,
-            separator: _,
-        } => {
-            let inner = convert_datatype(inner_type, registry)?;
-
-            Ok(format!("pkg::string_list<{inner}>"))
-        }
-
         DataType::Datetime | DataType::DatetimeUnix => Ok(String::from("pkg::chrono_time")),
 
         DataType::Map { key, value } => {
@@ -208,18 +199,55 @@ fn convert_datatype(
             Ok(format!("std::unordered_map<{key}, {value}>"))
         }
 
-        DataType::Array { inner_type } => {
+        DataType::Array {
+            inner_type,
+            size: ArraySize::Dynamic,
+        } => {
             let inner = convert_datatype(inner_type, registry)?;
 
             Ok(format!("std::vector<{inner}>"))
         }
 
-        DataType::SingleElementArray { inner_type } => {
+        DataType::Array {
+            inner_type,
+            size: ArraySize::Fixed(size),
+        } => {
             let inner = convert_datatype(inner_type, registry)?;
-            Ok(inner)
+
+            match size.get() {
+                1 => Ok(inner),
+                n => Ok(format!("std::array<{inner}, {n}>")),
+            }
         }
 
-        DataType::Definition(weak) => {
+        DataType::StringArray {
+            inner_type,
+            separator: _,
+            size: ArraySize::Dynamic,
+        } => {
+            let inner = convert_datatype(inner_type, registry)?;
+
+            Ok(format!("pkg::string_list<{inner}>"))
+        }
+
+        DataType::StringArray {
+            inner_type: _,
+            separator: _,
+            size: ArraySize::Fixed(_),
+        } => {
+            // TODO(Arves): Implement this.
+            todo!("Fixed array size for string arrays are not implemented.");
+        }
+
+        // DataType:: { inner_type } => {
+        //     let inner = convert_datatype(inner_type, registry)?;
+        //     Ok(inner)
+        // }
+        DataType::Definition {
+            definition: weak,
+            // TODO(anri): Handle JSON string encoding
+            encoding: _,
+        } => {
             let definition = registry.get(*weak);
             match *definition {
                 Definition::StringEnum(ref str_enum) => Ok(format!("{}::Type", str_enum.name)),
@@ -228,7 +256,7 @@ fn convert_datatype(
             }
         }
 
-        DataType::Unknown(other) => match registry.find(other) {
+        DataType::Unknown { name: other, .. } => match registry.find(other) {
             Some((definition, _idx)) => match definition {
                 Definition::StringEnum(str_enum) => Ok(format!("{}::Type", str_enum.name)),
 

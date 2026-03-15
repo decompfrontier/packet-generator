@@ -4,7 +4,8 @@ use stringcase::Caser;
 use crate::generators::{Addon, CxxGenerator, GenerationError};
 
 use crate::intermediate::{
-    ArraySeparator, BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding, Json,
+    ArraySeparator, ArraySize, BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding,
+    Json,
 };
 
 const TAB: &str = "    ";
@@ -54,6 +55,7 @@ const fn get_glz_array_separator(sep: ArraySeparator) -> char {
         ArraySeparator::Comma => ',',
         ArraySeparator::At => '@',
         ArraySeparator::Colon => ':',
+        ArraySeparator::Pipe => '|',
     }
 }
 
@@ -92,17 +94,32 @@ fn get_glz_mapper(
         } => Ok(format!("glz::bools_as_numbers<&T::{name}>")),
         DataType::Datetime => Ok(format!("pkg::glaze::datetime<&T::{name}>()")),
         DataType::DatetimeUnix => Ok(format!("pkg::glaze::datetime_unix<&T::{name}>()")),
-        DataType::SingleElementArray { inner_type: _ } => {
-            Ok(format!("pkg::glaze::single_array<&T::{name}>()"))
-        }
+
+        DataType::Array {
+            size: ArraySize::Fixed(n),
+            inner_type: _,
+        } => match n.get() {
+            1 => Ok(format!("pkg::glaze::single_array<&T::{name}>()")),
+            _ => Ok(format!("&T::{name}")),
+        },
+
         DataType::StringArray {
             inner_type: _,
             separator,
+            size: ArraySize::Dynamic,
         } => {
             let glz_sep = get_glz_array_separator(*separator);
             Ok(format!(
                 "pkg::glaze::array_string<T, &T::{name}, '{glz_sep}'>"
             ))
+        }
+
+        DataType::StringArray {
+            inner_type: _,
+            separator: _,
+            size: ArraySize::Fixed(_),
+        } => {
+            todo!("Fixed-length string arrays are not implemented.");
         }
 
         // NOTE(arves) => For custom encoding one should override the specific concepts

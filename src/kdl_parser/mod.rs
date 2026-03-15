@@ -336,8 +336,8 @@ mod document_to_intermediate {
             Definition, Encoding, Json, JsonField, PartialDefinitionRegistry,
         },
         kdl_parser::schema::{
-            self, BoolEncoding, DataType as SchemaDataType, JsonDefinition as SchemaJsonDefinition,
-            JsonField as SchemaJsonField, TypeEncoding,
+            self, BoolEncoding, DataType as SchemaDataType, IntLikeEncoding,
+            JsonDefinition as SchemaJsonDefinition, JsonField as SchemaJsonField,
         },
     };
 
@@ -347,46 +347,46 @@ mod document_to_intermediate {
     ) -> intermediate::DataType {
         match type_ {
             schema::DataType::I32 { encoding } => match encoding {
-                TypeEncoding::String => IntermediateDataType::I32 {
+                IntLikeEncoding::String => IntermediateDataType::I32 {
                     encoding: Encoding::String,
                 },
-                TypeEncoding::Int => IntermediateDataType::I32 {
+                IntLikeEncoding::Int => IntermediateDataType::I32 {
                     encoding: Encoding::Int,
                 },
             },
 
             SchemaDataType::U32 { encoding } => match encoding {
-                TypeEncoding::String => IntermediateDataType::U32 {
+                IntLikeEncoding::String => IntermediateDataType::U32 {
                     encoding: Encoding::String,
                 },
-                TypeEncoding::Int => IntermediateDataType::U32 {
+                IntLikeEncoding::Int => IntermediateDataType::U32 {
                     encoding: Encoding::Int,
                 },
             },
 
             SchemaDataType::I64 { encoding } => match encoding {
-                TypeEncoding::String => IntermediateDataType::I64 {
+                IntLikeEncoding::String => IntermediateDataType::I64 {
                     encoding: Encoding::String,
                 },
-                TypeEncoding::Int => IntermediateDataType::I64 {
+                IntLikeEncoding::Int => IntermediateDataType::I64 {
                     encoding: Encoding::Int,
                 },
             },
 
             SchemaDataType::U64 { encoding } => match encoding {
-                TypeEncoding::String => IntermediateDataType::U64 {
+                IntLikeEncoding::String => IntermediateDataType::U64 {
                     encoding: Encoding::String,
                 },
-                TypeEncoding::Int => IntermediateDataType::U64 {
+                IntLikeEncoding::Int => IntermediateDataType::U64 {
                     encoding: Encoding::Int,
                 },
             },
 
             SchemaDataType::F32 { encoding } => match encoding {
-                TypeEncoding::String => IntermediateDataType::F32 {
+                IntLikeEncoding::String => IntermediateDataType::F32 {
                     encoding: Encoding::String,
                 },
-                TypeEncoding::Int => IntermediateDataType::F32 {
+                IntLikeEncoding::Int => IntermediateDataType::F32 {
                     encoding: Encoding::Int,
                 },
             },
@@ -412,34 +412,44 @@ mod document_to_intermediate {
 
             SchemaDataType::String => IntermediateDataType::String,
 
-            SchemaDataType::Array(datatype) => IntermediateDataType::Array {
-                inner_type: Arc::new(convert_datatype_recursive(datatype, registry)),
+            SchemaDataType::Array { inner, size } => IntermediateDataType::Array {
+                inner_type: Arc::new(convert_datatype_recursive(inner, registry)),
+                size: (*size).into(),
             },
 
-            SchemaDataType::StringArray { inner, separator } => {
+            SchemaDataType::StringArray {
+                inner,
+                separator,
+                size,
+            } => {
                 use crate::kdl_parser::schema;
+
+                let size = (*size).into();
 
                 match separator {
                     schema::ArraySeparator::Comma => intermediate::DataType::StringArray {
                         separator: intermediate::ArraySeparator::Comma,
                         inner_type: Arc::new(convert_datatype_recursive(inner, registry)),
+                        size,
+                    },
+
+                    schema::ArraySeparator::Pipe => intermediate::DataType::StringArray {
+                        separator: intermediate::ArraySeparator::Pipe,
+                        inner_type: Arc::new(convert_datatype_recursive(inner, registry)),
+                        size,
                     },
 
                     schema::ArraySeparator::At => intermediate::DataType::StringArray {
                         separator: intermediate::ArraySeparator::At,
                         inner_type: Arc::new(convert_datatype_recursive(inner, registry)),
+                        size,
                     },
 
                     schema::ArraySeparator::Colon => intermediate::DataType::StringArray {
                         separator: intermediate::ArraySeparator::Colon,
                         inner_type: Arc::new(convert_datatype_recursive(inner, registry)),
+                        size,
                     },
-                }
-            }
-
-            SchemaDataType::SingleElementArray(data_type) => {
-                intermediate::DataType::SingleElementArray {
-                    inner_type: Arc::new(convert_datatype_recursive(data_type, registry)),
                 }
             }
 
@@ -448,11 +458,17 @@ mod document_to_intermediate {
                 value: Arc::new(convert_datatype_recursive(value, registry)),
             },
 
-            SchemaDataType::Custom(s) => {
-                if let Some(idx) = registry.find_weak(s) {
-                    intermediate::DataType::Definition(idx)
+            SchemaDataType::Custom { encoding, name } => {
+                if let Some(idx) = registry.find_weak(name) {
+                    intermediate::DataType::Definition {
+                        encoding: (*encoding).into(),
+                        definition: idx,
+                    }
                 } else {
-                    intermediate::DataType::Unknown(s.to_owned())
+                    intermediate::DataType::Unknown {
+                        encoding: (*encoding).into(),
+                        name: name.to_owned(),
+                    }
                 }
             }
         }

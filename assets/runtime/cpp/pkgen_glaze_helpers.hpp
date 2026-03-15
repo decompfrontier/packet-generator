@@ -46,6 +46,19 @@ template <auto MemPtr> constexpr decltype(auto) single_array() {
         };
 }
 
+// template <class T, uintmax_t N> struct fixed_array_helper {
+//     std::array<T, N>  &val; // reference to the data
+// };
+//
+// template <auto MemPtr> constexpr decltype(auto) fixed_array() {
+//     return [](auto&& val) {
+//         using T = std::decay_t<decltype(val.*MemPtr)>;
+//         return single_array_helper<T>{
+//             const_cast<T&>(val.*MemPtr) }; // NOTE(arves): this is a crappy thing yes...
+//         };
+// }
+
+
 template <class T> struct bool_as_string_helper {
   std::string as_str;
   T &val; // reference to the boolean
