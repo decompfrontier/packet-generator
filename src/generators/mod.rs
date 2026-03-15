@@ -20,7 +20,6 @@ use crate::intermediate::{
 };
 
 mod cpp;
-mod glaze;
 mod utils;
 
 #[derive(Debug, Clone)]
@@ -165,5 +164,4 @@ pub fn write_sources(
     Ok(())
 }
 
-pub use cpp::CxxGenerator;
-pub use glaze::GlazeGenerator;
+pub use cpp::{CxxGenerator, GlazeGenerator};
