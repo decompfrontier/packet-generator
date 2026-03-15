@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use stringcase::Caser;
 
 use crate::generators::{Addon, CxxGenerator, GenerationError};
 
@@ -66,8 +65,6 @@ fn get_glz_mapper(
     datatype: &DataType,
     _registry: &DefinitionRegistry,
 ) -> Result<String, GenerationError> {
-    let name = name.to_snake_case();
-
     match datatype {
         DataType::I32 {
             encoding: Encoding::String,
@@ -131,14 +128,14 @@ fn generate_json_cxx(
     registry: &DefinitionRegistry,
     json: &Json,
 ) -> Result<String, GenerationError> {
-    let struct_name = json.name.to_pascal_case();
+    let struct_name = super::struct_format(&json.name);
 
     let fields: String = json
         .fields
         .iter()
         .map(|field| -> Result<String, GenerationError> {
-            let mapper =
-                get_glz_mapper(/* &struct_name, */ &field.name, &field.type_, registry)?;
+            let field_name = super::field_format(&field.name);
+            let mapper = get_glz_mapper(&field_name, &field.type_, registry)?;
             let key: &str = &field.key;
 
             Ok(format!("{TAB}{TAB}\"{key}\", {mapper}"))

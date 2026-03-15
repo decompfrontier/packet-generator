@@ -1,5 +1,9 @@
 use std::path::PathBuf;
 
+mod glaze;
+
+pub use glaze::GlazeGenerator;
+
 use atomicow::CowArc;
 use itertools::Itertools;
 use stringcase::Caser;
@@ -84,8 +88,10 @@ impl Generator for CxxGenerator {
         let forward_definitions: Result<Vec<String>, _> = registry
             .all_definitions()
             .map(|def| match registry.get(def) {
-                Definition::Json(json) => Ok(format!("struct {};", json.name)),
-                Definition::IntEnum(int_enum) => Ok(format!("enum class {};", int_enum.name)),
+                Definition::Json(json) => Ok(format!("struct {};", struct_format(&json.name))),
+                Definition::IntEnum(int_enum) => {
+                    Ok(format!("enum class {};", enum_format(&int_enum.name)))
+                }
                 Definition::StringEnum(string_enum) => generate_str_enum_cxx(registry, string_enum),
             })
             .collect();
@@ -250,17 +256,23 @@ fn convert_datatype(
         } => {
             let definition = registry.get(*weak);
             match *definition {
-                Definition::StringEnum(ref str_enum) => Ok(format!("{}::Type", str_enum.name)),
+                Definition::StringEnum(ref str_enum) => {
+                    Ok(format!("{}::Type", enum_format(&str_enum.name)))
+                }
 
-                _ => Ok(definition.name().clone()),
+                Definition::Json(ref json) => Ok(struct_format(&json.name)),
+                Definition::IntEnum(ref int_enum) => Ok(enum_format(&int_enum.name)),
             }
         }
 
         DataType::Unknown { name: other, .. } => match registry.find(other) {
             Some((definition, _idx)) => match definition {
-                Definition::StringEnum(str_enum) => Ok(format!("{}::Type", str_enum.name)),
+                Definition::StringEnum(str_enum) => {
+                    Ok(format!("{}::Type", enum_format(&str_enum.name)))
+                }
 
-                _ => Ok(definition.name().clone()),
+                Definition::Json(json) => Ok(struct_format(&json.name)),
+                Definition::IntEnum(int_enum) => Ok(enum_format(&int_enum.name)),
             },
 
             None => Err(GenerationError::TypeNotFound {
