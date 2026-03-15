@@ -120,7 +120,7 @@ json LoginInfoResp {
 
     field dlc_url type="str" {
         key "23t3D28i"
-        doc TODO
+        doc "TODO"
         // "default": DefaultType.Omit
         optional #true
     }
@@ -197,7 +197,7 @@ json UserPartyDeckInfo {
 }
 
 json UserTeamInfo {
-    doc TODO
+    doc "TODO"
 
     field user_id type="str" {
         key "h7eY3sAK"
@@ -216,52 +216,52 @@ json UserTeamInfo {
 
     field max_action_point type="i32::str" {
         key "YnM14RIP"
-        doc TODO
+        doc "TODO"
     }
 
     field action_point type="i32::str" {
         key "0P9X1YHs"
-        doc TODO
+        doc "TODO"
     }
 
     field max_fight_point type="i32::str" {
         key "9m5FWR8q"
-        doc TODO
+        doc "TODO"
     }
 
     field fight_point type="i32::str" {
         key "YS2JG9no"
-        doc TODO
+        doc "TODO"
     }
 
     field max_unit_count type="i32::str" {
         key "ouXxIY63"
-        doc TODO
+        doc "TODO"
     }
 
     field add_unit_count type="i32::str" {
         key "Px1X7fcd"
-        doc TODO
+        doc "TODO"
     }
 
     field deck_cost type="i32::str" {
         key "QYP4kId9"
-        doc TODO
+        doc "TODO"
     }
 
     field max_equip_slot_count type="i32::str" {
         key "gEX30r1b"
-        doc TODO
+        doc "TODO"
     }
 
     field max_friend_count type="i32::str" {
         key "3u41PhR2"
-        doc TODO
+        doc "TODO"
     }
 
     field add_friend_count type="i32::str" {
         key "2rR5s6wn"
-        doc TODO
+        doc "TODO"
     }
 
     field friend_point type="i32::str" {
@@ -271,47 +271,47 @@ json UserTeamInfo {
 
     field zel type="i64::str" {
         key "Najhr8m6"
-        doc TODO
+        doc "TODO"
     }
 
     field karma type="i64::str" {
         key "HTVh8a65"
-        doc TODO
+        doc "TODO"
     }
 
     field brave_coin type="i32::int" {
         key "03UGMHxF"
-        doc TODO
+        doc "TODO"
     }
 
     field friend_message type="str" {
         key "bM7RLu5K"
-        doc TODO
+        doc "TODO"
     }
 
     field warehouse_count type="i32::str" {
         key "5pjoGBC4"
-        doc TODO
+        doc "TODO"
     }
 
     field add_warehouse_count type="i32::str" {
         key "iI7Wj6pM"
-        doc TODO
+        doc "TODO"
     }
 
     field want_gift type="str" {
         key "s2WnRw9N"
-        doc TODO
+        doc "TODO"
     }
 
     field present_count type="i32::str" {
         key "EfinBo65"
-        doc TODO
+        doc "TODO"
     }
 
     field friend_agree_count type="i32::str" {
         key "qVBx7g2c"
-        doc TODO
+        doc "TODO"
     }
 
     field gift_receive_count type="i32::str" {
@@ -321,284 +321,279 @@ json UserTeamInfo {
 
     field action_rest_timer type="i32::str" {
         key "f0IY4nj8"
-        doc TODO
+        doc "TODO"
     }
 
     field fight_rest_timer type="i32::str" {
         key "jp9s8IyY"
-        doc TODO
+        doc "TODO"
     }
 
     field free_gems type="i32::int" {
         key "92uj7oXB"
-        doc TODO
+        doc "TODO"
     }
 
     field active_deck type="i32::str" {
         key "Z0Y4RoD7"
-        doc TODO
+        doc "TODO"
     }
 
     field summon_ticket type="i32::str" {
         key "9r3aLmaB"
-        doc TODO
+        doc "TODO"
     }
 
     field slot_game_flag type="i32::int" {
         key "s3uU4Lgb"
-        doc TODO
+        doc "TODO"
     }
 
     field rainbow_coin type="i32::str" {
         key "KAZmxkgy"
-        doc TODO
+        doc "TODO"
     }
 
     field brave_points_total type="i32::str" {
         key "bya9a67k"
-        doc TODO
+        doc "TODO"
     }
 
     field colosseum_ticket type="i32::str" {
         key "lKuj3Ier"
-        doc TODO
+        doc "TODO"
     }
 
     field arena_deck_num type="i32::int" {
         key "gKNfIZiA"
-        doc TODO
+        doc "TODO"
     }
 
     field reinforcement_deck type="[i32::int]::sep(comma)" { // TODO(arves): Force array (size 3) with comma
         key "TwqMChon"
-        doc TODO
+        doc "TODO"
     }
 
  // # TODO: this is reinforcement_deck + reinforcement_deck_ex1 + reinforcement_deck_ex2
 
     field paid_gems type="i32::int" {
         key "d37CaiX1"
-        doc TODO
+        doc "TODO"
     }
 
     field mysterybox_count type="i32::int" {
         key "Qo9doUsp"
-        doc TODO
+        doc "TODO"
     }
 
     field completed_task_count type="i32::str" {
         key "3a8b9D8i"
-        doc TODO
+        doc "TODO"
     }
 
     field inbox_message_count type="i32::int" {
         key "7qncTHUJ"
-        doc TODO
+        doc "TODO"
     }
 
     field current_brave_points type="i32::str" {
         key "22rqpZTo"
-        doc TODO
+        doc "TODO"
     }
 }
 
 json UserUnitInfo {
-    doc TODO
-
-    field user_id type="str" {
-        key "h7eY3sAK"
-        doc TODO
-    }
+    doc "TODO"
 
     field user_unit_id type="i32::str" {
         key "edy7fq3L"
-        doc TODO
+        doc "TODO"
+    }
+
+    field user_id type="str" {
+        key "h7eY3sAK"
+        doc "TODO"
     }
 
     field unit_id type="i32::str" {
         key "pn16CNah"
-        doc TODO
+        doc "TODO"
     }
 
-    field unit_type_id type="i32::int" {
+    field unit_type_id type="i32::str" {
         key "nBTx56W9"
-        doc TODO
+        doc "TODO"
     }
 
-    field unit_lv type="i32::int" {
+    field unit_lv type="i32::str" {
         key "D9wXQI2V"
-        doc TODO
+        doc "TODO"
     }
 
-    field exp type="i32::int" {
+    field exp type="i32::str" {
         key "d96tuT2E"
-        doc TODO
+        doc "TODO"
     }
 
-    field total_exp type="i32::int" {
+    field total_exp type="i32::str" {
         key "gQInj3H6"
-        doc TODO
+        doc "TODO"
     }
 
-    field base_hp type="i32::int" {
+    field base_hp type="i32::str" {
         key "e7DK0FQT"
-        doc TODO
+        doc "TODO"
     }
 
-    field add_hp type="i32::int" {
+    field add_hp type="i32::str" {
         key "cuIWp89g"
-        doc TODO
+        doc "TODO"
     }
 
-    field ext_hp type="i32::int" {
+    field ext_hp type="i32::str" {
         key "TokWs1B3"
-        doc TODO
+        doc "TODO"
     }
 
     field limit_over_hp type="i32::int" {
         key "ISj9u5VL"
-        doc TODO
+        doc "TODO"
     }
 
-    field base_atk type="i32::int" {
+    field base_atk type="i32::str" {
         key "67CApcti"
-        doc TODO
+        doc "TODO"
     }
 
-    field add_atk type="i32::int" {
+    field add_atk type="i32::str" {
         key "RT4CtH5d"
-        doc TODO
+        doc "TODO"
     }
 
-    field ext_atk type="i32::int" {
+    field ext_atk type="i32::str" {
         key "t4m1RH6Y"
-        doc TODO
+        doc "TODO"
     }
 
     field limit_over_atk type="i32::int" {
         key "D6bKH5eV"
-        doc TODO
+        doc "TODO"
     }
 
-    field base_def type="i32::int" {
+    field base_def type="i32::str" {
         key "q08xLEsy"
-        doc TODO
+        doc "TODO"
     }
 
-    field add_def type="i32::int" {
+    field add_def type="i32::str" {
         key "GcMD0hy6"
-        doc TODO
+        doc "TODO"
     }
 
-    field ext_def type="i32::int" {
+    field ext_def type="i32::str" {
         key "e6mY8Z0k"
-        doc TODO
+        doc "TODO"
     }
 
     field limit_over_def type="i32::int" {
         key "3CsiQA0h"
-        doc TODO
+        doc "TODO"
     }
 
-    field base_heal type="i32::int" {
+    field base_heal type="i32::str" {
         key "PWXu25cg"
-        doc TODO
+        doc "TODO"
     }
 
-    field add_heal type="i32::int" {
+    field add_heal type="i32::str" {
         key "C1HZr3pb"
-        doc TODO
+        doc "TODO"
     }
 
-    field ext_heal type="i32::int" {
+    field ext_heal type="i32::str" {
         key "X6jf8DUw"
-        doc TODO
+        doc "TODO"
     }
 
     field limit_over_heal type="i32::int" {
         key "XJs2rPx0"
-        doc TODO
+        doc "TODO"
     }
 
     field element type="str" {
         key "iNy0ZU5M"
-        doc TODO
+        doc "TODO"
     }
 
     field leader_skill_id type="i32::str" {
         key "oS3kTZ2W"
-        doc TODO
+        doc "TODO"
     }
 
 
-    field skill_id type="i32::int" {
+    field skill_id type="i32::str" {
         key "nj9Lw7mV"
-        doc TODO
+        doc "TODO"
     }
 
-    field skill_lv type="i32::int" {
+    field skill_lv type="i32::str" {
         key "3NbeC8AB"
-        doc TODO
+        doc "TODO"
     }
 
     field extra_skill_id type="i32::str" {
         key "iEFZ6H19"
-        doc TODO
+        doc "TODO"
     }
 
-    field extra_skill_lv type="i32::int" {
+    field extra_skill_lv type="i32::str" {
         key "RQ5GnFE2"
         doc "TODO"
     }
 
-    field receive_date type="i32::int" {
-        key "Bvkx8s6M"
-        doc TODO
-    }
-
-    field ext_count type="i32::int" {
-        key "5gXxT7LZ"
-        doc TODO
-    }
-
     field equipitem_frame_id type="i32::str" {
         key "0R3qTPK9"
-        doc TODO
-    }
-
-    field equipitem_id type="i32::str" {
-        key "Ge8Yo32T"
-        doc TODO
+        doc "TODO"
     }
 
     field equipitem_frame_id2 type="i32::str" {
         key "RXfC31FA"
-        doc TODO
+        doc "TODO"
+    }
+
+    field equipitem_id type="i32::str" {
+        key "Ge8Yo32T"
+        doc "TODO"
     }
 
     field equipitem_id2 type="i32::str" {
         key "mZA7fH2v"
-        doc TODO
+        doc "TODO"
     }
 
-    field new_flag type="i32::int" {
+    field receive_date type="datetime-unix" {
+        key "Bvkx8s6M"
+        doc "TODO"
+    }
+
+    field unk type="i32::str" {
+        key "DbMVG16I"
+        doc "TODO"
+    }
+
+    field new_flag type="bool::str" {
         key "dJNpLc81"
-        doc TODO
+        doc "TODO"
     }
 
     field extra_passive_skill_id type="i32::str" {
         key "cP83zNsv"
-        doc TODO
-    }
-
-    field extra_passive_skill_id2 type="i32::str" {
-        key "LjY4DfRg"
         doc "TODO"
     }
 
     field add_extra_passive_skill_id type="i32::str" {
         key "T4rewHa9"
-        doc TODO
+        doc "TODO"
     }
 
     field unit_img_type type="i32::int" {
@@ -606,29 +601,39 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field fe_bp type="i32::int" {
-        key "bFQbZh3x"
+    field extra_passive_skill_id2 type="i32::str" {
+        key "LjY4DfRg"
         doc "TODO"
     }
 
-    field fe_used_bp type="i32::int" {
-        key "3RgneFpP"
-        doc TODO
-    }
-
-    field fe_max_usable_bp type="i32::int" {
-        key "GIO9DTif"
-        doc TODO
-    }
-
-    field fe_skill_info type="str" {
-        key "Fnxab5CN"
-        doc TODO
+    field ext_count type="i32::int" {
+        key "5gXxT7LZ"
+        doc "TODO"
     }
      // # TODO: is this really a str?
     field omni_level type="i32::int" {
         key "49sa3sld"
-        doc TODO
+        doc "TODO"
+    }
+
+    field fe_bp type="i32::str" {
+        key "bFQbZh3x"
+        doc "TODO"
+    }
+
+    field fe_used_bp type="i32::str" {
+        key "3RgneFpP"
+        doc "TODO"
+    }
+
+    field fe_max_usable_bp type="i32::str" {
+        key "GIO9DTif"
+        doc "TODO"
+    }
+
+    field fe_skill_info type="str" {
+        key "Fnxab5CN"
+        doc "TODO"
     }
 
 }
@@ -636,7 +641,7 @@ json UserUnitInfo {
 // ## --- request
 
 json LoginInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not support right now....
-    doc TODO
+    doc "TODO"
 
     field handle_name type="str" {
         key "B5JQyV8j"
@@ -722,7 +727,7 @@ json LoginInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not sup
 }
 
 json MstUrlList {
-    doc TODO
+    doc "TODO"
 
     field id type="str" {
         key "moWQ30GH"
@@ -935,7 +940,7 @@ json UserTownLocationInfo {
 }
 
 json UserLoginCampaignInfo {
-    doc TODO
+    doc "TODO"
     field id type="i32::str" {
         key "H1Dkq93v"
         doc "TODO"
