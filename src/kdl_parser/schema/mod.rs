@@ -1,4 +1,6 @@
-use std::{collections::BTreeSet, fmt::Display, path::PathBuf, str::FromStr, sync::Arc};
+use std::{
+    collections::BTreeSet, fmt::Display, num::NonZeroUsize, path::PathBuf, str::FromStr, sync::Arc,
+};
 
 mod validator;
 
@@ -153,13 +155,37 @@ pub struct HTTPProperty {
 
     pub r#type: DataType,
 
-    pub r#encoding: Option<TypeEncoding>,
+    pub r#encoding: Option<IntLikeEncoding>,
 
     pub key: String,
 
     pub doc: String,
 
     pub escape: bool,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum JsonEncoding {
+    Json,
+    String,
+}
+
+impl Display for JsonEncoding {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Json => write!(f, "json"),
+            Self::String => write!(f, "str"),
+        }
+    }
+}
+
+impl From<JsonEncoding> for crate::intermediate::JsonEncoding {
+    fn from(value: JsonEncoding) -> Self {
+        match value {
+            JsonEncoding::Json => Self::Json,
+            JsonEncoding::String => Self::String,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -201,6 +227,13 @@ pub enum ArraySeparator {
     /// ## Example
     ///
     /// [i32] = "1|3|4|5|6"
+    Pipe,
+
+    /// Array separated by ':'
+    ///
+    /// ## Example
+    ///
+    /// [i32] = "1:3:4:5:6"
     Colon,
 }
 
@@ -211,9 +244,10 @@ impl FromStr for ArraySeparator {
         match s {
             "," => Ok(Self::Comma),
             "@" => Ok(Self::At),
-            "|" => Ok(Self::Colon),
+            ":" => Ok(Self::Colon),
+            "|" => Ok(Self::Pipe),
             _ => Err(
-                "expected to find one of `,` (comma), `@` (at), or `|` (colon) as array separator",
+                "expected to find one of `,` (comma), `@` (at), `|` (pipe), or `:` (colon) as array separator",
             ),
         }
     }
@@ -224,7 +258,36 @@ impl Display for ArraySeparator {
         match self {
             Self::Comma => write!(f, ","),
             Self::At => write!(f, "@"),
-            Self::Colon => write!(f, "|"),
+            Self::Pipe => write!(f, "|"),
+            Self::Colon => write!(f, ":"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub enum ArraySize {
+    #[default]
+    /// Array of unbounded elements.
+    Dynamic,
+
+    /// Array of exactly N elements.
+    Fixed(NonZeroUsize),
+}
+
+impl Display for ArraySize {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Dynamic => write!(f, "size(n)"),
+            Self::Fixed(size) => write!(f, "size({size})"),
+        }
+    }
+}
+
+impl From<ArraySize> for crate::intermediate::ArraySize {
+    fn from(value: ArraySize) -> Self {
+        match value {
+            ArraySize::Dynamic => Self::Dynamic,
+            ArraySize::Fixed(n) => Self::Fixed(n),
         }
     }
 }
@@ -233,23 +296,23 @@ impl Display for ArraySeparator {
 #[allow(dead_code)]
 pub enum DataType {
     I32 {
-        encoding: TypeEncoding,
+        encoding: IntLikeEncoding,
     },
 
     U32 {
-        encoding: TypeEncoding,
+        encoding: IntLikeEncoding,
     },
 
     I64 {
-        encoding: TypeEncoding,
+        encoding: IntLikeEncoding,
     },
 
     U64 {
-        encoding: TypeEncoding,
+        encoding: IntLikeEncoding,
     },
 
     F32 {
-        encoding: TypeEncoding,
+        encoding: IntLikeEncoding,
     },
 
     // NOTE(anri, 2026-01-11): a string-encoded 64-bit float does not exist yet.
@@ -267,17 +330,18 @@ pub enum DataType {
 
     String,
 
+    /// An array represented as a native array type.
+    Array {
+        size: ArraySize,
+        inner: Arc<Self>,
+    },
+
     /// An array typically represented as a string separated by a separator.
     StringArray {
         inner: Arc<Self>,
         separator: ArraySeparator,
+        size: ArraySize,
     },
-
-    /// A normal array.
-    Array(Arc<Self>),
-
-    /// Like `Array` but it only holds a single element.
-    SingleElementArray(Arc<Self>),
 
     /// Dictionary from one type to another.
     Map {
@@ -286,7 +350,10 @@ pub enum DataType {
     },
 
     // Tuple(Vec<DataType>),
-    Custom(String),
+    Custom {
+        name: String,
+        encoding: JsonEncoding,
+    },
 }
 
 impl Display for DataType {
@@ -302,22 +369,25 @@ impl Display for DataType {
             Self::Datetime => write!(f, "datetime"),
             Self::DatetimeUnix => write!(f, "datetime-unix"),
             Self::String => write!(f, "string"),
-            Self::Array(inner) => write!(f, "[{inner}]"),
-            Self::StringArray { inner, separator } => write!(f, "[{inner}{separator}]"),
-            Self::SingleElementArray(data_type) => write!(f, "[{data_type}]"),
+            Self::Array { size, inner } => write!(f, "[{inner}]::{size}"),
+            Self::StringArray {
+                inner,
+                separator,
+                size,
+            } => write!(f, "[{inner}{separator}]::{size}"),
             Self::Map { key, value } => write!(f, "{key} => {value}"),
-            Self::Custom(s) => write!(f, "{s}"),
+            Self::Custom { name, encoding } => write!(f, "{name}::{encoding}"),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy)]
-pub enum TypeEncoding {
+pub enum IntLikeEncoding {
     String,
     Int,
 }
 
-impl FromStr for TypeEncoding {
+impl FromStr for IntLikeEncoding {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {

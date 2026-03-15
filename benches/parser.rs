@@ -105,8 +105,8 @@ fn build_gamefrontier_input() -> (&'static str, PathBuf, ParserOpts<InMemoryFS>)
         include_str!("../assets/mst/firstdesc.kdl"),
     );
     let _ = fs.add_file(
-        VfsPath::new("mst/gatcha.kdl"),
-        include_str!("../assets/mst/gatcha.kdl"),
+        VfsPath::new("mst/gacha.kdl"),
+        include_str!("../assets/mst/gacha.kdl"),
     );
     let _ = fs.add_file(
         VfsPath::new("mst/gift.kdl"),
@@ -119,6 +119,22 @@ fn build_gamefrontier_input() -> (&'static str, PathBuf, ParserOpts<InMemoryFS>)
     let _ = fs.add_file(
         VfsPath::new("mst/noticeinfo.kdl"),
         include_str!("../assets/mst/noticeinfo.kdl"),
+    );
+    let _ = fs.add_file(
+        VfsPath::new("mst/info.kdl"),
+        include_str!("../assets/mst/info.kdl"),
+    );
+    let _ = fs.add_file(
+        VfsPath::new("mst/trophy.kdl"),
+        include_str!("../assets/mst/trophy.kdl"),
+    );
+    let _ = fs.add_file(
+        VfsPath::new("mst/help.kdl"),
+        include_str!("../assets/mst/help.kdl"),
+    );
+    let _ = fs.add_file(
+        VfsPath::new("mst/frontier_hunter.kdl"),
+        include_str!("../assets/mst/frontier_hunter.kdl"),
     );
     let _ = fs.add_file(
         VfsPath::new("mst/npc.kdl"),

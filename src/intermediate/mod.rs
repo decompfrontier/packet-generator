@@ -6,6 +6,8 @@ use std::{
     sync::Arc,
 };
 
+use core::num::NonZeroUsize;
+
 use miette::SourceSpan;
 use petgraph::{
     algo::toposort, graph::NodeIndex, prelude::StableDiGraph, stable_graph::NodeIndices,
@@ -56,6 +58,12 @@ impl Definition {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum JsonEncoding {
+    Json,
+    String,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Json {
     pub index: usize,
@@ -65,6 +73,7 @@ pub struct Json {
     pub doc: String,
     pub source: Arc<SourceInfo>,
     pub span: SourceSpan,
+    pub encoding: JsonEncoding,
 }
 
 impl Borrow<str> for Json {
@@ -144,6 +153,7 @@ impl Json {
             doc,
             source: defined_in_source,
             span: defined_in_span,
+            encoding: JsonEncoding::Json,
         }
     }
 
@@ -252,12 +262,29 @@ pub enum ArraySeparator {
     /// [i32] = "1@3@4@5@6"
     At,
 
+    /// Array separated by '|'
+    ///
+    /// ## Example
+    ///
+    /// [i32] = "1|3|4|5|6"
+    Pipe,
+
     /// Array separated by ':'
     ///
     /// ## Example
     ///
     /// [i32] = "1:3:4:5:6"
     Colon,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Default)]
+pub enum ArraySize {
+    #[default]
+    /// Unbounded array size.
+    Dynamic,
+
+    /// Fixed array size.
+    Fixed(NonZeroUsize),
 }
 
 #[derive(Clone, Debug)]
@@ -302,19 +329,44 @@ pub enum DataType {
     StringArray {
         inner_type: Arc<Self>,
         separator: ArraySeparator,
+        size: ArraySize,
     },
 
     Array {
         inner_type: Arc<Self>,
+        size: ArraySize,
     },
 
-    SingleElementArray {
-        inner_type: Arc<Self>,
+    Definition {
+        encoding: JsonEncoding,
+        definition: DefinitionRef,
     },
 
-    Definition(DefinitionRef),
+    Unknown {
+        encoding: JsonEncoding,
+        name: String,
+    },
+}
 
-    Unknown(String),
+fn extract_dependency_from_field(data_type: &DataType) -> Vec<DefinitionRef> {
+    let mut ret = vec![];
+
+    match data_type {
+        DataType::Definition { definition, .. } => ret.push(*definition),
+
+        DataType::Array { inner_type, .. } | DataType::StringArray { inner_type, .. } => {
+            ret.append(&mut extract_dependency_from_field(inner_type.as_ref()));
+        }
+
+        DataType::Map { key, value } => {
+            ret.append(&mut extract_dependency_from_field(key.as_ref()));
+            ret.append(&mut extract_dependency_from_field(value.as_ref()));
+        }
+
+        _ => {}
+    }
+
+    ret
 }
 
 #[derive(Debug, Clone)]
@@ -372,6 +424,36 @@ impl PartialDefinitionRegistry {
         }
     }
 
+    pub fn insert(&mut self, definition: Definition) -> DefinitionRef {
+        #[allow(clippy::single_match_else, reason = "May add more cases in the future")]
+        match definition {
+            Definition::Json(ref json) => {
+                let mut dependencies = vec![];
+
+                for field in &json.fields {
+                    dependencies.append(&mut extract_dependency_from_field(&field.type_));
+                }
+
+                let name = definition.name().clone();
+                let this_def_idx = self.definitions.add_node(definition);
+                self.names.insert(name, this_def_idx);
+                for &dependency in &dependencies {
+                    self.definitions.add_edge(dependency, this_def_idx, ());
+                }
+
+                this_def_idx
+            }
+
+            _ => {
+                let name = definition.name().clone();
+                let idx = self.definitions.add_node(definition);
+                self.names.insert(name, idx);
+
+                idx
+            }
+        }
+    }
+
     /// Validates the current incomplete registry to build a
     /// [`DefinitionRegistry`].
     ///
@@ -393,7 +475,7 @@ impl PartialDefinitionRegistry {
                     .map(|field| -> Result<_, Diagnostic> {
                         let mut f = field.clone();
 
-                        if let DataType::Unknown(name) = &field.type_ {
+                        if let DataType::Unknown { encoding, name } = &field.type_ {
                             let idx = self.names.get(name).ok_or_else(|| Diagnostic {
                                 message: format!("could not find definition `{name}`"),
                                 severity: miette::Severity::Error,
@@ -415,7 +497,10 @@ impl PartialDefinitionRegistry {
                                 }],
                             })?;
 
-                            f.type_ = DataType::Definition(*idx);
+                            f.type_ = DataType::Definition {
+                                encoding: *encoding,
+                                definition: *idx,
+                            };
 
                             let Some(target_definition) = self.names.get(&json.name) else {
                                 return Err(Diagnostic {
@@ -452,40 +537,6 @@ impl PartialDefinitionRegistry {
             names: self.names,
             _private: std::marker::PhantomData {},
         })
-    }
-
-    pub fn insert(&mut self, definition: Definition) -> DefinitionRef {
-        #[allow(clippy::single_match_else, reason = "May add more cases in the future")]
-        match definition {
-            Definition::Json(ref json) => {
-                let dependencies: Vec<_> = json
-                    .fields
-                    .iter()
-                    .filter_map(|field| match field.type_ {
-                        DataType::Definition(def_idx) => Some(def_idx),
-
-                        _ => None,
-                    })
-                    .collect();
-
-                let name = definition.name().clone();
-                let idx = self.definitions.add_node(definition);
-                self.names.insert(name, idx);
-                for &dependency in &dependencies {
-                    self.definitions.add_edge(dependency, idx, ());
-                }
-
-                idx
-            }
-
-            _ => {
-                let name = definition.name().clone();
-                let idx = self.definitions.add_node(definition);
-                self.names.insert(name, idx);
-
-                idx
-            }
-        }
     }
 
     // #[must_use]
@@ -551,7 +602,10 @@ mod tests {
                 index: 0,
                 name: "has_foo".into(),
                 key: String::from("bar"),
-                type_: DataType::Definition(foo_struct),
+                type_: DataType::Definition {
+                    definition: foo_struct,
+                    encoding: JsonEncoding::Json,
+                },
                 optional: false,
                 doc: String::from("some documentation"),
                 span: SourceSpan::from((0, 0)),

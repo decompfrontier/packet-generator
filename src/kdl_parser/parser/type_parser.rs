@@ -5,13 +5,13 @@ use winnow::{LocatingSlice, Parser};
 
 use crate::kdl_parser::SourceInfo;
 use crate::kdl_parser::parser::type_parser::combinators::Error;
-use crate::kdl_parser::{Diagnostic, ParsingError, schema::TypeEncoding};
+use crate::kdl_parser::{Diagnostic, ParsingError, schema::IntLikeEncoding};
 
 use crate::kdl_parser::schema::DataType;
 
 pub fn generic_parse(
     input: &str,
-    _encoding: Option<TypeEncoding>,
+    _encoding: Option<IntLikeEncoding>,
     source_code: &Arc<SourceInfo>,
     span: SourceSpan,
 ) -> Result<DataType, ParsingError> {
@@ -92,9 +92,12 @@ fn convert_error_to_diagnostic(
 #[allow(dead_code)]
 mod combinators {
     use std::fmt::Display;
+    use std::num::NonZeroUsize;
     use std::sync::Arc;
 
-    use crate::kdl_parser::schema::{ArraySeparator, BoolEncoding, DataType, TypeEncoding};
+    use crate::kdl_parser::schema::{
+        ArraySeparator, ArraySize, BoolEncoding, DataType, IntLikeEncoding, JsonEncoding,
+    };
     use miette::SourceSpan;
     use winnow::ascii::{alpha1, alphanumeric1, space0, space1};
     use winnow::combinator::{
@@ -278,8 +281,8 @@ mod combinators {
                                 });
 
                             let last_encoding = valid_modifiers.last().and_then(|s| match s.name {
-                                "int" => Some(TypeEncoding::Int),
-                                "str" => Some(TypeEncoding::String),
+                                "int" => Some(IntLikeEncoding::Int),
+                                "str" => Some(IntLikeEncoding::String),
                                 _ => None,
                             });
 
@@ -428,10 +431,26 @@ mod combinators {
 
         (alphanumeric1, (not(alphanumeric1), opt(parse_modifier)))
             .try_map(
-                |(name, _maybe_modifiers)| -> Result<DataType, MiniDiagnostic> {
+                |(name, ((), maybe_modifiers))| -> Result<DataType, MiniDiagnostic> {
                     error_on_python_datatype(name)?;
 
-                    Ok(DataType::Custom(name.into()))
+                    let encoding = maybe_modifiers
+                        .and_then(|modifiers| {
+                            modifiers
+                                .iter()
+                                .filter_map(|modifier| match modifier.name {
+                                    "str" => Some(JsonEncoding::String),
+                                    "json" => Some(JsonEncoding::Json),
+                                    _ => None,
+                                })
+                                .next_back()
+                        })
+                        .unwrap_or(JsonEncoding::Json);
+
+                    Ok(DataType::Custom {
+                        encoding,
+                        name: name.into(),
+                    })
                 },
             )
             .parse_next(input)
@@ -464,22 +483,82 @@ mod combinators {
     fn parse_array(input: &mut Input) -> PResult {
         #[derive(Debug, Clone)]
         enum PartialArrayType {
-            SingleElement,
-            StringArray { separator: ArraySeparator },
-            NormalArray,
+            StringArray {
+                separator: ArraySeparator,
+                size: ArraySize,
+            },
+            NormalArray {
+                size: ArraySize,
+            },
         }
 
         (delimited("[", parse_datatype, "]"),
             cut_err(opt(parse_modifier).try_map(|maybe_modifiers| {
                 match maybe_modifiers {
 
-                None => Ok(PartialArrayType::NormalArray),
+                None => Ok(PartialArrayType::NormalArray { size: ArraySize::Dynamic }),
 
                 Some(modifiers) => {
 
-                    let possible_array_types: Result<Vec<_>, MiniDiagnostic> = modifiers
+                    let array_sizes =
+                        modifiers
                         .iter()
                         .filter_map(|modifier| -> Option<Result<_, MiniDiagnostic>> {
+
+                            match modifier.name {
+                                "size" => {
+                                    let res = modifier
+                                        .params
+                                        .first()
+                                        .ok_or_else(|| MiniDiagnostic {
+                                            message: "array modifier `size` needs to include the number of elements".to_owned(),
+                                            severity: miette::Severity::Error,
+                                            help: Some("add one of `::size(1)`, `::size(n)`".to_owned()),
+                                        })
+                                        .and_then(|&size| {
+                                            if size == "n" {
+                                                 Ok(ArraySize::Dynamic)
+                                            } else {
+                                                // Try to parse as an integer.
+                                                let n = size.parse::<usize>().map_err(|_e| {
+                                                        MiniDiagnostic {
+                                                            message: format!("unexpected argument value `{size}` in array modifier `size`"),
+                                                            severity: miette::Severity::Error,
+                                                            help: Some("use one of `::size(1)`, `::size(42)` or `::size(n)`".to_owned()),
+                                                        }
+                                                    })?;
+
+                                                match NonZeroUsize::new(n) {
+                                                    Some(v) => Ok(ArraySize::Fixed(v)),
+
+                                                    None => Err(MiniDiagnostic {
+                                                        message: format!("fixed array size `{size}` is <= 0"),
+                                                        severity: (miette::Severity::Error),
+                                                        help: Some("use a strictly positive size such as `::size(42)`".to_owned()),
+                                                    })
+                                                }
+                                            }
+                                        });
+
+                                    Some(res)
+                                }
+
+                                _ => None,
+                            }
+                        })
+                        .collect::<Result<Vec<_>, _>>()?;
+
+                    if array_sizes.len() > 1 {
+                        return Err(MiniDiagnostic {
+                            message: ("multiple sizes specified for array").into(),
+                            severity: miette::Severity::Error,
+                            help: Some("please specify only one size between `::size(1)`, `::size(42)`, `::size(n)`".into()),
+                        });
+                    }
+
+                    let array_size = array_sizes.first().copied().unwrap_or_default();
+
+                    let maybe_separators: Result<Vec<_>, _> = modifiers.iter().filter_map(|modifier| -> Option<Result<_, MiniDiagnostic>> {
                             match modifier.name {
                                 "sep" => {
                                     let x = modifier
@@ -495,73 +574,47 @@ mod combinators {
                                                 "at" => Ok(ArraySeparator::At),
                                                 "colon" => Ok(ArraySeparator::Colon),
                                                 "comma" => Ok(ArraySeparator::Comma),
+                                                "pipe" => Ok(ArraySeparator::Pipe),
                                                 _ => Err(MiniDiagnostic {
                                                     message: format!("unknown separator {sep}"),
                                                     severity: miette::Severity::Error,
-                                                    help: Some("use one of `::sep(at)`, `::sep(colon)`, `::sep(comma)`".to_owned()),
+                                                    help: Some("use one of `::sep(at)`, `::sep(colon)`, `::sep(pipe)`, `::sep(comma)`".to_owned()),
                                                 })
                                             }
                                         })
                                         .map(|separator| {
-                                            PartialArrayType::StringArray { separator }
+                                            PartialArrayType::StringArray { separator, size: array_size }
                                         });
 
                                     Some(x)
                                 }
 
-                                "size" => {
-                                    let x = modifier
-                                        .params
-                                        .first()
-                                        .ok_or_else(|| MiniDiagnostic {
-                                            message: "array modifier `size` needs to include the number of elements".to_owned(),
-                                            severity: miette::Severity::Error,
-                                            help: Some("add one of `::size(1)`, `::size(n)`".to_owned()),
-                                        })
-                                        .and_then(|&size| {
-                                            match size {
-                                                "1" => Ok(PartialArrayType::SingleElement),
-                                                "n" => Ok(PartialArrayType::NormalArray),
-                                                _ => Err(MiniDiagnostic {
-                                                    message: format!("unrecognized size `{size}` in array size modifier declaration"),
-                                                    severity: (miette::Severity::Error),
-                                                    help: Some("use one of `::size(1)` or `::size(n)`".to_owned()),
-                                                })
-                                            }
-                                        });
-
-                                    Some(x)
-                                }
-
-                                _ => None,
+                                _ => None
                             }
-                        })
-                        .collect();
+                        }).collect();
 
-                    let array_types = possible_array_types?;
+                    let maybe_separators = maybe_separators?;
 
-
-                    if array_types.len() > 1 {
+                    if maybe_separators.len() > 1 {
                         return Err(MiniDiagnostic {
-                            message: "multiple conflicting array modifiers, specify either `::size` or `::sep`, but not both".to_owned(),
+                            message: ("multiple separators specified for string array").into(),
                             severity: miette::Severity::Error,
-                            help: None,
-                        })
+                            help: Some("please specify only one separator.".into()),
+                        });
                     }
 
-                    match array_types.first() {
-                            Some(elem) => Ok(elem.clone()),
-                            None => Ok(PartialArrayType::NormalArray),
-                    }
+                    Ok(maybe_separators.first().cloned().unwrap_or(PartialArrayType::NormalArray { size: array_size }))
                 }
             }
             })
             ))
             .map(|(inner, array_type)| {
                 match array_type {
-                    PartialArrayType::SingleElement => DataType::SingleElementArray(inner.into()),
-                    PartialArrayType::NormalArray => DataType::Array(inner.into()),
-                    PartialArrayType::StringArray { separator } => DataType::StringArray { inner: inner.into(), separator},
+                    PartialArrayType::NormalArray { size} => DataType::Array{
+                        size,
+                        inner: inner.into()
+                    },
+                    PartialArrayType::StringArray { size,  separator } => DataType::StringArray { inner: inner.into(), separator, size },
                 }
             })
             .parse_next(input)
@@ -618,7 +671,7 @@ mod combinators {
 
     #[cfg(test)]
     mod tests {
-        use crate::kdl_parser::schema::{DataType, TypeEncoding};
+        use crate::kdl_parser::schema::{DataType, IntLikeEncoding};
 
         use super::*;
 
@@ -645,7 +698,7 @@ mod combinators {
             assert!(matches!(
                 val,
                 Ok(DataType::I32 {
-                    encoding: TypeEncoding::String
+                    encoding: IntLikeEncoding::String
                 })
             ));
         }
@@ -661,7 +714,7 @@ mod combinators {
             assert!(matches!(
                 val,
                 Ok(DataType::I32 {
-                    encoding: TypeEncoding::String
+                    encoding: IntLikeEncoding::String
                 })
             ));
         }
@@ -677,7 +730,7 @@ mod combinators {
             assert!(matches!(
                 val,
                 Ok(DataType::I32 {
-                    encoding: TypeEncoding::Int
+                    encoding: IntLikeEncoding::Int
                 })
             ));
         }
@@ -763,7 +816,7 @@ mod combinators {
                 state: State {},
             };
             let val = parse_datatype(&mut input);
-            assert!(matches!(val, Ok(DataType::SingleElementArray { .. })));
+            assert!(matches!(val, Ok(DataType::Array { .. })));
         }
 
         #[test]
@@ -796,7 +849,13 @@ mod combinators {
                 state: State {},
             };
             let val = parse_datatype(&mut input);
-            assert!(matches!(val, Ok(DataType::Custom(..))));
+            assert!(matches!(
+                val,
+                Ok(DataType::Custom {
+                    encoding: JsonEncoding::Json,
+                    ..
+                })
+            ));
         }
 
         #[test]
@@ -813,7 +872,13 @@ mod combinators {
                 };
                 let val = parse_datatype(&mut input);
                 assert!(!matches!(val, Ok(DataType::String)));
-                assert!(matches!(val, Ok(DataType::Custom(..))));
+                assert!(matches!(
+                    val,
+                    Ok(DataType::Custom {
+                        encoding: JsonEncoding::Json,
+                        ..
+                    })
+                ));
             }
         }
 

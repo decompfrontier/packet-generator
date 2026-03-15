@@ -27,6 +27,7 @@ import "../net/daily_login.kdl"
 import "../net/summonerjournaluserinfo.kdl"
 import "../net/userinfo.kdl"
 import "../net/items.kdl"
+import "../net/logincampaign.kdl"
 
 json InitializeReq {
     doc "Initialization command"
@@ -312,7 +313,7 @@ json UserInfoResp {
         key "fEi17cnx"
         doc "TODO"
     }
-    
+
 	field unitInfo type="[UserUnitInfo]" {
         key "4ceMWH6k"
         doc "TODO"
