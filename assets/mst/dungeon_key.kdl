@@ -1,6 +1,6 @@
-// @keyjson(key_group = "4NG79sX1", array=ArrayStep.Array)
+
 json DungeonKeyMst {
-    doc TODO
+    doc "TODO"
 
     field id type="i32::str" {
         key "16KMNJLb"
@@ -42,15 +42,18 @@ json DungeonKeyMst {
         doc "TODO"
     }
 
-    field distribute_count type="i32::str" {
-        key "khsb74Nq"
-        doc "TODO"
-        // "default": DefaultType.Omit
-        optional #true
-    }
-
     field distribute_flag type="i32::str" {
         key "EK5I6MQ9"
+        doc "TODO"
+    }
+
+    field unk type="str" {
+        key "fK15a73g"
+        doc "TODO"
+    }
+
+    field unk2 type="i32::str" {
+        key "zfdw7Ry1"
         doc "TODO"
     }
 
@@ -65,14 +68,11 @@ json DungeonKeyMst {
         doc "TODO"
     }
 
-    field unk type="str" {
-        key "fK15a73g"
+    field distribute_count type="i32::str" {
+        key "khsb74Nq"
         doc "TODO"
-    }
-
-    field unk2 type="i32::str" {
-        key "zfdw7Ry1"
-        doc "TODO"
+        // "default": DefaultType.Omit
+        optional #true
     }
 
 }

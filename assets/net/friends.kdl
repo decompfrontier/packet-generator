@@ -1,4 +1,14 @@
-// @keyjson(key_group = "6e4b7sQt", array = ArrayStep.Single)
+
 json FriendPointInfo {
-    doc TODO
+    doc "TODO"
+
+    field unk type="str" {
+        key "4vamo28W"
+        doc "TODO"
+    }
+
+    field unk2 type="str" {
+        key "KgbM81wd"
+        doc "TODO"
+    }
 }

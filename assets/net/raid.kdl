@@ -2,8 +2,58 @@
 json RaidUserInfo {
     doc "TODO"
     
-    field mock type="str" {
-        key "INVALID"
+    field unk1 type="i32::str" {
+        key "7x3pPB2C"
+        doc "TODO"
+    }
+
+    field unk2 type="i32::str" {
+        key "dziN1Ha9"
+        doc "TODO"
+    }
+
+    field unk3 type="i32::str" {
+        key "43hMuY2I"
+        doc "TODO"
+    }
+
+    field unk4 type="i32::int" {
+        key "Z0Y4RoD7"
+        doc "TODO"
+    }
+
+    field unk5 type="i32::str" {
+        key "8VYd6xSX"
+        doc "TODO"
+    }
+
+    field unk6 type="i32::str" {
+        key "C45mRxnZ"
+        doc "TODO"
+    }
+
+    field unk7 type="i32::str" {
+        key "S92Hcor3"
+        doc "TODO"
+    }
+
+    field unk8 type="i32::str" {
+        key "3wp7j5MI"
+        doc "TODO"
+    }
+
+    field unk9 type="i32::int" {
+        key "6d2XBDUu"
+        doc "TODO"
+    }
+
+    field unk10 type="str" {
+        key "N4XVE1uA"
+        doc "TODO"
+    }
+
+    field unk11 type="i32::str" {
+        key "iFA0fd6Y"
         doc "TODO"
     }
 }

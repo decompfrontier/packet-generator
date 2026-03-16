@@ -16,14 +16,14 @@ json ReceipeMst {
         doc "TODO"
     }
 
-    // TODO(arves): This is actually [i32::str => i32::str]::str
-    field materials type="str" {
-        key "75YV2q1i"
+    field karma type="i32::str" {
+        key "HTVh8a65"
         doc "TODO"
     }
 
-    field karma type="i32::str" {
-        key "HTVh8a65"
+    // TODO(arves): This is actually [i32::str => i32::str]::str
+    field materials type="str" {
+        key "75YV2q1i"
         doc "TODO"
     }
 
@@ -32,13 +32,13 @@ json ReceipeMst {
         doc "TODO"
     }
 
-    field unk type="i32::str" {
-        key "XuJL4pc5"
+    field unk2 type="i32::str" {
+        key "H6k1LIxC"
         doc "TODO"
     }
 
-    field unk2 type="i32::str" {
-        key "H6k1LIxC"
+    field unk type="i32::str" {
+        key "XuJL4pc5"
         doc "TODO"
     }
 

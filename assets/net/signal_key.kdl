@@ -1,7 +1,5 @@
-// @keyjson(key_group = "6FrKacq7", array=ArrayStep.Single)
 json SignalKey {
     doc "TODO"
-
 
     field key type="str" {
         key "Kn51uR4Y"

@@ -1,4 +1,4 @@
-// @keyjson(key_group = "Drudr2w5")
+
 json DailyLoginRewardsUserInfo {
     doc "TODO"
     field id type="i32::str" {

@@ -1,4 +1,33 @@
 
+json TrophyMst {
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "0xkdJSX7"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "x1evqVH6"
+        doc "TODO"
+    }
+
+    field group_id type="i32::str" {
+        key "b96suLJ4"
+        doc "TODO"
+    }
+
+    field disp_order type="i32::str" {
+        key "XuJL4pc5"
+        doc "TODO"
+    }
+
+    field description type="str" {
+        key "qp37xTDh"
+        doc "TODO"
+    }
+}
+
 json TrophyGroupMst {
     doc "TODO"
 

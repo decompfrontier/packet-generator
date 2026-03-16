@@ -46,6 +46,17 @@ json LoginInfoResp {
         doc "Password used for account transfering."
     }
 
+     // # TODO: this is UserSpecialScenarioInfoList we just dont have this yet
+    field model_change_count type="i32::str" {
+        key "nrg19RGe"
+        doc "How many times has the user transferred to a new device. May be used to avoid getting first time playing rewards twice."
+    }
+
+    field code_expire_date type="i32::str" {
+        key "iyJH5k6p"
+        doc "TODO"
+    }
+
     field friend_id type="str" {
         key "98WfKiyA"
         doc "Player ID that is used for the friend system."
@@ -56,6 +67,36 @@ json LoginInfoResp {
         doc "ID of the player used in the ticketing system for player support."
     }
 
+    field target_os type="GameTargetOs" {
+        key "DFY3k6qp"
+        doc "Operative system which runs the game"
+    }
+
+    field device_name type="str" {
+        key "iN7buP0j"
+        doc "Identifier of the device that the game is run on"
+    }
+
+    field device_id type="str" {
+        key "Ma5GnU0H"
+        doc "Device advertisement ID (the same as vid in the gumi api login)"
+    }
+
+    field unk type="str" {
+        key "dzhBs92A"
+        doc "TODO"
+    }
+
+    field country_code type="str" {
+        key "hceYTcAK"
+        doc "Country code"
+    }
+
+    field current_language type="GameLanguages" {
+        key "h7LYasNK"
+        doc "Current game language"
+    }
+
     field tutorial_status type="i32::str" {
         key "9sQM2XcN"
         doc "Get the current tutorial script to execute."
@@ -64,6 +105,21 @@ json LoginInfoResp {
     field tutorial_end_flag type="bool::str" {
         key "sv6BEI8X"
         doc "Checks if the player has finished the tutorial or not."
+    }
+
+    field unk2 type="i32::str" {
+        key "6W5Jbrse"
+        doc "TODO"
+    }
+
+    field unk3 type="str" {
+        key "iN7cCN9i"
+        doc "TODO"
+    }
+
+    field early_bird_end type="i64::int" {
+        key "iN7cYU9i"
+        doc "Time in seconds until the Gem banner sale ends."
     }
 
     field user_scenario_info type="str" {
@@ -77,30 +133,14 @@ json LoginInfoResp {
         doc "TODO"
     }
 
-     // # TODO: this is UserSpecialScenarioInfoList we just dont have this yet
-    field model_change_count type="i32::str" {
-        key "nrg19RGe"
-        doc "How many times has the user transferred to a new device. May be used to avoid getting first time playing rewards twice."
-    }
-
-    field code_expire_date type="i32::str" {
-        key "iyJH5k6p"
+    field first_desc type="str" {
+        key "7oV00FeR"
         doc "TODO"
     }
 
     field friend_invitation_flag type="i32::str" {
         key "y2v7Sd01"
         doc "TODO"
-    }
-
-    field early_bird_end type="i64::int" {
-        key "iN7cYU9i"
-        doc "Time in seconds until the Gem banner sale ends."
-    }
-
-    field debug_mode type="bool::int" {
-        key "5MPcr0sp"
-        doc "Enables several debug features (like skipping summoning animation) on the account."
     }
 
     field encrypt_iv type="str" {
@@ -113,38 +153,13 @@ json LoginInfoResp {
         doc "TODO"
     }
 
-    field first_desc type="str" {
-        key "7oV00FeR"
-        doc "TODO"
+    field debug_mode type="bool::int" {
+        key "5MPcr0sp"
+        doc "Enables several debug features (like skipping summoning animation) on the account."
     }
 
-    field dlc_url type="str" {
-        key "23t3D28i"
-        doc "TODO"
-        // "default": DefaultType.Omit
-        optional #true
-    }
-
-    field feature_gate type="i32::int" {
-        key "a37D29iJ"
-        doc "TODO"
-    }
-
-    field unk type="str" {
-        key "32k0ahkD"
-        doc "TODO"
-    }
-
-    // # v["32k0ahkD"] = ""; // TODO: discover what's this
-
-   /*field service_request_endpoint_param type="str" {
-        key "ABh7acL2"
-        doc "Extra parameters that are passed to the DLS API server in the request object EXTRA_PARAMS."
-    }*/
-
-
-    // # GUMI LIVE API V1/V2
-    /*field gumi_live_userid type="str" {
+    // Gumi live v1/v2 login api
+    field gumi_live_userid type="str" {
         key "iN7buP2h"
         doc "Gumi live API User ID. (used for example in IAP)"
     }
@@ -159,6 +174,50 @@ json LoginInfoResp {
         doc "Facebook ID of the associated account."
     }
 
+    field unk4 type="str" {
+        key "k29akH2I"
+        doc "TODO"
+    }
+
+    field build_platform_id type="str" {
+        key "j2lk52Be"
+        doc "TODO"
+    }
+
+    field unk5 type="i32::int" {
+        key "37d2Hi5p"
+        doc "TODO"
+    }
+
+    field pointer_name type="str" {
+        key "fKSzGDFb"
+        doc "TODO"
+    }
+
+    field feature_gate type="i32::int" {
+        key "a37D29iJ"
+        doc "TODO"
+    }
+
+    field unk6 type="str" {
+        key "32k0ahkD"
+        doc "TODO"
+    }
+
+   /*field service_request_endpoint_param type="str" {
+        key "ABh7acL2"
+        doc "Extra parameters that are passed to the DLS API server in the request object EXTRA_PARAMS."
+        optional #true
+    }*/
+
+    field dlc_url type="str" {
+        key "23t3D28i"
+        doc "TODO"
+        // "default": DefaultType.Omit
+        optional #true
+    }
+
+    /*
     field associated_user_id type="str" {
         key "uJP4aeg9"
         doc "TODO"
@@ -169,6 +228,11 @@ json LoginInfoResp {
 json UserPartyDeckInfo {
     doc "TODO"
 
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "TODO"
+    }
+
     field deck_type type="i32::int" {
         key "U9ABSYEp"
         doc "TODO"
@@ -176,11 +240,6 @@ json UserPartyDeckInfo {
 
     field deck_num type="i32::int" {
         key "zsiAn9P1"
-        doc "TODO"
-    }
-
-    field user_unit_id type="i32::str" {
-        key "edy7fq3L"
         doc "TODO"
     }
 
@@ -201,7 +260,7 @@ json UserTeamInfo {
 
     field user_id type="str" {
         key "h7eY3sAK"
-        doc "TODO"
+        doc "ID of the user for this session."
     }
 
     field level type="i32::str" {
@@ -224,6 +283,16 @@ json UserTeamInfo {
         doc "TODO"
     }
 
+    field unk type="i32::str" {
+        key "V0yJS7vZ"
+        doc "TODO"
+    }
+
+    field action_rest_timer type="i32::str" {
+        key "f0IY4nj8"
+        doc "TODO"
+    }
+
     field max_fight_point type="i32::str" {
         key "9m5FWR8q"
         doc "TODO"
@@ -231,6 +300,16 @@ json UserTeamInfo {
 
     field fight_point type="i32::str" {
         key "YS2JG9no"
+        doc "TODO"
+    }
+
+    field unk2 type="i32::str" {
+        key "32HCWt51"
+        doc "TODO"
+    }
+
+    field fight_rest_timer type="i32::str" {
+        key "jp9s8IyY"
         doc "TODO"
     }
 
@@ -249,8 +328,18 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field max_equip_slot_count type="i32::str" {
-        key "gEX30r1b"
+    field active_deck type="i32::str" {
+        key "Z0Y4RoD7"
+        doc "TODO"
+    }
+
+    field arena_deck_num type="i32::int" {
+        key "gKNfIZiA"
+        doc "TODO"
+    }
+
+    field reinforcement_deck type="[i32::int]::sep(comma)" { // TODO(arves): Force array (size 3) with comma
+        key "TwqMChon"
         doc "TODO"
     }
 
@@ -261,6 +350,16 @@ json UserTeamInfo {
 
     field add_friend_count type="i32::str" {
         key "2rR5s6wn"
+        doc "TODO"
+    }
+
+    field warehouse_count type="i32::str" {
+        key "5pjoGBC4"
+        doc "TODO"
+    }
+
+    field add_warehouse_count type="i32::str" {
+        key "iI7Wj6pM"
         doc "TODO"
     }
 
@@ -289,15 +388,6 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field warehouse_count type="i32::str" {
-        key "5pjoGBC4"
-        doc "TODO"
-    }
-
-    field add_warehouse_count type="i32::str" {
-        key "iI7Wj6pM"
-        doc "TODO"
-    }
 
     field want_gift type="str" {
         key "s2WnRw9N"
@@ -319,43 +409,13 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field action_rest_timer type="i32::str" {
-        key "f0IY4nj8"
+    field unk3 type="i32::str" {
+        key "kW5QuUz7"
         doc "TODO"
     }
 
-    field fight_rest_timer type="i32::str" {
-        key "jp9s8IyY"
-        doc "TODO"
-    }
-
-    field free_gems type="i32::int" {
-        key "92uj7oXB"
-        doc "TODO"
-    }
-
-    field active_deck type="i32::str" {
-        key "Z0Y4RoD7"
-        doc "TODO"
-    }
-
-    field summon_ticket type="i32::str" {
-        key "9r3aLmaB"
-        doc "TODO"
-    }
-
-    field slot_game_flag type="i32::int" {
-        key "s3uU4Lgb"
-        doc "TODO"
-    }
-
-    field rainbow_coin type="i32::str" {
-        key "KAZmxkgy"
-        doc "TODO"
-    }
-
-    field brave_points_total type="i32::str" {
-        key "bya9a67k"
+    field unk4 type="i32::str" {
+        key "3w6YDS4z"
         doc "TODO"
     }
 
@@ -364,25 +424,43 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field arena_deck_num type="i32::int" {
-        key "gKNfIZiA"
+    field unk5 type="i32::str" {
+        key "JmFn3g9t"
         doc "TODO"
     }
 
-    field reinforcement_deck type="[i32::int]::sep(comma)" { // TODO(arves): Force array (size 3) with comma
-        key "TwqMChon"
+    field summon_ticket type="i32::str" {
+        key "9r3aLmaB"
         doc "TODO"
     }
 
- // # TODO: this is reinforcement_deck + reinforcement_deck_ex1 + reinforcement_deck_ex2
-
-    field paid_gems type="i32::int" {
-        key "d37CaiX1"
+    field brave_points_total type="i32::str" {
+        key "bya9a67k"
         doc "TODO"
     }
 
-    field mysterybox_count type="i32::int" {
-        key "Qo9doUsp"
+    field current_brave_points type="i32::str" {
+        key "22rqpZTo"
+        doc "TODO"
+    }
+
+    field rainbow_coin type="i32::str" {
+        key "KAZmxkgy"
+        doc "TODO"
+    }
+
+    field unk6 type="i32::str" {
+        key "AKP8t3xK"
+        doc "TODO"
+    }
+
+    field unk7 type="i32::str" {
+        key "Nou5bCmm"
+        doc "TODO"
+    }
+
+    field slot_game_flag type="i32::int" {
+        key "s3uU4Lgb"
         doc "TODO"
     }
 
@@ -396,10 +474,36 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field current_brave_points type="i32::str" {
-        key "22rqpZTo"
+    field unk8 type="i32::int" {
+        key "38d7D18b"
         doc "TODO"
     }
+
+    field unk9 type="i32::int" {
+        key "D38bda8B"
+        doc "TODO"
+    }
+
+    field mysterybox_count type="i32::int" {
+        key "Qo9doUsp"
+        doc "TODO"
+    }
+
+    field paid_gems type="i32::int" {
+        key "d37CaiX1"
+        doc "TODO"
+    }
+
+    field free_gems type="i32::int" {
+        key "92uj7oXB"
+        doc "TODO"
+    }
+
+    field max_equip_slot_count type="i32::str" {
+        key "gEX30r1b"
+        doc "TODO"
+    }
+
 }
 
 json UserUnitInfo {
@@ -412,7 +516,7 @@ json UserUnitInfo {
 
     field user_id type="str" {
         key "h7eY3sAK"
-        doc "TODO"
+        doc "ID of the user for this session."
     }
 
     field unit_id type="i32::str" {
@@ -520,6 +624,11 @@ json UserUnitInfo {
         doc "TODO"
     }
 
+    field unk type="i32::str" {
+        key "xujp1nz2"
+        doc "TODO"
+    }
+
     field element type="str" {
         key "iNy0ZU5M"
         doc "TODO"
@@ -556,13 +665,13 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field equipitem_frame_id2 type="i32::str" {
-        key "RXfC31FA"
+    field equipitem_id type="i32::str" {
+        key "Ge8Yo32T"
         doc "TODO"
     }
 
-    field equipitem_id type="i32::str" {
-        key "Ge8Yo32T"
+    field equipitem_frame_id2 type="i32::str" {
+        key "RXfC31FA"
         doc "TODO"
     }
 
@@ -576,7 +685,7 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field unk type="i32::str" {
+    field unk2 type="i32::str" {
         key "DbMVG16I"
         doc "TODO"
     }
@@ -591,6 +700,11 @@ json UserUnitInfo {
         doc "TODO"
     }
 
+    field extra_passive_skill_id2 type="i32::str" {
+        key "LjY4DfRg"
+        doc "TODO"
+    }
+
     field add_extra_passive_skill_id type="i32::str" {
         key "T4rewHa9"
         doc "TODO"
@@ -600,19 +714,14 @@ json UserUnitInfo {
         key "2pAyFjmZ"
         doc "TODO"
     }
-
-    field extra_passive_skill_id2 type="i32::str" {
-        key "LjY4DfRg"
+     // # TODO: is this really a str?
+    field omni_level type="i32::int" {
+        key "49sa3sld"
         doc "TODO"
     }
 
     field ext_count type="i32::int" {
         key "5gXxT7LZ"
-        doc "TODO"
-    }
-     // # TODO: is this really a str?
-    field omni_level type="i32::int" {
-        key "49sa3sld"
         doc "TODO"
     }
 
@@ -650,7 +759,7 @@ json LoginInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not sup
 
     field user_id type="str" {
         key "h7eY3sAK"
-        doc "TODO"
+        doc "ID of the user for this session."
     }
 
     field contact_id type="str" {
@@ -780,6 +889,109 @@ json UserWarehouseInfo {
 json UserGiftInfo {
 	doc "TODO"
 	
+    field unk1 type="i32::str" {
+        key "gNE76SLp"
+        doc "TODO"
+    }
+
+    field unk2 type="str" {
+        key "yDiG31Fe"
+        doc "TODO"
+    }
+
+    field unk3 type="str" {
+        key "1px2dbX3"
+        doc "TODO"
+    }
+
+    field unk4 type="i32::str" {
+        key "eDj82kMN"
+        doc "TODO"
+    }
+
+    field unk5 type="i32::str" {
+        key "2bvT9hKt"
+        doc "TODO"
+    }
+
+    field unk6 type="i32::str" {
+        key "kixHbe54"
+        doc "TODO"
+    }
+
+    field unk7 type="i32::str" {
+        key "wgV86x1q"
+        doc "TODO"
+    }
+
+    field unk8 type="datetime" {
+        key "aHSvC81N"
+        doc "TODO"
+    }
+
+    field unk9 type="i32::str" {
+        key "q5Y4gUnb"
+        doc "TODO"
+    }
+
+    field unk10 type="i32::str" {
+        key "fa6WwE9u"
+        doc "TODO"
+    }
+
+    field unk11 type="i32::str" {
+        key "pn16CNah"
+        doc "TODO"
+    }
+
+    field unk12 type="str" {
+        key "B5JQyV8j"
+        doc "TODO"
+    }
+
+    field unk13 type="i32::str" {
+        key "2pAyFjmZ"
+        doc "TODO"
+    }
+
+    field un14 type="i32::int" {
+        key "jkldTrhL"
+        doc "TODO"
+    }
+
+    field unk15 type="str" {
+        key "9i2xhMaJ"
+        doc "TODO"
+    }
+
+    field unk16 type="str" {
+        key "iNy0ZU5M"
+        doc "TODO"
+    }
+
+    field unk17 type="str" {
+        key "btZizNep"
+        doc "TODO"
+    }
+
+    field unk18 type="str" {
+        key "RVVgyuor"
+        doc "TODO"
+    }
+}
+
+json UserSummonerInfo {
+    doc "TODO"
+	
+	field mock type="str" {
+		key "INVALID"
+		doc "TODO"
+	}
+}
+
+json UserSummonerArmsInfo {
+    doc "TODO"
+	
 	field mock type="str" {
 		key "INVALID"
 		doc "TODO"
@@ -827,7 +1039,7 @@ json UserSoundInfo {
 
     field user_id type="str" {
         key "h7eY3sAK"
-        doc "TODO"
+        doc "ID of the user for this session."
         optional #true
     }
 
@@ -843,7 +1055,7 @@ json UserBraveMedalInfo {
 
     field user_id type="str" {
         key "h7eY3sAK"
-        doc "TODO"
+        doc "ID of the user for this session."
     }
 
     field medal_id type="i32::str" {
@@ -871,9 +1083,10 @@ json UserAchievementInfo {
         doc "TODO"
     }
 
-    field unk3 type="i32::str" {
-        key "HjgTfx8A"
+    field unk type="str" { // TODO(arves): This is an i32::str with omit as empty
+        key "LHQZuau1"
         doc "TODO"
+        // NOTE: unused in last version
     }
 
     field unk2 type="str" { // TODO(arves): This is an i32::str with omit as empty
@@ -882,11 +1095,11 @@ json UserAchievementInfo {
         // NOTE: unused in last version
     }
 
-    field unk type="str" { // TODO(arves): This is an i32::str with omit as empty
-        key "LHQZuau1"
+    field unk3 type="i32::str" {
+        key "HjgTfx8A"
         doc "TODO"
-        // NOTE: unused in last version
     }
+
 }
 
 json UserTownFacilityInfo {
@@ -985,48 +1198,166 @@ json UserSettings {
 json UserTownLocationDetail {
     doc "TODO"
 
-    field mock type="str" {
-        key "INVALID"
+    field user_id type="str" {
+        key "h7eY3sAK"
+        doc "ID of the user for this session."
+    }
+
+    field unk type="i32::str" {
+        key "un80kW9Y"
+        doc "TODO"
+    }
+
+    field unk2 type="datetime" {
+        key "qA7M9EjP"
+        doc "TODO"
+    }
+
+    field unk3 type="i32::str" {
+        key "mDaE3t6A"
+        doc "TODO"
+    }
+
+    field unk4 type="str" {
+        key "eip3MS5L"
         doc "TODO"
     }
 }
 
 json UserDungeonKeyInfo {
     doc "TODO"
-    
-    field mock type="str" {
-        key "INVALID"
+ 
+    field user_id type="str" {
+        key "h7eY3sAK"
+        doc "ID of the user for this session."
+    }
+
+    field unk type="i32::str" {
+        key "16KMNJLb"
+        doc "TODO"
+    }
+
+    field unk2 type="i32::str" {
+        key "wgV86x1q"
+        doc "TODO"
+    }
+
+    field unk3 type="i32::str" {
+        key "KI42FwRt"
+        doc "TODO"
+    }
+
+    field unk4 type="i32::str" {
+        key "BY8fZ7M1"
+        doc "TODO"
+    }
+
+    field unk5 type="i32::str" {
+        key "phe9Ta54"
+        doc "TODO"
+    }
+
+    field unk6 type="bool::bool" {
+        key "g85qMNxf"
+        doc "TODO"
+    }
+
+    field unk7 type="str" {
+        key "b6QR1CH5"
+        doc "TODO"
+    }
+
+    field unk8 type="i32::int" {
+        key "H6k1LIxC"
         doc "TODO"
     }
 }
 
 json UserReleaseInfo {
     doc "TODO"
-    
-    field mock type="str" {
-        key "INVALID"
+
+    field unk type="i32::int" {
+        key "JHYubaBP"
         doc "TODO"
     }
+
+    field unk2 type="i32::str" {
+        key "g6PujUgD"
+        doc "TODO"
+    }
+
+    field unk3 type="i32::str" {
+        key "dJNpLc81"
+        doc "TODO"
+    }
+    
 }
 
 json UserEquipItemInfo {
     doc "TODO"
     
-    field mock type="str" {
-        key "INVALID"
+    field unk type="i32::str" {
+        key "kixHbe54"
         doc "TODO"
     }
+
+    field unk2 type="i32::str" {
+        key "XuJL4pc5"
+        doc "TODO"
+    }
+
+    field unk3 type="i32::str" {
+        key "wgV86x1q"
+        doc "TODO"
+    }
+
 }
 
 json UserEquipBoostItemInfo {
     doc "TODO"
     
-    field mock type="str" {
-        key "INVALID"
+    field unk1 type="i32::str" {
+        key "Kn51uR4Y"
         doc "TODO"
     }
 }
 
+json UserPurchaseInfo {
+    doc "TODO"
+
+    field unk type="str" {
+        key "KAD6iZj9"
+        doc "TODO"
+    }
+
+    field unk2 type="str" {
+        key "c4xbL2VW"
+        doc "TODO"
+    }
+
+    field unk3 type="str" {
+        key "2VdTuoW1"
+        doc "TODO"
+    }
+}
+
+json UserUnitDbbInfo {
+    doc "TODO"
+
+    field unk type="str" {
+        doc "TODO"
+        key "INVALID"
+    }
+}
+
+json UserUnitDbbLevelInfo {
+    doc "TODO"
+
+    field unk type="str" {
+        doc "TODO"
+        key "INVALID"
+    }
+}
 
 json SummonTicketV2UserInfo {
     doc "TODO"

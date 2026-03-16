@@ -188,6 +188,94 @@ json ChallengeItemMst {
     }
 }
 
+json ChallengeMvpMst {
+    doc "TODO"
+
+    field id type="i32::str" {
+        key "c5yZnpB4"
+        doc "TODO"
+    }
+
+    field rank_type type="i32::str" {
+        key "9w5e3ZJB"
+        doc "TODO"
+    }
+
+    field mission_id type="i32::str" {
+        key "j28VNcUW"
+        doc "TODO"
+    }
+
+    field rank_name type="str" {
+        key "h6V4weL2"
+        doc "TODO"
+    }
+
+    field title type="str" {
+        key "58LRVS1i"
+        doc "TODO"
+    }
+
+    field point_img type="str" {
+        key "KP3t9sfZ"
+        doc "TODO"
+    }
+}
+
+json ChallengeRankRewardMst {
+    doc "TODO"
+
+    field reward_id type="i32::str" {
+        key "N1b6SUW4"
+        doc "TODO"
+    }
+
+    field fronhun_id type="i32::str" {
+        key "c5yZnpB4"
+        doc "TODO"
+    }
+
+    field rank_type type="i32::str" {
+        key "9w5e3ZJB"
+        doc "TODO"
+    }
+
+    field rank_min type="i32::str" {
+        key "u7Ijep5o"
+        doc "TODO"
+    }
+
+    field rank_max type="i32::str" {
+        key "4BtYr6Eg"
+        doc "TODO"
+    }
+
+    field reward_type type="i32::str" {
+        key "30Kw4WBa"
+        doc "TODO"
+    }
+
+    field target_id type="i32::str" {
+        key "TdDHf59J"
+        doc "TODO"
+    }
+
+    field target_cnt type="i32::str" {
+        key "wJsB35iH"
+        doc "TODO"
+    }
+
+    field reward_param type="str" {
+        key "37moriMq"
+        doc "TODO"   
+    }
+
+    field commentm type="str" {
+        key "WDUyI85C"
+        doc "TODO"
+    }
+}
+
 json ChallengeRewardMst {
     doc "TODO"
 

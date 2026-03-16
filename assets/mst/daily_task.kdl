@@ -38,6 +38,16 @@ json DailyTaskMst {
         doc "TODO"
     }
 
+    field area_id type="str" {
+        key "a3011F8b"
+        doc "TODO"
+    }
+
+    field times_completed type="i32::int" {
+        key "9cKyb15U"
+        doc "Number of times the task was completed"
+    }
+
     field brave_points_total type="i32::str" {
         key "bya9a67k"
         doc "TODO"
@@ -48,18 +58,8 @@ json DailyTaskMst {
         doc "TODO"
     }
 
-    field area_id type="str" {
-        key "a3011F8b"
-        doc "TODO"
-    }
-
-    field times_completed type="i32::int" {
-        key "9cKyb15U"
-        doc "Number of times the task was completed"
-    }
 }
 
-// keyjson(key_group = "a739yK18", array=ArrayStep.Array)
 json DailyTaskPrizeMst {
     doc "TODO"
 

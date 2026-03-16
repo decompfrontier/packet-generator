@@ -1,9 +1,9 @@
 json SummonerJournalUserInfo {
-    doc TODO
+    doc "TODO"
 
     field user_id type="str" {
         key "h7eY3sAK"
-        doc "TODO"
+        doc "ID of the user for this session."
     }
 
     field points type="i32::int" {

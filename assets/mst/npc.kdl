@@ -98,9 +98,7 @@ json NpcUnitInfo {
     }
 }
 
-// @hashjson(hash_group = , array=ArrayStep.Array)
 json NpcMst {
-    hash "hV5vWu6C"
     doc "TODO"
 
     field id type="i32::str" {

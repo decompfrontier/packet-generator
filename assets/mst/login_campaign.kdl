@@ -1,4 +1,4 @@
-// @keyjson(key_group = "Bd29Pqw0")
+
 json LoginCampaignMst {
     doc "TODO"
 
@@ -23,7 +23,6 @@ json LoginCampaignMst {
     }
 }
 
-// @keyjson(key_group = "bD18x9Ti", array=ArrayStep.Array)
 json LoginCampaignReward {
     doc "TODO"
 

@@ -34,12 +34,16 @@ import "../net/items.kdl"
 import "../net/permit_place.kdl"
 import "../net/mission.kdl"
 import "../net/raid.kdl"
+import "../net/npc.kdl"
+import "../net/friends.kdl"
+import "../net/event.kdl"
+import "../net/featuring_gate.kdl"
 
 json InitializeReq {
     doc "Initialization command"
 
     field loginInfo type="[LoginInfoReq]::size(1)" {
-        key IKqx1Cn9
+        key "IKqx1Cn9"
         doc "TODO"
     }
 
@@ -150,7 +154,12 @@ json InitializeResp {
         doc "TODO"
     }
 
-    field trophy type="[TrophyGroupMst]" {
+    field trophy type="[TrophyMst]" {
+        key "6CTU8m2v"
+        doc "TODO"
+    }
+
+    field trophy_group type="[TrophyGroupMst]" {
         key "1NTG2oVZ"
         doc "TODO"
     }
@@ -167,6 +176,11 @@ json InitializeResp {
 
     field help type="[HelpMst]" {
         key "9x4zZCeN"
+        doc "TODO"
+    }
+
+    field help_sub type="[HelpSubMst]" {
+        key "5C9LuNrk"
         doc "TODO"
     }
 
@@ -202,6 +216,16 @@ json InitializeResp {
 
     field challenge_item type="[ChallengeItemMst]" {
         key "dn0NfRy1"
+        doc "TODO"
+    }
+
+    field challenge_mvp type="[ChallengeMvpMst]" {
+        key "nUmaEC41"
+        doc "TODO"
+    }
+
+    field challenge_rank_reward type="[ChallengeRankRewardMst]" {
+        key "P8V71kbw"
         doc "TODO"
     }
 
@@ -279,6 +303,15 @@ json UnkUserInfoNetReq {
 
     field unk type="i32::str" {
         key "ad37Bdr1"
+        doc "TODO"
+    }
+}
+
+json UnkUserInfoNetResp {
+    doc "TODO"
+
+    field mock type="str" {
+        key "INVALID"
         doc "TODO"
     }
 }
@@ -434,14 +467,14 @@ json UserInfoResp {
         key "5PR2VmH1"
         doc "TODO"
     }
-    /*field raidUserInfo type="RaidUserInfo" {
+    field raidUserInfo type="RaidUserInfo" {
         doc "TODO"
         key "1ry6BKoe"
     }
     field purchaseInfo type="UserPurchaseInfo" {
         doc "TODO"
         key "4W6EhXLS"
-    }*/
+    }
     field releaseInfo type="[UserReleaseInfo]" {
         doc "TODO"
         key "Dp0MjKAf"
@@ -457,6 +490,44 @@ json UserInfoResp {
     field summonTicketV2User type="[SummonTicketV2UserInfo]" {
         doc "TODO"
         key "a3d5d12i"
+    }
+    field npcMesssageOverwriteInfo type="[NpcMessageOverwriteInfo]" {
+        key "yNnvj59x"
+        doc "TODO"
+    }
+    field friendPointInfo type="[FriendPointInfo]" {
+        key "6e4b7sQt"
+        doc "TODO"
+    }
+    field summonerInfo type="[UserSummonerInfo]" {
+        key "n5mdIUqj"
+        doc "TODO"
+    }
+    field summonerArmInfo type="[UserSummonerArmsInfo]" {
+        key "dhMmbm5p"
+        doc "TODO"
+    }
+    field dbbInfo type="[UserUnitDbbInfo]" {
+        key "sxorQ3Mb"
+        doc "TODO"
+    }
+    field dbbLevelInfo type="[UserUnitDbbLevelInfo]" {
+        key "tR4katob"
+        doc "TODO"
+    }
+    field eventTokenInfo type="[EventTokenInfo]" {
+        key "l234vdKs"
+        doc "TODO"
+    }
+    field unkType type="[UnkUserInfoNetResp]" {
+        key "62Dz13dP"
+        doc "TODO"
+        // NOTE: not used in last binary
+    }
+
+    field featureGateInfo type="[FeatureGatingInfo]" {
+        doc "TODO"
+        key "2375D38i"
     }
 
     // Cachable!

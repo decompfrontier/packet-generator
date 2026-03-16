@@ -1,8 +1,5 @@
-// from schema import *
-
-// @keyjson(key_group = "z5U7utsm", array=ArrayStep.Array)
 json ExtraPassiveSkillMst {
-    doc TODO
+    doc "TODO"
 
     field id type="i32::str" {
         key "cP83zNsv"
@@ -19,6 +16,11 @@ json ExtraPassiveSkillMst {
         doc "TODO"
     }
 
+    field skill_type type="i32::str" {
+        key "h6UL9A1B"
+        doc "TODO"
+    }
+
     field group_id type="i32::str" {
         key "outas79f"
         doc "TODO"
@@ -29,13 +31,8 @@ json ExtraPassiveSkillMst {
         doc "TODO"
     }
 
-    field process_id type="str" {
-        key "hjAy9St3"
-        doc "TODO"
-    }
-
-    field process_param type="str" {
-        key "2Smu5Mtq"
+    field rare type="i32::str" {
+        key "7ofj5xa1"
         doc "TODO"
     }
 
@@ -51,18 +48,19 @@ json ExtraPassiveSkillMst {
         doc "TODO"
     }
 
+    field process_id type="str" {
+        key "hjAy9St3"
+        doc "TODO"
+    }
+
+    field process_param type="str" {
+        key "2Smu5Mtq"
+        doc "TODO"
+    }
+
     field description type="str" {
         key "qp37xTDh"
         doc "TODO"
     }
 
-    field skill_type type="i32::str" {
-        key "h6UL9A1B"
-        doc "TODO"
-    }
-
-    field rare type="i32::str" {
-        key "7ofj5xa1"
-        doc "TODO"
-    }
 }

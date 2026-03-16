@@ -11,6 +11,11 @@ json GachaEffectMst {
         doc "TODO"
     }
 
+    field unk type="i32::str" {
+        key "TPGXiNmN"
+        doc "TODO"
+    }
+
     field rare type="i32::str" {
         key "7ofj5xa1"
         doc "TODO"
@@ -26,15 +31,16 @@ json GachaEffectMst {
         doc "TODO"
     }
 
+    field effect type="str" {
+        key "YTx3c1jQ"
+        doc "TODO"
+    }
+
     field effect_after type="str" {
         key "tj0i9JhC"
         doc "TODO"
     }
 
-    field effect type="str" {
-        key "YTx3c1jQ"
-        doc "TODO"
-    }
 }
 
 json GachaCategory {

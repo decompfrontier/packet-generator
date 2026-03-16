@@ -28,8 +28,19 @@ json PermitPlaceSP {
 json PermitReceipe {
   doc "TODO"
 
-  field mock type="str" {
-    key "INVALID"
+  field unk1 type="i32::str" {
+    key "4HqhTf3a"
     doc "TODO"
   }
+
+  field unk2 type="i32::int" {
+    key "H6k1LIxC"
+    doc "TODO"
+  }
+
+  field unk3 type="i32::int" {
+    key "VDKB0Y5h"
+    doc "TODO"
+  }
+
 }

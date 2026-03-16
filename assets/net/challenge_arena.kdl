@@ -1,9 +1,9 @@
 json ChallengeArenaUserInfo {
-    doc TODO
+    doc "TODO"
 
-    field unk type="str" {
+    field user_id type="str" {
         key "h7eY3sAK"
-        doc "TODO"
+        doc "ID of the user for this session."
     }
 
     field unkint type="i32::str" {
@@ -41,19 +41,25 @@ json ChallengeArenaUserInfo {
         doc "TODO"
     }
 
-    field unkint8 type="i32::str" {
-        key "fBGCdi8I"
+    field unkint10 type="i32::str" {
+        key "zsiAn9P1"
         doc "TODO"
     }
 
-    field unkint9 type="i32::str" {
-        key "zf5Ae850"
+    field unkint8 type="i32::str" {
+        key "fBGCdi8I"
         doc "TODO"
     }
 
     field unkstr2 type="str" {
         key "outas79f"
         doc "TODO"
+    }
+
+    field unkint9 type="i32::str" {
+        key "zf5Ae850"
+        doc "TODO"
+        optional #true
     }
 
 }

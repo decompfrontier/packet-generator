@@ -16,6 +16,12 @@ json BannerInfoMst {
         key "oL71Fz3a"
     }
 
+    field page_type type="str" {
+        key "LM34kfVC"
+        doc "This parameter seems unused in the last version of the game"
+        optional #true
+    }
+
     field name type="str" {
         key "NyYKc1A5"
         doc "Internal name of the banner"
@@ -44,12 +50,6 @@ json BannerInfoMst {
     field param type="str" {
         key "t5R47iwj"
         doc "TODO"
-    }
-
-    field page_type type="str" {
-        key "LM34kfVC"
-        doc "This parameter seems unused in the last version of the game"
-        optional #true
     }
 
     field read_count type="i32::int" {

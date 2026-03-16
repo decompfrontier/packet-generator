@@ -1,6 +1,6 @@
-// @keyjson(key_group = "KeC10fuL", array=ArrayStep.Array)
+
 json VersionInfo {
-    doc TODO
+    doc "TODO"
 
     field id type="str" {
         key "moWQ30GH"

@@ -1,0 +1,8 @@
+json EventTokenInfo {
+    doc "TODO"
+
+    field mock type="str" {
+        key "INVALID"
+        doc "TODO"
+    }
+}

@@ -1,7 +1,6 @@
 
-// @keyjson(key_group = "Pj6zDW3m", array=ArrayStep.Array)
 json NoticeInfo {
-    doc TODO
+    doc "TODO"
 
     field id type="i32::str" {
         key "xJNom6i0"

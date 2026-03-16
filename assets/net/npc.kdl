@@ -1,0 +1,19 @@
+
+json NpcMessageOverwriteInfo {
+    doc "TODO"
+
+    field unk type="str" {
+        key "s35idar9"
+        doc "TODO"
+    }
+
+    field unk2 type="str" {
+        key "ZC0msu2L"
+        doc "TODO"
+    }
+
+    field unk3 type="i32::int" {
+        key "VDKB0Y5h"
+        doc "TODO"
+    }
+}

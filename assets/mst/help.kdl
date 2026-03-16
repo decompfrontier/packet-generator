@@ -11,3 +11,22 @@ json HelpMst {
         doc "TODO"
     }
 }
+
+json HelpSubMst {
+    doc "TODO"
+
+    field sub_id type="i32::str" {
+        key "meg8fhr1"
+        doc "TODO"
+    }
+
+    field name type="str" {
+        key "gLUNSs24"
+        doc "TODO"
+    }
+
+    field help_id type="i32::str" {
+        key "v9dyS8fi"
+        doc "TODO"
+    }
+}
