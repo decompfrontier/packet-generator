@@ -62,6 +62,7 @@ cmake_minimum_required(VERSION 3.31)
 project(kdl_generator_e2e_{test_name}_test_suite)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(FetchContent)
 
@@ -159,8 +160,5 @@ fn e2e_can_compile_cxx_glaze_stresstest() {
 
 #[test]
 fn e2e_can_compile_cxx_glaze_brave_frontier() {
-    generic_e2e_cxx_glaze_harness(
-        PathBuf::from_iter(["assets", "net", "handlers.kdl"]),
-        "brave-frontier",
-    );
+    generic_e2e_cxx_glaze_harness(PathBuf::from_iter(["assets", "all.kdl"]), "brave-frontier");
 }
