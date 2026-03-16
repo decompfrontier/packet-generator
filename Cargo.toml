@@ -15,6 +15,7 @@ bpaf = { version = "0.9.20", features = ["derive"] }
 atomicow = "1.1.0"
 itertools = "0.14.0"
 thiserror = "2.0.17"
+glob = "0.3.0"
 
 [dependencies]
 atomicow = { workspace = true }
@@ -26,9 +27,11 @@ stringcase = "0.4.0"
 clean-path = "0.2"
 petgraph = "0.8.3"
 kdl = "6.5.0"
+glob = { workspace = true }
 
 [dev-dependencies]
 criterion = { version = "0.8", features = ["html_reports"] }
+glob = { workspace = true }
 
 [[bench]]
 name = "parser"
