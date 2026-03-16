@@ -3,6 +3,7 @@ target/
 perf*
 profile*
 flamegraph*
+mutants.out/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

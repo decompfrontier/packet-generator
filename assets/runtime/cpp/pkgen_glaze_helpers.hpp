@@ -8,7 +8,7 @@ namespace pkg::glaze {
 
 
 #if __STDCPP_FLOAT32_T__ > 0
-    #define glz_write_f32(memptr) glz::write_float32<memptr>;
+    #define glz_write_f32(memptr) glz::write_float32<memptr>
 #else
     #define glz_write_f32(memptr) memptr
 #endif
