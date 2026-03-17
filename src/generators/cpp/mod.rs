@@ -10,9 +10,7 @@ use stringcase::Caser;
 
 use crate::generators::{Addon, GeneratedSource, GenerationError, Generator, WithAddons};
 
-use crate::intermediate::{
-    ArraySize, DataType, Definition, DefinitionRegistry, IntEnum, Json, JsonField, StringEnum,
-};
+use crate::intermediate::{DefinitionRegistry, schema::*};
 
 const AUTOGENERATION_NOTICE: &str = "
 // This file is auto-generated from a KDL specification by `packet-generator`.
@@ -145,10 +143,7 @@ impl Generator for CxxGenerator {
         CowArc::Owned(enum_format(&definition.name).into())
     }
 
-    fn int_enum_variant_name<'a>(
-        &'a self,
-        definition: &'a crate::intermediate::IntEnumVariant,
-    ) -> CowArc<'a, str> {
+    fn int_enum_variant_name<'a>(&'a self, definition: &'a IntEnumVariant) -> CowArc<'a, str> {
         CowArc::Owned(enum_variant_format(&definition.name).into())
     }
 
@@ -158,7 +153,7 @@ impl Generator for CxxGenerator {
 
     fn string_enum_variant_name<'a>(
         &'a self,
-        definition: &'a crate::intermediate::StringEnumVariant,
+        definition: &'a StringEnumVariant,
     ) -> CowArc<'a, str> {
         CowArc::Owned(enum_variant_format(&definition.name).into())
     }

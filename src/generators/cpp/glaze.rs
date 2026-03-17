@@ -2,10 +2,7 @@ use itertools::Itertools;
 
 use crate::generators::{Addon, CxxGenerator, GenerationError};
 
-use crate::intermediate::{
-    ArraySeparator, ArraySize, BoolEncoding, DataType, Definition, DefinitionRegistry, Encoding,
-    Json,
-};
+use crate::intermediate::{DefinitionRegistry, schema::*};
 
 const TAB: &str = "    ";
 

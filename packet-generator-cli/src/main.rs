@@ -51,7 +51,7 @@ fn main() -> Result<(), miette::Report> {
 
             println!("Parser: {:#?}", doc);
 
-            let doc = packet_generator::kdl_parser::validate(doc)?;
+            let doc = doc.finalize()?;
 
             let definitions = packet_generator::kdl_parser::document_to_definitions(doc)?;
 
@@ -108,7 +108,7 @@ fn main() -> Result<(), miette::Report> {
 
             warnings.print_warnings_if_any();
 
-            let doc = packet_generator::kdl_parser::validate(doc)?;
+            let doc = doc.finalize()?;
 
             let definitions = packet_generator::kdl_parser::document_to_definitions(doc)?;
 

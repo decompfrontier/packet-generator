@@ -66,7 +66,7 @@ pub fn parse_kdl<S: AsRef<str>, V: Vfs>(
 ) -> Result<(intermediate::DefinitionRegistry, ParsingWarnings), ParsingError> {
     let (raw_document, warnings) = kdl_parser::raw_parse_kdl(document, filepath, opts)?;
 
-    let document = kdl_parser::validate(raw_document)?;
+    let document = raw_document.finalize()?;
 
     Ok((kdl_parser::document_to_definitions(document)?, warnings))
 }
