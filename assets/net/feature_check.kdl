@@ -248,7 +248,7 @@ json FeatureCheck {
 
     field check_for_corrupted_mst type="bool::int" {
         key "corrupted_mst_check"
-        doc "Let the cliet checks for corrupted MSTs"
+        doc "Let the cliet check for corrupted MSTs. If set to 0 the client will never download MSTs (both from CDN and server) in case a mismatch happens"
     }
 
     field tutorial_skip type="bool::int" {
