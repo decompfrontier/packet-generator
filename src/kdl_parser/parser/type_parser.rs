@@ -99,7 +99,7 @@ mod combinators {
         ArraySeparator, ArraySize, BoolEncoding, DataType, IntLikeEncoding, JsonEncoding,
     };
     use miette::SourceSpan;
-    use winnow::ascii::{alpha1, alphanumeric1, space0, space1};
+    use winnow::ascii::{alpha1, alphanumeric1, multispace0, space0, space1};
     use winnow::combinator::{
         alt, cut_err, delimited, not, opt, peek, preceded, separated, separated_pair,
     };
@@ -310,7 +310,7 @@ mod combinators {
 
     pub fn parse_datatype(input: &mut Input) -> PResult {
         (
-            space0,
+            multispace0,
             alt((
                 parse_map,
                 parse_array,
@@ -327,7 +327,7 @@ mod combinators {
                 parse_custom_type,
             )),
         )
-            .map(|(_space, v)| v)
+            .map(|(_space1, v)| v)
             .parse_next(input)
     }
 
@@ -685,6 +685,22 @@ mod combinators {
             let val = parse_datatype(&mut input);
             println!("{val:?}");
             assert!(val.is_err());
+        }
+
+        #[test]
+        fn can_parse_bool_with_whitespace() {
+            let s = "bool::int ";
+            let mut input = Input {
+                input: LocatingSlice::new(s),
+                state: State {},
+            };
+            let val = parse_datatype(&mut input);
+            assert!(matches!(
+                val,
+                Ok(DataType::Bool {
+                    encoding: BoolEncoding::Int
+                })
+            ));
         }
 
         #[test]
