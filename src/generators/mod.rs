@@ -188,7 +188,6 @@ mod tests {
         let definition = Json::new(
             "Foo".into(),
             0,
-            None,
             "a".into(),
             Arc::new(SourceInfo {
                 name: "foo".into(),

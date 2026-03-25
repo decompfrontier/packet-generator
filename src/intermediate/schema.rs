@@ -51,12 +51,23 @@ pub enum JsonEncoding {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Json {
+    /// The index of the definition in the given [source code](Self::source).
     pub index: usize,
+
+    /// The name of the JSON definition.
     pub name: String,
-    pub hash_name: Option<String>,
+
+    /// The fields inside the JSON definition.
     pub fields: BTreeSet<JsonField>,
+
+    /// The documentation attached to the JSON definition.
     pub doc: String,
+
+    /// The source file from which this JSON comes from,
     pub source: Arc<SourceInfo>,
+
+    /// The span, related to a [source code](Self::source), where this JSON
+    /// is defined.
     pub span: SourceSpan,
 }
 
@@ -124,7 +135,6 @@ impl Json {
     pub const fn new(
         name: String,
         index: usize,
-        hash_name: Option<String>,
         doc: String,
         defined_in_source: Arc<SourceInfo>,
         defined_in_span: SourceSpan,
@@ -132,7 +142,6 @@ impl Json {
         Self {
             index,
             name,
-            hash_name,
             fields: BTreeSet::new(),
             doc,
             source: defined_in_source,

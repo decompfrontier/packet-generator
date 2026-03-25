@@ -187,7 +187,6 @@ pub fn add_json_definitions(
         let mut struct_def = Json::new(
             struct_.name,
             struct_.index,
-            struct_.hash,
             struct_.doc,
             struct_.source_info,
             struct_.span,

@@ -327,7 +327,6 @@ mod tests {
             let mut s = Json::new(
                 String::from("Foo"),
                 0,
-                Some(String::from("avdsfdsf")),
                 String::from("some documentation"),
                 source.clone(),
                 SourceSpan::from((0, 0)),
@@ -358,7 +357,6 @@ mod tests {
             let mut s = Json::new(
                 String::from("Bar"),
                 1,
-                Some(String::from("avfdsfdsf")),
                 String::from("some documentation"),
                 source,
                 SourceSpan::from((0, 0)),
