@@ -17,7 +17,7 @@ use petgraph::{algo::Cycle, graph::NodeIndex};
 use crate::intermediate::{DefinitionRegistry, schema::*};
 
 mod cpp;
-mod utils;
+pub mod utils;
 
 pub use cpp::{CxxGenerator, GlazeGenerator};
 
