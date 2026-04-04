@@ -30,8 +30,10 @@ pub fn split_documentation(doc: &str, tab: &str, comment_str: &str, indent_level
         .map(|line| {
             let mut start = tab.repeat(indent_level);
             start.push_str(comment_str);
-            start.push(' ');
-            start.push_str(line);
+            if !line.is_empty() {
+                start.push(' ');
+                start.push_str(line);
+            }
 
             start
         })
@@ -65,7 +67,9 @@ Bar. Baz. Quox.
             let until_comment_str = &line[(INDENT_LEVEL)..(INDENT_LEVEL + COMMENT_STR.len())];
             assert_eq!(until_comment_str, COMMENT_STR);
 
-            let rest_of_line = &line[(INDENT_LEVEL + COMMENT_STR.len() + 1)..];
+            let skip_whitespace = usize::from(!doc_line.is_empty());
+
+            let rest_of_line = &line[(INDENT_LEVEL + COMMENT_STR.len() + skip_whitespace)..];
 
             assert_eq!(rest_of_line, doc_line);
         }
