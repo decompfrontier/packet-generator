@@ -131,7 +131,7 @@ fn generate_json_cxx(
         .fields
         .iter()
         .map(|field| -> Result<String, GenerationError> {
-            let field_name = super::field_format(&field.name);
+            let field_name = super::struct_field_format(&field.name);
             let mapper = get_glz_mapper(&field_name, &field.type_, registry)?;
             let key: &str = &field.key;
 

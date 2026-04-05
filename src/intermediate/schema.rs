@@ -339,3 +339,169 @@ pub enum DataType {
         name: String,
     },
 }
+
+/// Dev-only module for easy `proptest` tests.
+#[cfg(test)]
+pub mod arbitrary {
+    use super::*;
+    use proptest::prelude::*;
+
+    pub fn arbitrary_int_encoding() -> impl Strategy<Value = Encoding> {
+        prop_oneof![Just(Encoding::Int), Just(Encoding::String)]
+    }
+
+    pub fn arbitrary_bool_encoding() -> impl Strategy<Value = BoolEncoding> {
+        prop_oneof![
+            Just(BoolEncoding::Bool),
+            Just(BoolEncoding::Int),
+            Just(BoolEncoding::String)
+        ]
+    }
+
+    pub fn arbitrary_json_encoding() -> impl Strategy<Value = JsonEncoding> {
+        prop_oneof![Just(JsonEncoding::Json), Just(JsonEncoding::String)]
+    }
+
+    pub fn arbitrary_array_size() -> impl Strategy<Value = ArraySize> {
+        prop_oneof![
+            Just(ArraySize::Dynamic),
+            any::<NonZeroUsize>().prop_map(ArraySize::Fixed)
+        ]
+    }
+
+    pub fn arbitrary_array_separator() -> impl Strategy<Value = ArraySeparator> {
+        prop_oneof![
+            Just(ArraySeparator::Comma),
+            Just(ArraySeparator::Colon),
+            Just(ArraySeparator::Pipe),
+            Just(ArraySeparator::At),
+        ]
+    }
+
+    prop_compose! {
+        pub fn arbitrary_source_info()(name in ".*", source_code in ".*") -> SourceInfo {
+            SourceInfo {
+                name,
+                source_code
+            }
+        }
+    }
+
+    prop_compose! {
+        pub fn arbitrary_source_span()(start in 0..(usize::MAX - 100))(end in start..usize::MAX, start in Just(start)) -> SourceSpan {
+            (start..end).into()
+        }
+    }
+
+    prop_compose! {
+        pub fn arbitrary_json()(
+            name in "[a-zA-Z][a-zA-Z0-9]*",
+            index in 0..usize::MAX,
+            doc in ".*",
+            defined_in_source in arbitrary_source_info(),
+            defined_in_span in arbitrary_source_span()
+        ) -> Json {
+            Json::new(name, index, doc, Arc::new(defined_in_source), defined_in_span)
+        }
+    }
+
+    prop_compose! {
+        pub fn arbitrary_unknown_datatype()(
+            name in ".*",
+            encoding in arbitrary_json_encoding()
+        ) -> DataType {
+            DataType::Unknown { encoding, name }
+        }
+    }
+
+    prop_compose! {
+        pub fn arbitrary_definition_ref()(x in any::<usize>()) -> DefinitionRef {
+            DefinitionRef::new(x)
+        }
+    }
+
+    fn arbitrary_self_referential_datatype(
+        inner: BoxedStrategy<DataType>,
+    ) -> impl Strategy<Value = DataType> {
+        prop_oneof![
+            (inner.clone(), arbitrary_array_size()).prop_map(|(inner_type, size)| {
+                DataType::Array {
+                    inner_type: Arc::new(inner_type),
+                    size,
+                }
+            }),
+            (
+                inner.clone(),
+                arbitrary_array_separator(),
+                arbitrary_array_size()
+            )
+                .prop_map(|(inner_type, separator, size)| {
+                    DataType::StringArray {
+                        inner_type: Arc::new(inner_type),
+                        size,
+                        separator,
+                    }
+                }),
+            inner.prop_map(|inner_type| {
+                DataType::Map {
+                    key: Arc::new(inner_type.clone()),
+                    value: Arc::new(inner_type),
+                }
+            }),
+        ]
+    }
+
+    pub fn arbitrary_datatype() -> impl Strategy<Value = DataType> {
+        let leaf = prop_oneof![
+            arbitrary_int_encoding().prop_map(|encoding| DataType::I32 { encoding }),
+            arbitrary_int_encoding().prop_map(|encoding| DataType::U32 { encoding }),
+            arbitrary_int_encoding().prop_map(|encoding| DataType::I64 { encoding }),
+            arbitrary_int_encoding().prop_map(|encoding| DataType::U64 { encoding }),
+            arbitrary_int_encoding().prop_map(|encoding| DataType::F32 { encoding }),
+            arbitrary_bool_encoding().prop_map(|encoding| DataType::Bool { encoding }),
+            Just(DataType::F64),
+            Just(DataType::String),
+            Just(DataType::Datetime),
+            Just(DataType::DatetimeUnix),
+            (arbitrary_definition_ref(), arbitrary_json_encoding()).prop_map(
+                |(definition, encoding)| DataType::Definition {
+                    encoding,
+                    definition
+                }
+            ),
+            arbitrary_unknown_datatype()
+        ];
+
+        leaf.prop_recursive(8, 200, 10, arbitrary_self_referential_datatype)
+    }
+
+    pub fn arbitrary_primitive_datatype() -> impl Strategy<Value = DataType> {
+        let leaf = prop_oneof![
+            arbitrary_int_encoding().prop_map(|encoding| DataType::I32 { encoding }),
+            arbitrary_int_encoding().prop_map(|encoding| DataType::U32 { encoding }),
+            arbitrary_int_encoding().prop_map(|encoding| DataType::I64 { encoding }),
+            arbitrary_int_encoding().prop_map(|encoding| DataType::U64 { encoding }),
+            arbitrary_int_encoding().prop_map(|encoding| DataType::F32 { encoding }),
+            arbitrary_bool_encoding().prop_map(|encoding| DataType::Bool { encoding }),
+            Just(DataType::F64),
+            Just(DataType::String),
+            Just(DataType::Datetime),
+            Just(DataType::DatetimeUnix),
+        ];
+
+        leaf.prop_recursive(8, 200, 10, arbitrary_self_referential_datatype)
+    }
+
+    pub fn arbitrary_non_primitive_datatype() -> impl Strategy<Value = DataType> {
+        let leaf = prop_oneof![
+            (arbitrary_definition_ref(), arbitrary_json_encoding()).prop_map(
+                |(definition, encoding)| DataType::Definition {
+                    encoding,
+                    definition
+                }
+            ),
+        ];
+
+        leaf.prop_recursive(8, 200, 10, arbitrary_self_referential_datatype)
+    }
+}

@@ -52,6 +52,13 @@ debug = true
 lto = false
 strip = false
 
+# Make proptest a bit faster
+[profile.test.package.proptest]
+opt-level = 3
+
+[profile.test.package.rand_chacha]
+opt-level = 3
+
 [lints]
 workspace = true
 

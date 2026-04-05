@@ -21,10 +21,30 @@ pub enum RegistryError {
     },
 }
 
-fn extract_dependency_from_field(data_type: &DataType) -> Vec<DefinitionRef> {
+/// This function looks at which types the given `datatype`
+/// (related to one in [`Json::fields`]) are non-primitive
+/// (that is, are other definitions) and lists them out.
+///
+/// # Example
+///
+/// Given the following KDL:
+/// ```kdl
+/// field foo type="%{ Bar => [Baz] }"
+/// ```
+/// The output of this function should be equivalent to a `vec![ Bar, Baz ]`.
+///
+/// # Intended usage
+///
+/// This function is later used by the registry to correctly identify
+/// and resolve dependencies between types when building the DAG.
+fn extract_dependency_from_field(datatype: &DataType) -> Vec<DefinitionRef> {
     let mut ret = vec![];
 
-    match data_type {
+    // NOTE:
+    // When adding a new compound [`DataType`] (e.g., [`DataType::Map`],
+    // [`DataType::Array`]), this match MUST be updated to include the new
+    // datatype.
+    match datatype {
         DataType::Definition { definition, .. } => ret.push(*definition),
 
         DataType::Array { inner_type, .. } | DataType::StringArray { inner_type, .. } => {
@@ -303,6 +323,8 @@ mod tests {
     use crate::kdl_parser::SourceInfo;
 
     use super::*;
+    use crate::intermediate::schema::arbitrary::*;
+    use proptest::prelude::*;
 
     #[test]
     pub fn registry_can_handle_circular_definitions() {
@@ -369,5 +391,26 @@ mod tests {
         let definitions = definitions.finalize().expect("should resolve cycles?");
 
         definitions.find("Bar").expect("Bar was inserted above.");
+    }
+
+    // These tests track a possible bug where, when adding more compound types
+    // to `DataType` (like `Map` or `Array`), one may inadvertidedly fail to
+    // add their dependency resolution in `extract_dependency_from_field`.
+    proptest! {
+        #[test]
+        fn must_not_extract_dependency_from_primitive(datatype in arbitrary_primitive_datatype()) {
+            assert!(
+                extract_dependency_from_field(&datatype)
+                .is_empty()
+            );
+        }
+
+        #[test]
+        fn must_extract_dependency_from_definition(datatype in arbitrary_non_primitive_datatype()) {
+            assert!(
+                !extract_dependency_from_field(&datatype)
+                .is_empty()
+            );
+        }
     }
 }
