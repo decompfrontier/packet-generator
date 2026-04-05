@@ -745,7 +745,7 @@ mod combinators {
         fn arbitrary_datatype() -> impl Strategy<Value = String> {
             let leaf = prop_oneof![arbitrary_primitive(), arbitrary_non_primitive()];
 
-            leaf.prop_recursive(20, 200, 3, |inner| {
+            leaf.prop_recursive(20, 200, 10, |inner| {
                 prop_oneof![
                     inner.clone().prop_flat_map(|val| { arbitrary_array(val) }),
                     (inner.clone(), inner)
