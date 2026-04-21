@@ -569,17 +569,6 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
         let (other_root, other_diagnostics) =
             parse_single_document(other_document, &path, visited_documents, opts)?;
 
-        // last_json_index = {
-        //     let mut last_max_seen = last_json_index;
-        //     for def in &mut other_root.json_definitions {
-        //         def.index += last_json_index;
-        //         if def.index > last_max_seen {
-        //             last_max_seen = def.index;
-        //         }
-        //     }
-        //     last_max_seen
-        // };
-
         raw_document
             .json_definitions
             .extend(other_root.json_definitions);
@@ -621,7 +610,7 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
 ///
 /// The [`RawDocument`] can be later converted to a
 /// [`Document`](super::Document) used for generating the IR by calling
-/// [`schema::validate`](super::validate).
+/// the [`RawDocument::finalize`] method.
 ///
 /// # Errors
 ///

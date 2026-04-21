@@ -10,9 +10,7 @@ use stringcase::Caser;
 
 use crate::generators::{Addon, GeneratedSource, GenerationError, Generator, WithAddons};
 
-use crate::intermediate::{
-    ArraySize, DataType, Definition, DefinitionRegistry, IntEnum, Json, JsonField, StringEnum,
-};
+use crate::intermediate::{DefinitionRegistry, schema::*};
 
 const AUTOGENERATION_NOTICE: &str = "
 // This file is auto-generated from a KDL specification by `packet-generator`.
@@ -36,7 +34,7 @@ fn enum_variant_format(string: &str) -> String {
     string.to_pascal_case()
 }
 
-fn field_format(string: &str) -> String {
+fn struct_field_format(string: &str) -> String {
     string.to_snake_case()
 }
 
@@ -138,17 +136,14 @@ impl Generator for CxxGenerator {
     }
 
     fn json_field_name<'a>(&'a self, definition: &'a JsonField) -> CowArc<'a, str> {
-        CowArc::Owned(field_format(&definition.name).into())
+        CowArc::Owned(struct_field_format(&definition.name).into())
     }
 
     fn int_enum_name<'a>(&'a self, definition: &'a IntEnum) -> CowArc<'a, str> {
         CowArc::Owned(enum_format(&definition.name).into())
     }
 
-    fn int_enum_variant_name<'a>(
-        &'a self,
-        definition: &'a crate::intermediate::IntEnumVariant,
-    ) -> CowArc<'a, str> {
+    fn int_enum_variant_name<'a>(&'a self, definition: &'a IntEnumVariant) -> CowArc<'a, str> {
         CowArc::Owned(enum_variant_format(&definition.name).into())
     }
 
@@ -158,7 +153,7 @@ impl Generator for CxxGenerator {
 
     fn string_enum_variant_name<'a>(
         &'a self,
-        definition: &'a crate::intermediate::StringEnumVariant,
+        definition: &'a StringEnumVariant,
     ) -> CowArc<'a, str> {
         CowArc::Owned(enum_variant_format(&definition.name).into())
     }
@@ -242,17 +237,12 @@ fn convert_datatype(
             size: ArraySize::Fixed(_),
         } => {
             // TODO(Arves): Implement this.
-            todo!("Fixed array size for string arrays are not implemented.");
+            todo!("Fixed array size for string arrays are not implemented yet.");
         }
 
-        // DataType:: { inner_type } => {
-        //     let inner = convert_datatype(inner_type, registry)?;
-        //     Ok(inner)
-        // }
         DataType::Definition {
             definition: weak,
-            // TODO(anri): Handle JSON string encoding
-            encoding: _,
+            encoding: JsonEncoding::Json,
         } => {
             let definition = registry.get(*weak);
             match *definition {
@@ -263,6 +253,14 @@ fn convert_datatype(
                 Definition::Json(ref json) => Ok(struct_format(&json.name)),
                 Definition::IntEnum(ref int_enum) => Ok(enum_format(&int_enum.name)),
             }
+        }
+
+        DataType::Definition {
+            definition: _,
+            encoding: JsonEncoding::String,
+        } => {
+            // TODO(anri): Handle JSON string encoding
+            todo!("String-encoded JSONs are not implemented yet.");
         }
 
         DataType::Unknown { name: other, .. } => match registry.find(other) {
@@ -302,7 +300,7 @@ fn generate_json_cxx(
                 datatype = format!("std::optional<{datatype}>");
             }
 
-            let name = field_format(&field.name);
+            let name = struct_field_format(&field.name);
             let doc = split_documentation(&field.doc, 0);
 
             Ok(format!(
@@ -341,9 +339,9 @@ fn generate_int_enum_cxx(
             let name = enum_variant_format(&variant.name);
 
             let start = variant.value.unwrap_or(start);
-            let doc = &variant.doc;
+            let doc = split_documentation(&variant.doc, 1);
 
-            format!("\n{TAB}/// {doc}\n{TAB}{name} = {start},")
+            format!("\n{doc}\n{TAB}{name} = {start},")
         })
         .unwrap_or_default();
 
@@ -351,9 +349,9 @@ fn generate_int_enum_cxx(
         .map(|variant| {
             let name = enum_variant_format(&variant.name);
             let maybe_val = variant.value.map(|v| format!(" = {v}")).unwrap_or_default();
-            let doc = &variant.doc;
+            let doc = split_documentation(&variant.doc, 1);
 
-            format!("\n{TAB}/// {doc}\n{TAB}{name}{maybe_val}")
+            format!("\n{doc}\n{TAB}{name}{maybe_val}")
         })
         .join(",\n");
 
@@ -381,9 +379,9 @@ fn generate_str_enum_cxx(
         .sorted_unstable_by_key(|a| a.index)
         .map(|variant| {
             let name = enum_variant_format(&variant.name);
-            let doc = &variant.doc;
+            let doc = split_documentation(&variant.doc, 1);
             let val = &variant.value;
-            format!("\n{TAB}/// {doc}\n{TAB}constexpr const auto {name} = \"{val}\";")
+            format!("\n{doc}\n{TAB}constexpr const auto {name} = \"{val}\";")
         })
         .join("\n");
 
@@ -399,4 +397,171 @@ namespace {} {{
     );
 
     Ok(content)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::kdl_parser::SourceInfo;
+
+    use std::sync::{Arc, LazyLock};
+
+    struct SyntheticData {
+        json: Json,
+        int_enum: IntEnum,
+        str_enum: StringEnum,
+    }
+
+    fn build_synthetic_definitions() -> SyntheticData {
+        let source = Arc::new(SourceInfo::new(String::new(), String::new()));
+
+        let arced_name: Arc<str> = TEST_NAME.into();
+
+        let mut json = Json::new(
+            TEST_NAME.to_owned(),
+            0,
+            String::new(),
+            source,
+            (0, 0).into(),
+        );
+
+        json.add_field(JsonField {
+            index: 0,
+            name: arced_name.clone(),
+            key: String::new(),
+            type_: DataType::String,
+            optional: false,
+            doc: String::new(),
+            span: (0, 0).into(),
+        });
+
+        let mut int_enum = IntEnum::new(TEST_NAME.to_owned(), 0, String::new(), 0);
+
+        int_enum.add_variant(IntEnumVariant {
+            index: 0,
+            name: arced_name.clone(),
+            doc: String::new(),
+            value: None,
+        });
+
+        let mut str_enum = StringEnum::new(TEST_NAME.to_owned(), 0, String::new());
+
+        str_enum.add_variant(StringEnumVariant {
+            index: 0,
+            name: arced_name,
+            doc: String::new(),
+            value: String::new(),
+        });
+
+        SyntheticData {
+            json,
+            int_enum,
+            str_enum,
+        }
+    }
+
+    const TEST_NAME: &str = "any-random_namedSequence-Of_characters";
+    const TEST_GENERATOR: CxxGenerator = CxxGenerator::new();
+    static TEST_DATA: LazyLock<SyntheticData> = LazyLock::new(build_synthetic_definitions);
+
+    #[test]
+    fn can_format_structs() {
+        let expected = "AnyRandomNamedSequenceOfCharacters";
+        assert_eq!(struct_format(TEST_NAME), expected);
+
+        assert_eq!(TEST_GENERATOR.json_name(&TEST_DATA.json).as_ref(), expected);
+    }
+
+    #[test]
+    fn can_format_struct_fields() {
+        let expected = "any_random_named_sequence_of_characters";
+        assert_eq!(struct_field_format(TEST_NAME), expected);
+
+        assert_eq!(
+            TEST_GENERATOR
+                .json_field_name(TEST_DATA.json.fields.get(TEST_NAME).unwrap())
+                .as_ref(),
+            expected
+        );
+    }
+
+    #[test]
+    fn can_format_enums() {
+        let expected = "AnyRandomNamedSequenceOfCharacters";
+        assert_eq!(enum_format(TEST_NAME), expected);
+
+        assert_eq!(
+            TEST_GENERATOR.int_enum_name(&TEST_DATA.int_enum).as_ref(),
+            expected
+        );
+
+        assert_eq!(
+            TEST_GENERATOR
+                .string_enum_name(&TEST_DATA.str_enum)
+                .as_ref(),
+            expected
+        );
+    }
+
+    #[test]
+    fn can_format_enum_variants() {
+        let expected = "AnyRandomNamedSequenceOfCharacters";
+        assert_eq!(enum_variant_format(TEST_NAME), expected);
+
+        assert_eq!(
+            TEST_GENERATOR
+                .int_enum_variant_name(TEST_DATA.int_enum.variants.get(TEST_NAME).unwrap())
+                .as_ref(),
+            expected
+        );
+
+        assert_eq!(
+            TEST_GENERATOR
+                .string_enum_variant_name(TEST_DATA.str_enum.variants.get(TEST_NAME).unwrap())
+                .as_ref(),
+            expected
+        );
+    }
+
+    #[test]
+    fn can_add_addons() {
+        #[derive(Debug, Clone)]
+        struct MockAddon {}
+        impl Addon for MockAddon {
+            type For = CxxGenerator;
+        }
+
+        let mut generator = CxxGenerator::new();
+        assert!(generator.addons.is_empty());
+
+        generator.add_addon(MockAddon {});
+        generator.add_addon(MockAddon {});
+        generator.add_addon(MockAddon {});
+
+        assert_eq!(generator.addons.len(), 3);
+    }
+
+    #[test]
+    fn can_split_documentation() {
+        const DOC: &str = r#"# Foo
+
+Bar.
+    Baz."#;
+
+        assert_eq!(
+            split_documentation(DOC, 0),
+            r#"/// # Foo
+///
+/// Bar.
+///     Baz."#
+        );
+
+        assert_eq!(
+            split_documentation(DOC, 2),
+            r#"        /// # Foo
+        ///
+        /// Bar.
+        ///     Baz."#
+        );
+    }
 }

@@ -9,6 +9,8 @@ use std::{
 };
 
 /// A valid reference to a path for the VFS.
+///
+/// This type should only be constructed by a [`Vfs::normalize_path`].
 #[derive(Debug, PartialEq, PartialOrd, Eq, Hash)]
 #[repr(transparent)]
 pub struct VfsPath {
@@ -29,25 +31,34 @@ impl ToOwned for VfsPath {
 
     #[inline]
     fn to_owned(&self) -> Self::Owned {
-        VfsPathBuf(self.inner.to_owned())
+        VfsPathBuf {
+            inner: self.inner.to_owned(),
+        }
     }
 
     #[inline]
     fn clone_into(&self, target: &mut Self::Owned) {
-        self.inner.clone_into(&mut target.0);
+        self.inner.clone_into(&mut target.inner);
     }
 }
 
 /// A valid owned path for the VFS.
+///
+/// This type should only be constructed by a [`Vfs::normalize_path`].
 #[derive(Debug, Clone, PartialEq, PartialOrd, Eq, Hash)]
-pub struct VfsPathBuf(PathBuf);
+#[repr(transparent)]
+pub struct VfsPathBuf {
+    inner: PathBuf,
+}
+
+impl VfsPathBuf {}
 
 impl Deref for VfsPathBuf {
     type Target = VfsPath;
 
     #[inline]
     fn deref(&self) -> &Self::Target {
-        VfsPath::new(&self.0)
+        VfsPath::new(&self.inner)
     }
 }
 
@@ -57,10 +68,39 @@ impl Borrow<VfsPath> for VfsPathBuf {
     }
 }
 
+/// Trait for dealing with path sanitization.
+///
+/// Normal users should never use this trait but always prefer
+/// [`Vfs::normalize_path`].
+pub trait VfsSanitize {
+    /// Function that sanitizes a [`Path`] to be usable with a [`Vfs`].
+    ///
+    ///
+    /// # Errors
+    ///
+    /// The error-conditions depend on the underlying implementation.
+    fn sanitize(path: &Path) -> Result<PathBuf, std::io::Error>;
+}
+
 impl VfsPathBuf {
+    #[must_use = "Constructing a `VfsPathBuf` implies that you want to use it."]
+    /// Constructs a path usable by a [`Vfs`].
+    ///
+    /// # Errors
+    ///
+    /// The error-conditions depend on the underlying implementation of
+    /// the trait method [`VfsSanitize::sanitize`].
+    pub fn new_from_vfs<V>(path: impl AsRef<Path>) -> Result<Self, std::io::Error>
+    where
+        V: Vfs + VfsSanitize,
+    {
+        let sanitized = <V as VfsSanitize>::sanitize(path.as_ref())?;
+        Ok(Self { inner: sanitized })
+    }
+
     #[must_use]
     pub fn to_string_lossy(&self) -> Cow<'_, str> {
-        self.0.to_string_lossy()
+        self.inner.to_string_lossy()
     }
 }
 
@@ -85,9 +125,15 @@ pub trait Vfs {
 
 pub struct DefaultFS;
 
+impl VfsSanitize for DefaultFS {
+    fn sanitize(path: &Path) -> Result<PathBuf, std::io::Error> {
+        path.canonicalize()
+    }
+}
+
 impl Vfs for DefaultFS {
     fn normalize_path(path: &Path) -> Result<VfsPathBuf, std::io::Error> {
-        path.canonicalize().map(VfsPathBuf)
+        VfsPathBuf::new_from_vfs::<Self>(path)
     }
 
     fn read_file_to_string(&self, path: &VfsPath) -> Result<String, std::io::Error> {
@@ -120,10 +166,16 @@ impl InMemoryFS {
     }
 }
 
+impl VfsSanitize for InMemoryFS {
+    fn sanitize(path: &Path) -> Result<PathBuf, std::io::Error> {
+        Ok(clean_path::clean(path))
+    }
+}
+
 impl Vfs for InMemoryFS {
     fn normalize_path(path: &Path) -> Result<VfsPathBuf, std::io::Error> {
         match path.to_str() {
-            Some(s) => Ok(VfsPathBuf(clean_path::clean(s))),
+            Some(s) => Ok(VfsPathBuf::new_from_vfs::<Self>(s)?),
             None => Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidFilename,
                 String::from("path is not UTF-8"),
@@ -163,9 +215,69 @@ mod tests {
     #[test]
     fn vfspathbuf_is_a_pathbuf() {
         let path = PathBuf::from("test.kdl");
-        let path2 = VfsPathBuf(path.clone());
+        let path2 = VfsPathBuf {
+            inner: path.clone(),
+        };
 
-        assert_eq!(path2.0.to_string_lossy(), path.to_string_lossy());
+        assert_eq!(path2.inner.to_string_lossy(), path.to_string_lossy());
+    }
+
+    #[test]
+    fn vfspath_can_clone_into_vfspathbuf() {
+        let vfs_path = VfsPath::new("a");
+        let mut path = VfsPathBuf {
+            inner: PathBuf::new(),
+        };
+        vfs_path.clone_into(&mut path);
+
+        assert_eq!(&path.inner, "a");
+        assert_eq!(&path.inner, &vfs_path.inner);
+    }
+
+    #[test]
+    fn vfspathbuf_to_string_lossy_works() {
+        let path_a = VfsPath::new("a").to_owned();
+        assert_eq!(path_a.to_string_lossy(), Cow::Borrowed("a"));
+
+        #[cfg(not(windows))]
+        let os_str =
+            unsafe { std::ffi::OsStr::from_encoded_bytes_unchecked(&[0x61, 0x62, 0xE3, 0x82]) };
+
+        #[cfg(windows)]
+        let os_string = {
+            use std::os::windows::prelude::*;
+
+            std::ffi::OsString::from_wide(&[0x0061, 0x0062, 0xD800])
+        };
+
+        #[cfg(windows)]
+        let os_str = &os_string;
+
+        let path_b = VfsPath::new(os_str).to_owned();
+
+        let expected: Cow<'_, str> = Cow::Owned(String::from("ab�"));
+        assert_eq!(path_b.to_string_lossy(), expected);
+    }
+
+    #[test]
+    fn vfspathbuf_derefs_from_box() {
+        let path = VfsPath::new("a").to_owned();
+        let boxed_path = Box::new(path.clone());
+        assert_eq!(path, *boxed_path);
+        assert_eq!(&path.inner, "a");
+    }
+
+    #[test]
+    fn inmem_vfs_adds_files() {
+        let mut fs = InMemoryFS::new();
+
+        let path = InMemoryFS::normalize_path(Path::new("foo")).expect("normalization works");
+
+        let () = fs.add_file(&path, "abcd").expect("can add file");
+
+        let content = fs.read_file_to_string(&path).expect("can read file");
+
+        assert_eq!(content, "abcd");
     }
 
     #[test]

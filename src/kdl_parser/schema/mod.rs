@@ -1,3 +1,5 @@
+//! Schema of the KDL files.
+
 use std::{
     collections::BTreeSet, fmt::Display, num::NonZeroUsize, path::PathBuf, str::FromStr, sync::Arc,
 };
@@ -5,12 +7,8 @@ use std::{
 mod validator;
 
 use miette::SourceSpan;
-pub use validator::validate;
 
-use crate::{
-    intermediate::{IntEnumVariant, StringEnumVariant},
-    kdl_parser::SourceInfo,
-};
+use crate::kdl_parser::{Diagnostic, Document, SourceInfo};
 
 #[derive(Debug)]
 pub struct RawDocument {
@@ -21,6 +19,21 @@ pub struct RawDocument {
     pub http_definitions: Vec<HTTPDefinition>,
 
     pub enum_definitions: Vec<EnumDefinition>,
+}
+
+impl RawDocument {
+    /// Validates a [`RawDocument`] to make it usable for the intermediate
+    /// representation.
+    /// Destroys the current document in the process.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if after this post-processing the [`Document`] is still
+    /// not valid.
+    #[allow(clippy::result_large_err)]
+    pub const fn finalize(self) -> Result<Document, Diagnostic> {
+        validator::validate(self)
+    }
 }
 
 #[derive(Debug)]
@@ -60,8 +73,10 @@ pub struct StringEnumInner {
     pub value: String,
 }
 
-impl From<StringEnumDefinition> for crate::intermediate::StringEnum {
+impl From<StringEnumDefinition> for crate::intermediate::schema::StringEnum {
     fn from(value: StringEnumDefinition) -> Self {
+        use crate::intermediate::schema::StringEnumVariant;
+
         let mut members = BTreeSet::new();
 
         for variant in value.variants.as_slice() {
@@ -116,8 +131,10 @@ pub struct IntEnumInner {
     pub value: Option<i128>,
 }
 
-impl From<IntEnumDefinition> for crate::intermediate::IntEnum {
+impl From<IntEnumDefinition> for crate::intermediate::schema::IntEnum {
     fn from(value: IntEnumDefinition) -> Self {
+        use crate::intermediate::schema::IntEnumVariant;
+
         let mut members = BTreeSet::new();
 
         for variant in value.variants {
@@ -179,7 +196,7 @@ impl Display for JsonEncoding {
     }
 }
 
-impl From<JsonEncoding> for crate::intermediate::JsonEncoding {
+impl From<JsonEncoding> for crate::intermediate::schema::JsonEncoding {
     fn from(value: JsonEncoding) -> Self {
         match value {
             JsonEncoding::Json => Self::Json,
@@ -283,7 +300,7 @@ impl Display for ArraySize {
     }
 }
 
-impl From<ArraySize> for crate::intermediate::ArraySize {
+impl From<ArraySize> for crate::intermediate::schema::ArraySize {
     fn from(value: ArraySize) -> Self {
         match value {
             ArraySize::Dynamic => Self::Dynamic,

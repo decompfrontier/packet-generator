@@ -14,13 +14,12 @@ use std::{
 use atomicow::CowArc;
 use petgraph::{algo::Cycle, graph::NodeIndex};
 
-use crate::intermediate::{
-    DataType, DefinitionRegistry, IntEnum, IntEnumVariant, Json, JsonField, StringEnum,
-    StringEnumVariant,
-};
+use crate::intermediate::{DefinitionRegistry, schema::*};
 
 mod cpp;
-mod utils;
+pub mod utils;
+
+pub use cpp::{CxxGenerator, GlazeGenerator};
 
 #[derive(Debug, Clone)]
 pub struct GeneratedSource {
@@ -94,7 +93,7 @@ pub trait Addon: Debug {
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum GenerationError {
     /// We needed to look into a
-    /// [`Definition`](crate::intermediate::Definition),
+    /// [`Definition`],
     /// but the [`DefinitionRegistry`] expired in the meantime.
     ///
     /// Use this when converting [`std::sync::Weak`] into [`std::sync::Arc`]
@@ -164,4 +163,116 @@ pub fn write_sources(
     Ok(())
 }
 
-pub use cpp::{CxxGenerator, GlazeGenerator};
+#[cfg(test)]
+mod tests {
+    use std::{collections::BTreeSet, sync::Arc};
+
+    use crate::kdl_parser::SourceInfo;
+
+    use super::*;
+
+    struct MockGenerator;
+    impl Generator for MockGenerator {
+        fn generate(
+            &self,
+            _registry: &DefinitionRegistry,
+            _initial_filename: &str,
+        ) -> Result<Vec<GeneratedSource>, GenerationError> {
+            Ok(vec![])
+        }
+    }
+
+    #[test]
+    fn generator_can_read_json_name() {
+        let generator = MockGenerator {};
+        let definition = Json::new(
+            "Foo".into(),
+            0,
+            "a".into(),
+            Arc::new(SourceInfo {
+                name: "foo".into(),
+                source_code: "foo.kdl".into(),
+            }),
+            (0, 0).into(),
+        );
+
+        assert_eq!(generator.json_name(&definition).as_ref(), "Foo");
+    }
+
+    #[test]
+    fn generator_can_read_json_field_name() {
+        let generator = MockGenerator {};
+
+        let definition = JsonField {
+            index: 0,
+            name: "foo".into(),
+            key: "x".into(),
+            type_: DataType::String,
+            optional: false,
+            doc: "a".into(),
+            span: (0, 0).into(),
+        };
+
+        assert_eq!(generator.json_field_name(&definition).as_ref(), "foo");
+    }
+
+    #[test]
+    fn generator_can_read_int_enum_name() {
+        let generator = MockGenerator {};
+
+        let definition = IntEnum {
+            index: 0,
+            name: "Foo".into(),
+            doc: "a".into(),
+            start: 0,
+            variants: BTreeSet::new(),
+        };
+
+        assert_eq!(generator.int_enum_name(&definition).as_ref(), "Foo");
+    }
+
+    #[test]
+    fn generator_can_read_int_enum_variant_name() {
+        let generator = MockGenerator {};
+
+        let definition = IntEnumVariant {
+            index: 0,
+            name: "Foo".into(),
+            doc: "a".into(),
+            value: None,
+        };
+
+        assert_eq!(generator.int_enum_variant_name(&definition).as_ref(), "Foo");
+    }
+
+    #[test]
+    fn generator_can_read_string_enum_name() {
+        let generator = MockGenerator {};
+
+        let definition = StringEnum {
+            index: 0,
+            name: "Foo".into(),
+            doc: "a".into(),
+            variants: BTreeSet::new(),
+        };
+
+        assert_eq!(generator.string_enum_name(&definition).as_ref(), "Foo");
+    }
+
+    #[test]
+    fn generator_can_read_string_enum_variant_name() {
+        let generator = MockGenerator {};
+
+        let definition = StringEnumVariant {
+            index: 0,
+            name: "Foo".into(),
+            doc: "a".into(),
+            value: "a".into(),
+        };
+
+        assert_eq!(
+            generator.string_enum_variant_name(&definition).as_ref(),
+            "Foo"
+        );
+    }
+}

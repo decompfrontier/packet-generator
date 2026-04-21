@@ -250,9 +250,16 @@ mod combinators {
     type PResult<T = DataType> = winnow::ModalResult<T, Error>;
 
     #[derive(Debug)]
-    struct Modifier<'a> {
-        name: &'a str,
-        params: Vec<&'a str>,
+    enum Modifier<'a> {
+        Unnamed {
+            name: &'a str,
+            params: Vec<&'a str>,
+        },
+
+        Named {
+            name: &'a str,
+            params: Vec<(&'a str, &'a str)>,
+        },
     }
 
     macro_rules! generate_intlike {
@@ -274,17 +281,18 @@ mod combinators {
                         }),
 
                         Some(modifiers) => {
-                            let valid_modifiers =
-                                modifiers.iter().filter(|modifier| match modifier.name {
-                                    "str" | "int" => true,
-                                    _ => false,
-                                });
-
-                            let last_encoding = valid_modifiers.last().and_then(|s| match s.name {
-                                "int" => Some(IntLikeEncoding::Int),
-                                "str" => Some(IntLikeEncoding::String),
-                                _ => None,
-                            });
+                            let last_encoding = modifiers
+                                .iter()
+                                .filter_map(|modifier| match modifier {
+                                    Modifier::Unnamed { name: "str", .. } => {
+                                        Some(IntLikeEncoding::String)
+                                    }
+                                    Modifier::Unnamed { name: "int", .. } => {
+                                        Some(IntLikeEncoding::Int)
+                                    }
+                                    _ => None,
+                                })
+                                .next_back();
 
                             match last_encoding {
                                 Some(encoding) => Ok(DataType::$enum_name { encoding }),
@@ -346,21 +354,18 @@ mod combinators {
                 },
 
                 Some(modifiers) => {
-                    let valid_modifiers = modifiers
+                    let last_specified_encoding = modifiers
                         .iter()
-                        .rfind(|modifier| matches!(modifier.name, "str" | "int"));
-
-                    let last_encoding = valid_modifiers
-                        .and_then(|s| match s.name {
-                            "int" => Some(BoolEncoding::Int),
-                            "str" => Some(BoolEncoding::String),
+                        .filter_map(|modifier| match modifier {
+                            Modifier::Unnamed { name: "str", .. } => Some(BoolEncoding::String),
+                            Modifier::Unnamed { name: "int", .. } => Some(BoolEncoding::Int),
                             _ => None,
                         })
-                        .unwrap_or(BoolEncoding::Bool);
+                        .next_back();
 
-                    DataType::Bool {
-                        encoding: last_encoding,
-                    }
+                    let encoding = last_specified_encoding.unwrap_or(BoolEncoding::Bool);
+
+                    DataType::Bool { encoding }
                 }
             })),
         )
@@ -438,9 +443,13 @@ mod combinators {
                         .and_then(|modifiers| {
                             modifiers
                                 .iter()
-                                .filter_map(|modifier| match modifier.name {
-                                    "str" => Some(JsonEncoding::String),
-                                    "json" => Some(JsonEncoding::Json),
+                                .filter_map(|modifier| match modifier {
+                                    Modifier::Unnamed { name: "str", .. } => {
+                                        Some(JsonEncoding::String)
+                                    }
+                                    Modifier::Unnamed { name: "json", .. } => {
+                                        Some(JsonEncoding::Json)
+                                    }
                                     _ => None,
                                 })
                                 .next_back()
@@ -457,10 +466,10 @@ mod combinators {
     }
 
     fn parse_map(input: &mut Input) -> PResult {
-        delimited(
-            ("%{", space0),
-            (
-                separated_pair(
+        (
+            delimited(
+                ("%{", space0),
+                (separated_pair(
                     parse_datatype,
                     cut_err((space1, literal("=>"), space1).context(MiniDiagnostic {
                         message: "expected separator ` => ` in map".to_owned(),
@@ -468,16 +477,16 @@ mod combinators {
                         help: Some("a map is defined as `%{foo => bar}`.".to_owned()),
                     })),
                     parse_datatype,
-                ),
-                opt(parse_modifier),
+                ),),
+                (space0, "}"),
             ),
-            (space0, "}"),
+            cut_err(opt(parse_modifier)),
         )
-        .map(|((x, y), _maybe_modifiers)| DataType::Map {
-            key: Arc::new(x),
-            value: Arc::new(y),
-        })
-        .parse_next(input)
+            .map(|(((x, y),), _mods)| DataType::Map {
+                key: Arc::new(x),
+                value: Arc::new(y),
+            })
+            .parse_next(input)
     }
 
     fn parse_array(input: &mut Input) -> PResult {
@@ -505,10 +514,10 @@ mod combinators {
                         .iter()
                         .filter_map(|modifier| -> Option<Result<_, MiniDiagnostic>> {
 
-                            match modifier.name {
-                                "size" => {
-                                    let res = modifier
-                                        .params
+                            match modifier {
+                                Modifier::Unnamed { name: "size", params } => {
+                                    let res =
+                                        params
                                         .first()
                                         .ok_or_else(|| MiniDiagnostic {
                                             message: "array modifier `size` needs to include the number of elements".to_owned(),
@@ -543,6 +552,12 @@ mod combinators {
                                     Some(res)
                                 }
 
+                                Modifier::Named { name: "size", .. } => {
+                                    Some(Err(MiniDiagnostic { message: "the modifier `size` should be unnamed, not named!".to_owned(),
+                                    severity: miette::Severity::Error,
+                                    help: Some(("use `::size(42)` instead of `::size(foo: 42)`").to_owned()) }))
+                                }
+
                                 _ => None,
                             }
                         })
@@ -559,10 +574,10 @@ mod combinators {
                     let array_size = array_sizes.first().copied().unwrap_or_default();
 
                     let maybe_separators: Result<Vec<_>, _> = modifiers.iter().filter_map(|modifier| -> Option<Result<_, MiniDiagnostic>> {
-                            match modifier.name {
-                                "sep" => {
-                                    let x = modifier
-                                        .params
+                            match modifier {
+                                Modifier::Unnamed { name: "sep", params } => {
+                                    let x =
+                                        params
                                         .first()
                                         .ok_or_else(|| MiniDiagnostic {
                                             message: "array modifier `sep` needs to include the separator".to_owned(),
@@ -587,6 +602,12 @@ mod combinators {
                                         });
 
                                     Some(x)
+                                }
+
+                                Modifier::Named { name: "sep", .. } => {
+                                    Some(Err(MiniDiagnostic { message: "the modifier `sep` should be unnamed, not named!".to_owned(),
+                                    severity: miette::Severity::Error,
+                                    help: Some(("use `::sep(comma)` instead of `::sep(foo: comma)`").to_owned()) }))
                                 }
 
                                 _ => None
@@ -621,18 +642,45 @@ mod combinators {
     }
 
     fn parse_modifier<'a>(input: &mut Input<'a>) -> PResult<Vec<Modifier<'a>>> {
-        fn modifier_param_1<'a>(input: &mut Input<'a>) -> PResult<Modifier<'a>> {
+        fn modifier_unnamed_param<'a>(input: &mut Input<'a>) -> PResult<Modifier<'a>> {
             (
-                alpha1,
+                alphanumeric1,
                 opt(delimited(
                     '(',
                     separated(1.., alphanumeric1, (',', space1)),
                     ')',
                 )),
             )
-                .map(|(name, params)| Modifier {
+                .map(|(name, params)| Modifier::Unnamed {
                     name,
                     params: params.unwrap_or_else(Vec::new),
+                })
+                .parse_next(input)
+        }
+
+        fn modifier_named_param<'a>(input: &mut Input<'a>) -> PResult<Modifier<'a>> {
+            type ParsedKeyValueModifier<'a> = (&'a str, Option<Vec<(&'a str, (), &'a str)>>);
+            (
+                alphanumeric1,
+                opt(delimited(
+                    '(',
+                    separated(
+                        1..,
+                        (alphanumeric1, (':', space1).void(), alphanumeric1),
+                        (',', space1),
+                    ),
+                    ')',
+                )),
+            )
+                .map(|(name, params): ParsedKeyValueModifier| Modifier::Named {
+                    name,
+                    params: params
+                        .map(|v| {
+                            v.iter()
+                                .map(|(key, (), value)| (*key, *value))
+                                .collect::<Vec<_>>()
+                        })
+                        .unwrap_or_default(),
                 })
                 .parse_next(input)
         }
@@ -644,7 +692,7 @@ mod combinators {
                     '{',
                     separated(
                         1..,
-                        modifier_param_1,
+                        alt((modifier_unnamed_param, modifier_named_param)),
                         (',', cut_err(space1.context(MiniDiagnostic {
                             message: "expected modifiers in modifier list to be separated by comma _and_ a space"
                                 .to_owned(),
@@ -654,7 +702,7 @@ mod combinators {
                     ),
                     '}',
                 ),
-                modifier_param_1.map(|x| vec![x]),
+                alt((modifier_unnamed_param, modifier_named_param)).map(|x| vec![x]),
             )))
             .context(MiniDiagnostic {
                 message: "expected modifier or modifier list required after '::' in type definition"
@@ -674,6 +722,200 @@ mod combinators {
         use crate::kdl_parser::schema::{DataType, IntLikeEncoding};
 
         use super::*;
+
+        use proptest::prelude::*;
+        use proptest::strategy::Strategy;
+
+        fn arbitrary_modifier() -> impl Strategy<Value = String> {
+            macro_rules! mod_params {
+                () => {
+                    proptest::collection::vec("[a-zA-Z][a-zA-Z0-9]*", 0..5)
+                };
+            }
+
+            ("[a-zA-Z][a-zA-Z0-9]*", mod_params!()).prop_map(|(name, params)| {
+                if params.is_empty() {
+                    name
+                } else {
+                    format!("{name}({})", params.join(", "))
+                }
+            })
+        }
+
+        fn arbitrary_datatype() -> impl Strategy<Value = String> {
+            let leaf = prop_oneof![arbitrary_primitive(), arbitrary_non_primitive()];
+
+            leaf.prop_recursive(20, 200, 10, |inner| {
+                prop_oneof![
+                    inner.clone().prop_flat_map(|val| { arbitrary_array(val) }),
+                    (inner.clone(), inner)
+                        .prop_flat_map(|(left, right)| { arbitrary_map(left, right) })
+                ]
+            })
+        }
+
+        fn arbitrary_primitive() -> impl Strategy<Value = String> {
+            macro_rules! extra_mods {
+                () => {
+                    prop::collection::vec(arbitrary_modifier(), 0..3)
+                };
+            }
+
+            let intlikes = {
+                let intlikes = prop_oneof![
+                    Just("i32"),
+                    Just("u32"),
+                    Just("i64"),
+                    Just("u64"),
+                    Just("f32"),
+                ];
+
+                let intlike_encoding = prop_oneof![Just("int"), Just("str")];
+
+                (intlikes, intlike_encoding, extra_mods!()).prop_map(|(outer, encoding, mods)| {
+                    if mods.is_empty() {
+                        format!("{outer}::{encoding}")
+                    } else {
+                        format!("{outer}::{{{encoding}, {}}}", mods.join(", "))
+                    }
+                })
+            };
+
+            let bools = {
+                let bool_encoding = prop_oneof![
+                    Just(None),
+                    Just(Some(String::from("int"))),
+                    Just(Some(String::from("str"))),
+                ];
+
+                (bool_encoding, extra_mods!()).prop_map(|(enc, mods)| {
+                    if let Some(enc) = enc {
+                        if mods.is_empty() {
+                            format!("bool::{enc}")
+                        } else {
+                            format!("bool::{{{enc}, {}}}", mods.join(", "))
+                        }
+                    } else {
+                        if mods.is_empty() {
+                            String::from("bool")
+                        } else {
+                            format!("bool::{{{}}}", mods.join(", "))
+                        }
+                    }
+                })
+            };
+
+            let rest = prop_oneof![
+                Just(String::from("str")),
+                Just(String::from("f64")),
+                Just(String::from("datetime")),
+                Just(String::from("datetime-unix")),
+            ];
+
+            prop_oneof![
+                intlikes,
+                bools,
+                (rest, extra_mods!()).prop_map(|(name, mods)| {
+                    if mods.is_empty() {
+                        name
+                    } else {
+                        format!("{name}::{{{}}}", mods.join(", "))
+                    }
+                })
+            ]
+        }
+
+        fn arbitrary_array(inner: String) -> impl Strategy<Value = String> {
+            macro_rules! extra_mods {
+                () => {
+                    prop::collection::vec(arbitrary_modifier(), 0..3)
+                };
+            }
+
+            let size = prop_oneof![
+                Just(String::from("size(n)")),
+                (1..=usize::MAX).prop_map(|v| format!("size({v})"))
+            ];
+
+            let separator = prop_oneof![
+                Just(String::from("sep(comma)")),
+                Just(String::from("sep(pipe)")),
+                Just(String::from("sep(colon)")),
+                Just(String::from("sep(at)")),
+            ];
+
+            let size_or_separator = prop_oneof![
+                Just(String::new()),
+                size.clone().prop_map(|size| format!("::{size}")),
+                (size.clone(), extra_mods!()).prop_map(|(size, mods)| {
+                    if mods.is_empty() {
+                        format!("::{{{size}}}")
+                    } else {
+                        format!("::{{{size}, {}}}", mods.join(", "))
+                    }
+                }),
+                separator
+                    .clone()
+                    .prop_map(|separator| format!("::{separator}")),
+                (separator.clone(), extra_mods!()).prop_map(|(separator, mods)| {
+                    if mods.is_empty() {
+                        format!("::{{{separator}}}")
+                    } else {
+                        format!("::{{{separator}, {}}}", mods.join(", "))
+                    }
+                }),
+                (size, separator, extra_mods!()).prop_map(|(size, separator, mods)| {
+                    if mods.is_empty() {
+                        format!("::{{{separator}, {size}}}")
+                    } else {
+                        format!("::{{{separator}, {size}, {}}}", mods.join(", "))
+                    }
+                })
+            ];
+
+            size_or_separator.prop_map(move |extra| format!("[{inner}]{extra}"))
+        }
+
+        #[allow(
+            clippy::needless_pass_by_value,
+            reason = "proptest and rustc throw a fit if we use references"
+        )]
+        fn arbitrary_map(left: String, right: String) -> impl Strategy<Value = String> {
+            (
+                Just(format!("%{{ {left} => {right} }}")),
+                prop::collection::vec(arbitrary_modifier(), 0..4),
+            )
+                .prop_map(|(map, mods)| {
+                    if mods.is_empty() {
+                        map
+                    } else {
+                        format!("{map}::{{{}}}", mods.join(", "))
+                    }
+                })
+        }
+
+        prop_compose! {
+            fn arbitrary_non_primitive()(
+                name in "[A-Z][a-zA-Z0-9]*"
+            ) -> String {
+                name
+            }
+        }
+
+        proptest! {
+            #[test]
+            fn test_arbitrary_types(s in arbitrary_datatype()) {
+                println!("{s}");
+                let mut input = Input {
+                    input: LocatingSlice::new(&s),
+                    state: State {},
+                };
+                let val = parse_datatype(&mut input);
+                println!("{val:#?}");
+                assert!(val.is_ok(), "Error: {}", val.unwrap_err().into_inner().unwrap());
+
+            }
+        }
 
         #[test]
         fn errors_on_unspecified_i32() {

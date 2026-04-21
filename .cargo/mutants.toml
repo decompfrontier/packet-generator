@@ -1,0 +1,6 @@
+exclude_globs = ["src/kdl_parser/errors.rs"]
+exclude_re = [
+    "impl (miette::)?SourceCode",
+    "impl (miette::)?Diagnostic"
+
+]

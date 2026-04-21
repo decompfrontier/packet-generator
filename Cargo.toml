@@ -16,6 +16,7 @@ atomicow = "1.1.0"
 itertools = "0.14.0"
 thiserror = "2.0.17"
 glob = "0.3.0"
+proptest = "1.11.0"
 
 [dependencies]
 atomicow = { workspace = true }
@@ -32,6 +33,7 @@ glob = { workspace = true }
 [dev-dependencies]
 criterion = { version = "0.8", features = ["html_reports"] }
 glob = { workspace = true }
+proptest = { workspace = true }
 
 [[bench]]
 name = "parser"
@@ -49,6 +51,13 @@ inherits = "release"
 debug = true
 lto = false
 strip = false
+
+# Make proptest a bit faster
+[profile.test.package.proptest]
+opt-level = 3
+
+[profile.test.package.rand_chacha]
+opt-level = 3
 
 [lints]
 workspace = true
