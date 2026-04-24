@@ -1,0 +1,59 @@
+// GME unit-related request/response definitions.
+// Ported from old fork's hand-written response structs in
+// gimuserver/gme/response/{ReinforcementInfoResponse,UnitOpeEvoResponse}.hpp
+// and request shapes in gimuserver/gme/handlers/Unit*RequestHandler.cpp.
+
+json UnitFavoriteEntry {
+    doc "Single user_unit favorite/lock entry. Wire-format integers come quoted."
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "Target user_unit instance id (matches user_units.id)"
+    }
+
+    field favorite type="i32::str" {
+        key "5JbjC3Pp"
+        doc "1 = favorited (locked from sell/fusion), 0 = unlocked"
+    }
+
+    field unit_img_type type="i32::str" {
+        key "2pAyFjmZ"
+        doc "Cosmetic unit-image frame id; echoed back unchanged"
+    }
+}
+
+json UnitFavoriteReq {
+    doc "Toggle the favorite/lock flag on one or more user_units."
+
+    field entries type="[UnitFavoriteEntry]" {
+        key "3kcmQy7B"
+        doc "List of entries the client is updating in this call"
+    }
+}
+
+json UnitFavoriteResp {
+    doc "Echoed favorite-flag entry. Wire format is a single object (not an array)."
+
+    field entry type="UnitFavoriteEntry" {
+        key "3kcmQy7B"
+        doc "Echo of the first request entry"
+    }
+}
+
+json UnitEvoReq {
+    doc "Evolve a base unit by consuming evo materials. Body fields TBD; old fork's handler did not parse them."
+
+    field placeholder type="str" {
+        key "_unused"
+        doc "Schema placeholder; old handler returned an empty response without inspecting the body."
+    }
+}
+
+json UnitEvoResp {
+    doc "Empty response stub. Old fork returned {} here; real fields will land when the handler is implemented against the real DB+MST data."
+
+    field placeholder type="str" {
+        key "_unused"
+        doc "Schema placeholder; never populated by the current stub."
+    }
+}
