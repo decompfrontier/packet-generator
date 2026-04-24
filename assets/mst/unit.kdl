@@ -22,299 +22,308 @@ json UnitMst {
     hash "2r9cNSdt"
     doc "F_UNIT_MST"
 
-    field id  type="i32::int" {
+    field id  type="i32::str" {
         key "pn16CNah"
-        doc "TODO"
+        doc "Unit ID"
     }
 
     field unit_name  type=str {
         key "utP1c0CD"
-        doc "TODO"
+        doc "Unit display name"
     }
 
-    field rarity  type="i32::int" {
+    field rarity  type="i32::str" {
         key "7ofj5xa1"
-        doc "TODO"
+        doc "Rarity tier"
     }
 
-    field cost  type="i32::int" {
+    field cost  type="i32::str" {
         key "gvT2ds0Q"
-        doc "TODO"
+        doc "Squad cost"
     }
 
-    field kind  type="i32::int" {
+    field kind  type="i32::str" {
         key "xP9oi5Z2"
-        doc "TODO"
+        doc "Unit kind/class"
     }
 
-    field max_lv  type="i32::int" {
+    field max_lv  type="i32::str" {
         key "EI1DF8Yt"
-        doc "TODO"
+        doc "Maximum level"
     }
 
-    field min_hp  type="i32::int" {
+    field min_hp  type="i32::str" {
         key "UZ1Bj7w2"
-        doc "TODO"
+        doc "Base HP at level 1"
     }
 
-    field max_hp  type="i32::int" {
+    field max_hp  type="i32::str" {
         key "3WMz78t6"
-        doc "TODO"
+        doc "Base HP at max level"
     }
 
-    field min_atk  type="i32::int" {
+    field min_atk  type="i32::str" {
         key "i9Tn7kYr"
-        doc "TODO"
+        doc "Base ATK at level 1"
     }
 
-    field max_atk  type="i32::int" {
+    field max_atk  type="i32::str" {
         key "omuyP54D"
-        doc "TODO"
+        doc "Base ATK at max level"
     }
 
-    field min_def  type="i32::int" {
+    field min_def  type="i32::str" {
         key "q78KoWsg"
-        doc "TODO"
+        doc "Base DEF at level 1"
     }
 
-    field max_def  type="i32::int" {
+    field max_def  type="i32::str" {
         key "32INDST4"
-        doc "TODO"
+        doc "Base DEF at max level"
     }
 
-    field min_rec  type="i32::int" {
+    field min_rec  type="i32::str" {
         key "92ij6UGB"
-        doc "TODO"
+        doc "Base REC at level 1"
     }
 
-    field max_rec  type="i32::int" {
+    field max_rec  type="i32::str" {
         key "X9P3AN5d"
-        doc "TODO"
+        doc "Base REC at max level"
     }
 
-    field param_max  type="[str]" {
+    field param_max  type="[i32::str]::sep(colon)" {
         key "imQJdg64"
-        doc "TODO"
+        doc "IMP parameter caps per stat (HP:ATK:DEF:REC), colon-separated"
     }
 
-    field arousal  type="i32::int" {
+    field arousal  type="i32::str" {
         key "2SH6YsJi"
-        doc "TODO"
+        doc "Limit break / arousal level"
     }
 
-    field element  type="i32::int" {
+    field element  type="i32::str" {
         key "iNy0ZU5M"
-        doc "TODO"
+        doc "Element ID"
     }
 
-    field sex  type="i32::int" {
+    field sex  type="i32::str" {
         key "9i2xhMaJ"
-        doc "TODO"
+        doc "Gender ID"
     }
 
-    field tribe  type="i32::int" {
+    field tribe  type="i32::str" {
         key "07nTrLdD"
-        doc "TODO"
+        doc "Tribe/race ID"
     }
 
     field effect_frame  type=str {
         key "eyUo6a8c"
-        doc "TODO"
+        doc "Effect animation frame data"
     }
 
     field damage_frame  type=str {
         key "6Aou5M9r"
-        doc "TODO"
+        doc "Damage animation frame data"
     }
 
-    field drop_check_count  type="i32::int" {
+    field drop_check_count  type="i32::str" {
         key "n9h7p02P"
-        doc "TODO"
-        doc "TODO"
+        doc "Drop check count"
     }
 
-    field leader_skill_id  type="i32::int" {
+    field leader_skill_id  type="i32::str" {
         key "oS3kTZ2W"
-        doc "TODO"
+        doc "Leader skill ID"
     }
 
-    field skill_id  type="i32::int" {
+    field skill_id  type="i32::str" {
         key "nj9Lw7mV"
-        doc "TODO"
+        doc "Normal skill ID"
     }
 
-    field extra_skill_id  type="i32::int" {
+    field extra_skill_id  type="i32::str" {
         key "iEFZ6H19"
-        doc "TODO"
+        doc "Extra skill ID"
     }
 
-    field ultimate_skill_id  type="i32::int" {
+    field ultimate_skill_id  type="i32::str" {
         key "cb0P4mp1"
-        doc "TODO"
+        doc "Ultimate skill ID"
     }
 
-    field unknown  type="[i32::str]" {
+    field unknown  type=str {
         key "5SUvj4tM"
-        doc "TODO"
+        doc "overdriveStats — raw string, may be empty"
     }
 
-    field extra_passive_skill_id  type="i32::int" {
+    field extra_passive_skill_id  type="i32::str" {
         key "cP83zNsv"
-        doc "TODO"
+        doc "Extra passive skill ID"
     }
 
     field anim_cgg  type=str {
         key "QqfI9mM4"
-        doc "TODO"
+        doc "Animation CGG asset name"
     }
 
-    field sell_price  type="i32::int" {
+    field sell_price  type="i32::str" {
         key "eKtE6k0n"
-        doc "TODO"
+        doc "Zel sell price"
     }
 
     field caution_type  type="bool::str" {
         key "y4jAZ9nI"
-        doc "TODO"
+        doc "Caution/warning flag"
     }
 
-    field description_type  type="i32::int" {
+    field description_type  type="i32::str" {
         key "qp37xTDh"
-        doc "TODO"
+        doc "Description display type"
     }
 
-    field move_speed  type="i32::int" {
+    field move_speed  type="i32::str" {
         key "J2hPXGo5"
-        doc "TODO"
+        doc "Movement speed"
     }
 
-    field attack_move_type  type="i32::int" {
+    field attack_move_type  type="i32::str" {
         key "mv4o39Uz"
-        doc "TODO"
+        doc "Attack movement type"
     }
 
-    field back_move_type  type="i32::int" {
+    field back_move_type  type="i32::str" {
         key "h2L1YI90"
-        doc "TODO"
+        doc "Back movement type"
     }
 
-    field skill_move_type  type="i32::int" {
+    field skill_move_type  type="i32::str" {
         key "XE7Yi5c3"
-        doc "TODO"
+        doc "Skill movement type"
     }
 
-    field ai_id  type="i32::int" {
+    field ai_id  type="i32::str" {
         key "i74vGUFa"
-        doc "TODO"
+        doc "AI behaviour ID"
     }
 
-    field exp_pattern_id  type="i32::int" {
+    field exp_pattern_id  type="i32::str" {
         key "5UvTp7q1"
-        doc "TODO"
+        doc "EXP curve pattern ID"
     }
 
-    field bad_state_resists  type="[i32::str]::sep(colon)" {
+    field unknown2  type="i32::str" {
+        key "pA9ZoWa2"
+        doc "UNIT_pA9ZoWa2 — purpose not yet decoded"
+    }
+
+    field bad_state_resists  type=str {
         key "CEeqs63b"
-        doc "TODO"
+        doc "Bad-state resistance list, colon-separated raw string"
     }
 
-    field adjust_exp  type="i32::int" {
+    field adjust_exp  type="i32::str" {
         key "Gd4NS7H6"
-        doc "TODO"
+        doc "EXP adjustment multiplier"
     }
 
-    field home_img_pos  type="[i32::str]::sep(comma)" {
+    field home_img_pos  type=str {
         key "1W9CxaFK"
-        doc "TODO"
+        doc "Home screen image position, comma-separated raw string (may contain floats)"
     }
 
-    field detail_img_pos  type="[i32::str]::sep(comma)" {
+    field detail_img_pos  type=str {
         key "6z54rgb3"
-        doc "TODO"
+        doc "Detail screen image position, comma-separated raw string (may contain floats)"
     }
 
-    field confirm_img_pos  type="[i32::str]::sep(comma)" {
+    field confirm_img_pos  type=str {
         key "MYK1fq6c"
-        doc "TODO"
+        doc "Confirm screen image position, comma-separated raw string (may contain floats)"
     }
 
-    field summon_image_pos  type="[i32::str]::sep(comma)" {
+    field summon_image_pos  type=str {
         key "KC3Jk8Br"
-        doc "TODO"
+        doc "Summon screen image position, comma-separated raw string (may contain floats)"
     }
 
-    field skill_cut_image_pos  type="[i32::str]::sep(comma)" {
+    field skill_cut_image_pos  type=str {
         key "7hLR6pDN"
-        doc "TODO"
+        doc "Skill cut-in image position, comma-separated raw string (may contain floats)"
     }
 
-    field hp_disp_pos  type="[i32::str]::sep(comma)" {
+    field hp_disp_pos  type=str {
         key "3BpHN6VD"
-        doc "TODO"
+        doc "HP bar display position, comma-separated raw string (may contain floats)"
     }
 
-    field disp_order  type="i32::int" {
+    field disp_order  type="i32::str" {
         key "XuJL4pc5"
-        doc "TODO"
+        doc "Sort/display order"
     }
 
-    field move_offset  type="[i32::str]::sep(comma)" {
+    field move_offset  type=str {
         key "jFX0a7qe"
-        doc "TODO"
+        doc "Movement offset, comma-separated raw string (may contain floats)"
     }
 
-    field category  type="i32::int" {
+    field after_image  type="i32::str" {
+        key "D4Y5bWK7"
+        doc "unitDisplayAfterImage — after-image trail display flag"
+    }
+
+    field category  type="i32::str" {
         key "9PsmH7tz"
-        doc "TODO"
+        doc "Unit category"
     }
 
-    field skill_up_adjust  type="i32::int" {
+    field skill_up_adjust  type="i32::str" {
         key "PXD4v2KY"
-        doc "TODO"
+        doc "Skill level-up adjustment rate"
     }
 
-    field character_voice  type="[i32::str]::sep(comma)" {
+    field character_voice  type=str {
         key "QwN4hqJ2"
-        doc "TODO"
+        doc "Character voice IDs, comma-separated raw string, may be empty"
     }
 
-    field getting_type  type="i32::int" {
+    field getting_type  type="i32::str" {
         key "6yHMXYv1"
-        doc "TODO"
+        doc "Acquisition type"
     }
 
     field ext_home_img_pos  type=str {
         key "jyj6bl9P"
-        doc "TODO"
+        doc "Extended home image position string"
     }
 
     field ext_detail_img_pos  type=str {
         key "QHhOLCuk"
-        doc "TODO"
+        doc "Extended detail image position string"
     }
 
     field ext_confirm_img_pos  type=str {
         key "S0BjxW1F"
-        doc "TODO"
+        doc "Extended confirm image position string"
     }
 
     field ext_summon_img_pos  type=str {
         key "psOjpTAv"
-        doc "TODO"
+        doc "Extended summon image position string"
     }
 
     field ext_skill_cutin_img_pos  type=str {
         key "9y1vaEJk"
-        doc "TODO"
+        doc "Extended skill cut-in image position string"
     }
 
-    field cursor_disp_pos  type="[i32::str]::sep(comma)" {
+    field cursor_disp_pos  type=str {
         key "Lkh6gYkT"
-        doc "TODO"
+        doc "Cursor display position, comma-separated raw string (may contain floats)"
     }
 
     field disp_dict_flag  type="bool::str" {
         key "S4ezp6uK"
-        doc "TODO"
+        doc "Show in dictionary flag"
     }
 }
