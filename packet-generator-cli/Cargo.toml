@@ -15,6 +15,7 @@ atomicow = { workspace = true }
 miette = { workspace = true }
 itertools = { workspace = true }
 thiserror = { workspace = true }
+glob = { workspace = true }
 
 mimalloc = { version = "0.1.37", optional = true }
 

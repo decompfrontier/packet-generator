@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use dashmap::DashMap;
 use packet_generator::kdl_parser::{
-    ParserOpts, ParsingError,
+    ParserOpts, ParsingError, UnparsedKdl,
     schema::{JsonDefinition, RawDocument},
 };
 use ropey::Rope;
@@ -245,11 +245,13 @@ impl LanguageServer for Backend {
 
         let path = params.text_document.uri.path();
 
-        let res = packet_generator::kdl_parser::raw_parse_kdl(
-            file.to_string(),
-            &PathBuf::from(path),
-            &ParserOpts::default(),
-        );
+        let content = file.to_string();
+        let path = PathBuf::from(path);
+
+        let unparsed_kdl = UnparsedKdl::new_owned(content, path);
+
+        let res =
+            packet_generator::kdl_parser::raw_parse_kdl(&[unparsed_kdl], &ParserOpts::default());
 
         match res {
             Ok((document, warnings)) => {

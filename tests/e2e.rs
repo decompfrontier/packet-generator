@@ -10,7 +10,7 @@ use std::{
 use packet_generator::{
     generators::{self, Generator, GlazeGenerator, WithAddons, write_sources},
     intermediate::DefinitionRegistry,
-    kdl_parser::{ParserOpts, ParsingWarnings},
+    kdl_parser::{ParserOpts, ParsingWarnings, UnparsedKdl},
 };
 use stringcase::Caser;
 
@@ -19,7 +19,8 @@ const PROJECT_DIR: &str = env!("CARGO_MANIFEST_DIR");
 fn setup_e2e_registry(main_file: PathBuf) -> (DefinitionRegistry, ParsingWarnings) {
     let path = PathBuf::from(PROJECT_DIR).join(main_file);
     let document = std::fs::read_to_string(&path).expect("this is a test, we control the string");
-    packet_generator::parse_kdl(&document, &path, &ParserOpts::default())
+    let unparsed_kdl = UnparsedKdl::new(&document, &path);
+    packet_generator::parse_kdl(&[unparsed_kdl], &ParserOpts::default())
         .map_err(miette::Report::from)
         .expect("we control the files")
 }

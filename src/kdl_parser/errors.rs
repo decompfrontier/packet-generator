@@ -145,6 +145,9 @@ pub enum ParsingError {
     #[error(transparent)]
     KdlError(#[from] KdlError),
 
+    #[error("no document found")]
+    NoDocumentProvided,
+
     #[error("problems when parsing packet definition")]
     Diagnostics {
         source_info: Arc<SourceInfo>,

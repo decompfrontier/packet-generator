@@ -13,10 +13,8 @@ pub mod kdl_parser;
 
 pub mod vfs;
 
-use std::path::PathBuf;
-
 use crate::{
-    kdl_parser::{ParserOpts, ParsingError, ParsingWarnings},
+    kdl_parser::{ParserOpts, ParsingError, ParsingWarnings, UnparsedKdl},
     vfs::Vfs,
 };
 
@@ -27,7 +25,7 @@ use crate::{
 ///
 /// ```rust
 /// # use std::path::PathBuf;
-/// use packet_generator::kdl_parser::ParserOpts;
+/// use packet_generator::kdl_parser::{ParserOpts, UnparsedKdl};
 ///
 /// # fn main() {
 /// let doc = r#"
@@ -40,11 +38,15 @@ use crate::{
 ///     }
 /// "#;
 ///
+/// let path = PathBuf::from("foo.kdl");
+///
+/// let unparsed_kdl = UnparsedKdl::new(&doc, &path);
+///
 /// let opts = ParserOpts::default();
 /// # let filemap = packet_generator::vfs::InMemoryFS::new();
 /// # let opts = ParserOpts::new(filemap);
 ///
-/// match packet_generator::parse_kdl(doc, &PathBuf::from("foo.kdl"), &opts) {
+/// match packet_generator::parse_kdl(&[unparsed_kdl], &opts) {
 ///     Ok((registry, _warnings)) => {
 ///         println!("{:#?}", registry.find("Foo"));
 ///     }
@@ -59,12 +61,11 @@ use crate::{
 /// Will return `Err` if it was not possible to parse the file in `document`
 /// and its includes.
 /// See [`ParsingError`].
-pub fn parse_kdl<S: AsRef<str>, V: Vfs>(
-    document: S,
-    filepath: &PathBuf,
+pub fn parse_kdl<V: Vfs>(
+    documents: &[UnparsedKdl],
     opts: &ParserOpts<V>,
 ) -> Result<(intermediate::DefinitionRegistry, ParsingWarnings), ParsingError> {
-    let (raw_document, warnings) = kdl_parser::raw_parse_kdl(document, filepath, opts)?;
+    let (raw_document, warnings) = kdl_parser::raw_parse_kdl(documents, opts)?;
 
     let document = raw_document.finalize()?;
 

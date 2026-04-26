@@ -6,8 +6,10 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use std::{env::current_dir, path::PathBuf};
 
-use miette::{Context, miette};
+use itertools::Itertools;
+use miette::{Context, IntoDiagnostic, miette};
 use packet_generator::generators::write_sources;
+use packet_generator::kdl_parser::UnparsedKdl;
 use packet_generator::{
     generators::{CxxGenerator, GenerationError, Generator, GlazeGenerator, WithAddons},
     kdl_parser::{Diagnostic, ParserOpts, ParsingError},
@@ -37,13 +39,14 @@ fn main() -> Result<(), miette::Report> {
         cli::CliArgs::DumpRepresentation { input } => {
             let path = PathBuf::from(input);
 
-            let doc_str = std::fs::read_to_string(&path)
+            let kdl_document_content = std::fs::read_to_string(&path)
                 .map_err(|e| miette::miette!(e))
                 .wrap_err_with(|| format!("cannot open file: {}", path.display()))?;
 
+            let unparsed_document = UnparsedKdl::new(&kdl_document_content, &path);
+
             let (doc, warnings) = packet_generator::kdl_parser::raw_parse_kdl(
-                doc_str,
-                &path,
+                &[unparsed_document],
                 &ParserOpts::default(),
             )?;
 
@@ -67,6 +70,47 @@ fn main() -> Result<(), miette::Report> {
                 Some(v) => v,
                 None => current_dir().map_err(|e| miette::miette!(e))?,
             };
+
+            let input_path = PathBuf::from(&input);
+
+            let (doc, warnings) = if input_path.is_dir() {
+                let files_to_read = glob::glob(&format!("{input}/**/*.kdl"))
+                    .into_diagnostic()
+                    .wrap_err_with(|| format!("error creating glob pattern for '{}'", input))?;
+
+                let paths = files_to_read
+                    .process_results(|maybe_paths| {
+                        maybe_paths
+                            .map(|p| -> Result<_, miette::Report> {
+                                let kdl_document_content = std::fs::read_to_string(&p)
+                                    .into_diagnostic()
+                                    .wrap_err("cannot read file")?;
+
+                                Ok(UnparsedKdl::new_owned(kdl_document_content, p))
+                            })
+                            .collect::<Result<Vec<_>, _>>()
+                    })
+                    .into_diagnostic()
+                    .wrap_err("cannot read globs")??;
+
+                packet_generator::kdl_parser::raw_parse_kdl(&paths, &ParserOpts::default())?
+            } else {
+                let kdl_document_content = std::fs::read_to_string(&input_path)
+                    .map_err(|e| miette::miette!(e))
+                    .wrap_err_with(|| format!("cannot open file: {}", input_path.display()))?;
+
+                let unparsed_document = UnparsedKdl::new(&kdl_document_content, &input_path);
+                packet_generator::kdl_parser::raw_parse_kdl(
+                    &[unparsed_document],
+                    &ParserOpts::default(),
+                )?
+            };
+
+            warnings.print_warnings_if_any();
+
+            let doc = doc.finalize()?;
+
+            let definitions = packet_generator::kdl_parser::document_to_definitions(doc)?;
 
             let generator = match language {
                 cli::ProgrammingLanguage::Cxx(options) => {
@@ -94,24 +138,6 @@ fn main() -> Result<(), miette::Report> {
                 }
             };
 
-            let input_path = PathBuf::from(input);
-
-            let doc_str = std::fs::read_to_string(&input_path)
-                .map_err(|e| miette::miette!(e))
-                .wrap_err_with(|| format!("cannot open file: {}", input_path.display()))?;
-
-            let (doc, warnings) = packet_generator::kdl_parser::raw_parse_kdl(
-                doc_str,
-                &input_path,
-                &ParserOpts::default(),
-            )?;
-
-            warnings.print_warnings_if_any();
-
-            let doc = doc.finalize()?;
-
-            let definitions = packet_generator::kdl_parser::document_to_definitions(doc)?;
-
             let sources = generator
                 .generate(
                     &definitions,
@@ -131,7 +157,8 @@ fn main() -> Result<(), miette::Report> {
                             )
                         })?,
                 )
-                .map_err(|e| miette::miette!("could not generate sources: {e}"))?;
+                .into_diagnostic()
+                .wrap_err("could not generate sources")?;
 
             write_sources(&output_directory, &sources)?;
         }
