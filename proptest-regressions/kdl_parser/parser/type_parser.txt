@@ -1,0 +1,9 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 0beef09667ce9e4819061ad18d2ecf41d590fe249a63477cd180a537071bf103 # shrinks to s = "%{ i32::int => bool::str::{, } }"
+cc 2374380bc15faedf91d9c03c7edc7e0d5f52338269eba148a5fea520f05e393f # shrinks to s = "[%{ Aj => Qk-_dF_--GdF1_7A-y }]::{size(14154322344), sep(comma)}"
+cc 3b42edb86ce65be096352ef35061bd038d38a1391f733c917e1e4e672895d21c # shrinks to s = "%{ [[m82]::sep(comma)]::{size(7235)} => %{ %{ [bool]::{size(n), sep(comma)} => Dc467gpDYWOau7znNP07kYZ79zs338kZ } => %{ bEY87nzP9C4 => %{ XYGf1 => u321CN1E8eK3rG1l5DSB6Tn } } } }"
