@@ -34,6 +34,15 @@ impl RawDocument {
     pub const fn finalize(self) -> Result<Document, Diagnostic> {
         validator::validate(self)
     }
+
+    /// Extends this [`RawDocument`] with another one.
+    ///
+    /// Does not check for uniqueness of definitions.
+    pub(crate) fn extend(&mut self, other: Self) {
+        self.json_definitions.extend(other.json_definitions);
+        self.enum_definitions.extend(other.enum_definitions);
+        self.http_definitions.extend(other.http_definitions);
+    }
 }
 
 #[derive(Debug)]

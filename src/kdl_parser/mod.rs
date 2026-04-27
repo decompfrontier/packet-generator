@@ -10,6 +10,7 @@ mod to_intermediate;
 
 // Exports
 pub use errors::{Diagnostic, ParsingError, ParsingWarnings, SourceInfo};
+pub use parser::UnparsedKdl;
 pub use parser::raw_parse_kdl;
 
 /// A valid KDL document.

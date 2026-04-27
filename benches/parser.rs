@@ -4,17 +4,16 @@
 use criterion::{Criterion, criterion_group, criterion_main};
 use packet_generator::{
     intermediate::DefinitionRegistry,
-    kdl_parser::{ParserOpts, ParsingError, ParsingWarnings},
+    kdl_parser::{ParserOpts, ParsingError, ParsingWarnings, UnparsedKdl},
     vfs::{InMemoryFS, VfsPath},
 };
 use std::path::PathBuf;
 
 fn parse_files(
-    main_content: &'static str,
-    path: &PathBuf,
+    unparsed_kdls: &[UnparsedKdl<'_>],
     parser_opts: &ParserOpts<InMemoryFS>,
 ) -> Result<(DefinitionRegistry, ParsingWarnings), ParsingError> {
-    let res = packet_generator::parse_kdl(main_content, path, parser_opts);
+    let res = packet_generator::parse_kdl(unparsed_kdls, parser_opts);
 
     assert!(
         res.is_ok(),
@@ -74,7 +73,11 @@ fn criterion_benchmark(c: &mut Criterion) {
         group.bench_with_input(
             criterion::BenchmarkId::from_parameter("stress-test files"),
             &(main_content, path, &opts),
-            |b, input| b.iter_with_large_drop(|| parse_files(input.0, &input.1, input.2)),
+            |b, input| {
+                let unparsed_kdl = UnparsedKdl::new(input.0, &input.1);
+                let files = &[unparsed_kdl];
+                b.iter_with_large_drop(|| parse_files(files, input.2));
+            },
         );
     }
 
@@ -83,7 +86,11 @@ fn criterion_benchmark(c: &mut Criterion) {
         group.bench_with_input(
             criterion::BenchmarkId::from_parameter("Brave Frontier files"),
             &(main_content, path, &opts),
-            |b, input| b.iter_with_large_drop(|| parse_files(input.0, &input.1, input.2)),
+            |b, input| {
+                let unparsed_kdl = UnparsedKdl::new(input.0, &input.1);
+                let files = &[unparsed_kdl];
+                b.iter_with_large_drop(|| parse_files(files, input.2));
+            },
         );
     }
 
