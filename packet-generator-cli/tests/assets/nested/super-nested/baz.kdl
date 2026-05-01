@@ -1,0 +1,8 @@
+str-enum Baz {
+    doc "A Baz"
+
+    variant test {
+        doc "Test"
+        value "Test"
+    }
+}

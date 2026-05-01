@@ -1,0 +1,10 @@
+// No explicit include is present.
+
+json Foo {
+    doc "Contains a Bar"
+
+    field bar type="Bar" {
+        key "bar"
+        doc "The Bar"
+    }
+}

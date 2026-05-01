@@ -6,7 +6,6 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use std::{env::current_dir, path::PathBuf};
 
-use itertools::Itertools;
 use miette::{Context, IntoDiagnostic, miette};
 use packet_generator::generators::write_sources;
 use packet_generator::kdl_parser::UnparsedKdl;
@@ -14,6 +13,8 @@ use packet_generator::{
     generators::{CxxGenerator, GenerationError, Generator, GlazeGenerator, WithAddons},
     kdl_parser::{Diagnostic, ParserOpts, ParsingError},
 };
+
+use packet_generator_cli::read_all_kdls_from_directory;
 
 use crate::cli::CxxSerializer;
 
@@ -74,26 +75,7 @@ fn main() -> Result<(), miette::Report> {
             let input_path = PathBuf::from(&input);
 
             let (doc, warnings) = if input_path.is_dir() {
-                let files_to_read = glob::glob(&format!("{input}/**/*.kdl"))
-                    .into_diagnostic()
-                    .wrap_err_with(|| format!("error creating glob pattern for '{}'", input))?;
-
-                let paths = files_to_read
-                    .process_results(|maybe_paths| {
-                        maybe_paths
-                            .map(|p| -> Result<_, miette::Report> {
-                                let kdl_document_content = std::fs::read_to_string(&p)
-                                    .into_diagnostic()
-                                    .wrap_err("cannot read file")?;
-
-                                Ok(UnparsedKdl::new_owned(kdl_document_content, p))
-                            })
-                            .collect::<Result<Vec<_>, _>>()
-                    })
-                    .into_diagnostic()
-                    .wrap_err("cannot read globs")??;
-
-                packet_generator::kdl_parser::raw_parse_kdl(&paths, &ParserOpts::default())?
+                read_all_kdls_from_directory(&input_path)?
             } else {
                 let kdl_document_content = std::fs::read_to_string(&input_path)
                     .map_err(|e| miette::miette!(e))
@@ -123,7 +105,7 @@ fn main() -> Result<(), miette::Report> {
 
                         CxxSerializer::Simdjson => {
                             return Err(miette::miette!(
-                                "Simdjson secondary generator for Cxx is not implemented!"
+                                "Simdjson generator for C++ is not implemented!"
                             ));
                         }
                     }
