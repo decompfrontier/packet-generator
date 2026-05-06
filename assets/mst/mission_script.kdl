@@ -1,0 +1,25 @@
+// F_MISSION_SCRIPT_MST — per-mission cutscene / dialogue scripts.
+// Each entry defines a cutscene that fires at a specific point in a mission
+// (typically mission entry or after clearing a wave).  The script_data field
+// contains a compact encoded sequence of commands that drive the in-game
+// dialogue engine.
+
+json MissionScriptMst {
+    hash "N4XVE1uA"
+    doc "F_MISSION_SCRIPT_MST — mission cutscene script definitions"
+
+    field mission_id type="i32::str" {
+        key "j28VNcUW"
+        doc "Mission ID — references F_MISSION_MST.j28VNcUW"
+    }
+
+    field unit_id type="i32::str" {
+        key "o49dYfpH"
+        doc "NPC/narrator unit ID shown during the cutscene"
+    }
+
+    field script_data type=str {
+        key "diGe6u21"
+        doc "Encoded script command sequence. Format: '@'-separated scenes, each scene is ':'-separated fields of 'phase:command:params=value,...'. Commands include: 10=dialogue, 11=place unit, 50=portrait. Example: '1:10:1:1=thum.png,MSG_KEY,12#4#100#2@2:11:3=unitId,50:1=thum.png,MSG_KEY,12#4#100#2'"
+    }
+}

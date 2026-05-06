@@ -1,0 +1,104 @@
+// F_MISSION_NPC_UNIT_MST — NPC / boss unit definitions used in campaign
+// cutscenes and as encounter targets.  Each entry describes a fully-statted
+// unit (HP/ATK/DEF/REC + skills) identified by an encounter_id that links
+// back to F_MISSION_MST.1e6jxQzf.
+
+json MissionNpcUnitMst {
+    hash "1e6jxQzf"
+    doc "F_MISSION_NPC_UNIT_MST — NPC unit stat and skill definitions for campaign encounters"
+
+    field encounter_id type="i32::str" {
+        key "1e6jxQzf"
+        doc "Encounter ID (primary key) — referenced by F_MISSION_MST.1e6jxQzf"
+    }
+
+    field unit_name type=str {
+        key "y4k9o7Jt"
+        doc "Display name of the NPC unit (e.g. 'Ice Warrior Karl')"
+    }
+
+    field unit_id type="i32::str" {
+        key "pn16CNah"
+        doc "Unit MST ID — references F_UNIT_MST.pn16CNah for sprite/animation assets"
+    }
+
+    field unknown_nBTx56W9 type="i32::str" {
+        key "nBTx56W9"
+        doc "Unknown integer — always 1 in observed data"
+    }
+
+    field level type="i32::str" {
+        key "D9wXQI2V"
+        doc "NPC unit level (e.g. 80)"
+    }
+
+    field hp type="i32::str" {
+        key "e7DK0FQT"
+        doc "NPC unit HP stat"
+    }
+
+    field atk type="i32::str" {
+        key "67CApcti"
+        doc "NPC unit ATK stat"
+    }
+
+    field def type="i32::str" {
+        key "q08xLEsy"
+        doc "NPC unit DEF stat"
+    }
+
+    field rec type="i32::str" {
+        key "PWXu25cg"
+        doc "NPC unit REC stat"
+    }
+
+    field skill_id type="i32::str" {
+        key "nj9Lw7mV"
+        doc "BB skill ID — references F_SKILL_MST.nj9Lw7mV"
+    }
+
+    field bb_fill_rate type="i32::str" {
+        key "3NbeC8AB"
+        doc "BB gauge fill rate modifier — always 10 in observed data (10× normal fill)"
+    }
+
+    field extra_skill_id type="i32::str" {
+        key "iEFZ6H19"
+        doc "Extra skill ID (SBB); 0 = none"
+    }
+
+    field unknown_RQ5GnFE2 type="i32::str" {
+        key "RQ5GnFE2"
+        doc "Unknown integer — always 0 in observed data"
+    }
+
+    field ultimate_skill_id type="i32::str" {
+        key "cb0P4mp1"
+        doc "Ultimate BB skill ID; 0 = none"
+    }
+
+    field unknown_5SUvj4tM type=str {
+        key "5SUvj4tM"
+        doc "Unknown string — usually empty; matches overdriveStats slot in UnitMst"
+    }
+
+    field unknown_oS3kTZ2W type="i32::str" {
+        key "oS3kTZ2W"
+        doc "Unknown integer — always 0; slot reserved for a secondary leader-skill reference"
+    }
+
+    field extra_passive_skill_id type="i32::str" {
+        key "cP83zNsv"
+        doc "Extra passive skill ID; 0 = none"
+    }
+
+    field leader_skill_id type="i32::str" {
+        key "Ge8Yo32T"
+        doc "Leader skill ID — references F_SKILL_MST.nj9Lw7mV for the leader-skill effect"
+    }
+
+    field sp_skill_id type="i32::str" {
+        key "mZA7fH2v"
+        doc "SP/arena extra skill ID — references F_SKILL_MST.nj9Lw7mV; 0 = none"
+    }
+}
