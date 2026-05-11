@@ -63,3 +63,36 @@ json ChallengeArenaUserInfo {
     }
 
 }
+
+json ChallengeArenaResetInfo {
+    doc "TODO"
+
+    field daily_cooling_start type="str" {
+        key "xQZe5il8"
+        doc "Daily cooling period start time"
+    }
+
+    field daily_cooling_end type="str" {
+        key "1fhT0oIQ"
+        doc "Daily cooling period end time"
+    }
+
+    field weekly_reset_time type="str" {
+        key "QRqWHfJG"
+        doc "Weekly reset time"
+    }
+
+    field server_time type="str" {
+        key "z1I0P1Qk"
+        doc "Current server time"
+    }
+}
+
+json ChallengeArenaResetInfoResp {
+    doc "TODO"
+
+    field reset_info type="ChallengeArenaResetInfo" {
+        key "t6bRQfln"
+        doc "TODO"
+    }
+}
