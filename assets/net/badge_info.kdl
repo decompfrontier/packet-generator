@@ -1,4 +1,3 @@
-
 json BadgeInfo {
     doc "TODO"
 
@@ -31,5 +30,13 @@ json BadgeInfo {
         key "dUujjBBK"
         doc "TODO"
     }
+}
 
+json BadgeInfoResp {
+    doc "TODO"
+
+    field badge_info type="BadgeInfo" {
+        key "h23iRjGN"
+        doc "TODO"
+    }
 }

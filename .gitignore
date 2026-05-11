@@ -176,3 +176,6 @@ cython_debug/
 .vscode/
 
 test_write/
+
+# Visual Studio
+.vs/
