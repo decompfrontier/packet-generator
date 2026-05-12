@@ -32,11 +32,3 @@ json BadgeInfo {
     }
 }
 
-json BadgeInfoResp {
-    doc "TODO"
-
-    field badge_info type="BadgeInfo" {
-        key "h23iRjGN"
-        doc "TODO"
-    }
-}
