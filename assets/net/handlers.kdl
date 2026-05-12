@@ -591,3 +591,21 @@ json FriendGetResp {
         doc "TODO"
     }
 }
+
+json ChallengeArenaResetInfoResp {
+    doc "Challenge Arena cooling/reset timer snapshot"
+
+    field reset_info type="ChallengeArenaResetInfo" {
+        key "t6bRQfln"
+        doc "Timestamps for daily cooling and weekly reset"
+    }
+}
+
+json BadgeInfoResp {
+    doc "TODO"
+
+    field badge_info type="BadgeInfo" {
+        key "h23iRjGN"
+        doc "TODO"
+    }
+}
