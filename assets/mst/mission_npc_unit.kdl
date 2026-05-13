@@ -5,7 +5,7 @@
 
 json MissionNpcUnitMst {
     hash "1e6jxQzf"
-    doc "F_MISSION_NPC_UNIT_MST — NPC unit stat and skill definitions for campaign encounters"
+    doc "F_MISSION_NPC_UNIT_MST — NPC unit stat and skill definitions for campaign encounters.  UNVERIFIED HASH: `1e6jxQzf` appears in IDA `response_mappings.json` ONLY as a field key (used in several response classes), not as a top-level `response_key` for any *MstResponse class.  No decoded `deploy/system/mission_npc_unit.json` exists on this branch to verify the file's actual top-level key.  Field definitions below were inferred from `F_MISSION_MST.1e6jxQzf` references in mission.kdl and the npc_encounter_id linkage pattern — they are best-effort guesses.  Replace this hash + audit fields once mstdec.py output for F_MISSION_NPC_UNIT_MST is available."
 
     field encounter_id type="i32::str" {
         key "1e6jxQzf"

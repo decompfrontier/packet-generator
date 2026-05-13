@@ -1,26 +1,26 @@
 json UnitExpPatternMst {
     hash "JYFGe9y6"
-    doc "TODO"
+    doc "F_UNIT_EXP_PATTERN_MST — unit XP-curve lookup table.  VERIFIED: top-level key in `deploy/system/unit_exp_pattern.json` is `\"JYFGe9y6\": [...]` and IDA `response_mappings.json` confirms response_class=`UnitExpPatternMstResponse`, response_key=`JYFGe9y6`, is_mst=true.  Sample row: `{\"5UvTp7q1\":\"10\",\"D9wXQI2V\":\"1\",\"grKTq15A\":\"0\"}`."
 
     field id type="i32::str" {
         key "5UvTp7q1"
-        doc "TODO"
+        doc "Pattern id (which curve this row belongs to).  Quoted decimal integer.  Sample values from unit_exp_pattern.json: \"10\", \"11\", etc."
     }
 
     field lv type="i32::str" {
         key "D9wXQI2V"
-        doc "TODO"
+        doc "Level within the pattern.  Quoted decimal integer (1..maxLv).  Sample value: \"1\""
     }
 
     field need_exp type="i32::str" {
         key "grKTq15A"
-        doc "TODO"
+        doc "Cumulative XP needed to reach this level.  Quoted decimal integer.  Sample value: \"0\" (for level 1)"
     }
 }
 
 json UnitMst {
     hash "2r9cNSdt"
-    doc "F_UNIT_MST"
+    doc "F_UNIT_MST — unit master data (Brave Frontier unit definitions).  VERIFIED: top-level key in `deploy/system/unit.json` is `\"2r9cNSdt\": [...]`.  IDA `response_mappings.json` lists response_class=`UnitMstResponse`, response_key=`fcoRMe14`, is_mst=true — that `fcoRMe14` is the response key used when the SERVER pushes the table to the client, while `2r9cNSdt` is the on-disk JSON top-level key.  Both refer to the same logical table."
 
     field id  type="i32::str" {
         key "pn16CNah"

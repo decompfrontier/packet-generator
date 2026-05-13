@@ -4,8 +4,8 @@
 // Merged into deploy/system/mission.json for server use.
 
 json MissionMst {
-    hash "2I9V0o6J"
-    doc "F_MISSION_MST — mission master data (parts 1 & 2)"
+    hash "oXeC1Ak9"
+    doc "F_MISSION_MST — mission master data (parts 1 & 2).  Hash sourced from IDA `response_mappings.json` (response_class=MissionMstResponse, response_key=oXeC1Ak9, is_mst=true).  UNVERIFIED: no decoded `deploy/system/mission.json` available on this branch to cross-check the top-level key against — confirm once the .dat file is decoded via `scripts/mstdec.py`.  Previous KDL used hash `2I9V0o6J` which IDA labels as `CampaignMissionInfoResponse` (a network response, is_mst=false) — wrong category entirely."
 
     field id type="i32::str" {
         key "j28VNcUW"

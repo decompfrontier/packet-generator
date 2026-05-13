@@ -5,7 +5,7 @@
 
 json SkillMst {
     hash "8aiBoHg5"
-    doc "F_SKILL_MST — skill master data (all 9 parts)"
+    doc "F_SKILL_MST — skill master data (all 9 parts).  UNVERIFIED HASH: IDA `response_mappings.json` does have an entry for response_key `8aiBoHg5` but the response_class is `UnitSkillMstResponse` (the per-unit skill assignment table), not a standalone `SkillMstResponse`.  There is no `SkillMstResponse` class in `response_mappings.json` at all — F_SKILL_MST data may be transported under a different key entirely, or it may be the unit-skill key reused.  No decoded `deploy/system/skill.json` exists on this branch to confirm.  Field definitions below are inferred from typical BF skill-table schemas — replace once mstdec.py output is available."
 
     field id type="i32::str" {
         key "nj9Lw7mV"
