@@ -611,3 +611,39 @@ json BadgeInfoResp {
         doc "TODO"
     }
 }
+
+json UnitFavoriteReq {
+    doc "Toggle the favorite/lock flag on one or more user_units.  Example captured wire body: {\"3kcmQy7B\":[{\"edy7fq3L\":\"12345\",\"5JbjC3Pp\":\"1\",\"2pAyFjmZ\":\"0\"}]}"
+
+    field entries type="[UnitFavoriteEntry]" {
+        key "3kcmQy7B"
+        doc "List of entries the client is updating in this call"
+    }
+}
+
+json UnitFavoriteResp {
+    doc "Echoed favorite-flag entry.  The IDA-extracted UnitFavoriteResponse::SerializeFields (in exported_handlers/response/UnitFavoriteResponse.hpp) emits a single object value rather than an array under key 3kcmQy7B, so the wire shape is {\"3kcmQy7B\":{\"edy7fq3L\":\"...\",\"5JbjC3Pp\":\"...\",\"2pAyFjmZ\":\"...\"}}"
+
+    field entry type="UnitFavoriteEntry" {
+        key "3kcmQy7B"
+        doc "Echo of the first request entry"
+    }
+}
+
+json UnitEvoReq {
+    doc "Evolve a base unit by consuming evo materials.  Body field layout still pending — should be replaced once `extract_createbody(\"UnitEvoRequest\")` output is incorporated.  The old hand-written handler did not parse the body in detail; it returned a stubbed response."
+
+    field placeholder type="str" {
+        key "_unused"
+        doc "Schema placeholder.  Real keys will be added when createBody is extracted from the IDA dump."
+    }
+}
+
+json UnitEvoResp {
+    doc "Empty response stub.  Real fields will land when the handler is implemented against actual DB + MST data, keyed off the readparam for response_class=UnitOpeEvoResponse (response_key=I82p0wCL, params include pn16CNah/edy7fq3L/t9FEW2KC/u1ECvfg8/dV3qji4I — see response_mappings.json)."
+
+    field placeholder type="str" {
+        key "_unused"
+        doc "Schema placeholder; never populated by the current stub"
+    }
+}

@@ -154,7 +154,7 @@ json UnitMst {
 
     field unknown  type=str {
         key "5SUvj4tM"
-        doc "overdriveStats — raw string, may be empty"
+        doc "overdriveStats — raw passthrough string.  Kept as `str` rather than `[i32::str]::sep(comma)` because real values include a trailing comma the array codec would drop on round-trip.  Captured values from deploy/system/unit.json: \"\" (empty for most units), \"100,100,100,0,\", \"100,100,100,5000,\""
     }
 
     field extra_passive_skill_id  type="i32::str" {
@@ -219,7 +219,7 @@ json UnitMst {
 
     field bad_state_resists  type=str {
         key "CEeqs63b"
-        doc "Bad-state resistance list, colon-separated raw string"
+        doc "Six colon-separated bad-state resistance percentages (poison/weak/sick/injury/curse/paralysis order).  Kept as `str` rather than `[i32::str]::sep(colon)` because real captures include a literal space character in the slot, e.g. \"0:0:0:0: :0\", which the array codec cannot parse as i32.  Other observed values from deploy/system/unit.json: \"0:0:0:0:0:0\", \"0:0:0:0:0:100\", \"100:100:100:100:100:100\""
     }
 
     field adjust_exp  type="i32::str" {
@@ -227,34 +227,34 @@ json UnitMst {
         doc "EXP adjustment multiplier"
     }
 
-    field home_img_pos  type=str {
+    field home_img_pos  type="[i32::str]::sep(comma)" {
         key "1W9CxaFK"
-        doc "Home screen image position, comma-separated raw string (may contain floats)"
+        doc "Home-screen image position (x, y, w, h).  Verified across all 2291 unit MST rows: every value is an integer (can be negative), no decimals.  Example values from deploy/system/unit.json: \"1000,905,150,410\", \"101,-13,174,475\", \"103,-33,240,655\""
     }
 
-    field detail_img_pos  type=str {
+    field detail_img_pos  type="[i32::str]::sep(comma)" {
         key "6z54rgb3"
-        doc "Detail screen image position, comma-separated raw string (may contain floats)"
+        doc "Detail-screen image position (x, y, w, h).  All-integer across 2291 unit rows; example values: \"-1,-142,914,1088\", \"-10,154,900,679\", \"-10,225,880,601\""
     }
 
-    field confirm_img_pos  type=str {
+    field confirm_img_pos  type="[i32::str]::sep(comma)" {
         key "MYK1fq6c"
-        doc "Confirm screen image position, comma-separated raw string (may contain floats)"
+        doc "Confirm-screen image position (x, y, w, h, flag).  All-integer across 2291 unit rows; example values: \"-1,107,679,586,1\", \"-1,172,550,456,0\", \"-10,138,656,496,0\""
     }
 
     field summon_image_pos  type=str {
         key "KC3Jk8Br"
-        doc "Summon screen image position, comma-separated raw string (may contain floats)"
+        doc "Summon-screen image position (x, y, w, h, flag).  Kept as `str` rather than `[i32::str]::sep(comma)` because 56 of 2291 unit rows contain decimal width/height values that the integer array codec cannot represent — e.g. \"41,231,560.5,387.5,0\", \"175,314,302.5,302.5,0\", \"177,312,302.5,302.5,0\".  Most rows are integer-only (e.g. \"-1,107,679,586,1\")"
     }
 
-    field skill_cut_image_pos  type=str {
+    field skill_cut_image_pos  type="[i32::str]::sep(comma)" {
         key "7hLR6pDN"
-        doc "Skill cut-in image position, comma-separated raw string (may contain floats)"
+        doc "Skill cut-in image position (x, y, w, h).  All-integer across 2291 unit rows; example values: \"-10,-244,880,745\", \"-100,-150,1008,922\", \"-100,-214,1000,762\""
     }
 
-    field hp_disp_pos  type=str {
+    field hp_disp_pos  type="[i32::str]::sep(comma)" {
         key "3BpHN6VD"
-        doc "HP bar display position, comma-separated raw string (may contain floats)"
+        doc "HP bar display offset (x, y).  All-integer across 2291 unit rows; example values: \"-1,-1\", \"-1,-20\", \"-1,1\""
     }
 
     field disp_order  type="i32::str" {
