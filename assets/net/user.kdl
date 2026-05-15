@@ -233,14 +233,14 @@ json UserPartyDeckInfo {
         doc "TODO"
     }
 
-    field deck_type type="i32::int" {
+    field deck_type type="i32::str" {
         key "U9ABSYEp"
-        doc "TODO"
+        doc "Deck slot kind, usually 1 (party). // CAPTURED FROM: deploy/log/http_log_m2Ve9PkJ_*.log DeckEdit request had \"U9ABSYEp\":\"1\" (quoted). // REVERTED FROM i32::int: that made glaze silently fail to parse the DeckEdit body, so the deck array was always empty and saves were dropped."
     }
 
-    field deck_num type="i32::int" {
+    field deck_num type="i32::str" {
         key "zsiAn9P1"
-        doc "TODO"
+        doc "Deck index within the slot (0-9). // CAPTURED FROM: deploy/log/http_log_m2Ve9PkJ_*.log DeckEdit request had \"zsiAn9P1\":\"0\" (quoted). // REVERTED FROM i32::int: same silent-parse-fail story as deck_type."
     }
 
     field member_type type="i32::str" {
@@ -869,11 +869,41 @@ json UserFavorite {
 }
 
 json UserClearMissionInfo {
-	doc "TODO"
-	
-	field mock type="str" {
-		key "INVALID"
-		doc "TODO"
+	doc "UserClearMissionInfoResponse (wire key UT1SVg59). Per-mission clear-history record carried in the MissionEnd response so the client can keep its mission-clear list synced. ALL 7 fields decoded from UserClearMissionInfo::readParam in libgame.so via a private IDA audit. Every field uses std::string-typed setters even when the value is numeric (clear count, BC/HC totals) — BF stores them as quoted strings on the wire."
+
+	field user_id type=str {
+		key "h7eY3sAK"
+		doc "setUserID. The player's user_id (not a friend / reinforce id)."
+	}
+
+	field mission_id type=str {
+		key "j28VNcUW"
+		doc "setMissionID. The mission this record is for. Combined with user_id forms the unique key (one row per (user, mission))."
+	}
+
+	field clear_date type=str {
+		key "JATWnN57"
+		doc "setClearDate. Timestamp of the most recent clear. Format // UNVERIFIED — likely either Unix epoch as a quoted int or the BF datetime string `YYYY-MM-DD HH:MM:SS`."
+	}
+
+	field clear_cnt type=str {
+		key "HIQoGb10"
+		doc "setClearCnt. How many times the player has cleared this mission. Stored as a quoted string on the wire (\"1\", \"2\", ...). Server has no per-mission clear counter yet — currently sent as \"1\" placeholder."
+	}
+
+	field most_time type=str {
+		key "Wi4EFe6f"
+		doc "setMostTime. Fastest clear time the player has ever recorded for this mission. Format // UNVERIFIED — likely seconds as quoted int (\"42\") or m:ss formatted string. Server has no per-mission best-time tracking yet — sent as empty string."
+	}
+
+	field get_bc type=str {
+		key "RWX38boG"
+		doc "setGetBc. Lifetime Battle Crystal count obtained from THIS specific mission across all clears. Quoted-int wire format. Server has no per-mission BC ledger yet — sent as \"0\" placeholder."
+	}
+
+	field get_hc type=str {
+		key "bGx5ku0F"
+		doc "setGetHc. Lifetime Heart Crystal count obtained from THIS specific mission. Same shape as get_bc."
 	}
 }
 
@@ -1360,15 +1390,15 @@ json UserUnitDbbLevelInfo {
 }
 
 json SummonTicketV2UserInfo {
-    doc "TODO"
+    doc "User's owned-ticket entry in the V2 typed-ticket inventory.  Wire wrapper a3d5d12i (IDA: SummonTicketV2UserInfoResponse, is_array=true).  Per a private IDA readParam audit of the handler at 0x1C6EBB4, it reads TWO fields — `b0D2iq2d → setSummonTicketV2Id(std::string)` and `Rs7bCE3t → setAmount(int)` parsed via CommonUtils::StrToInt.  readparam_analysis.json only lists the first one; the audit confirmed the second comes through a hand-coded path inside the same readParam.  // REVERTED FROM single-field struct: earlier port (§7.10) dropped Rs7bCE3t guessing the wire-strict client rejected unknown fields.  Audit proves both fields are read; the shape that matters is one entry per ticket TYPE with `amount` carrying the owned count — not N entries per type."
 
     field id type="i32::str" {
-        doc "TODO"
+        doc "Ticket-type id.  Setter: setSummonTicketV2Id(std::string) per audit.  Joins to SummonTicketV2Mst.id (b0D2iq2d).  Captured: \"8\" (Brave Summon Ticket → door 17160 / Veteran summon's Brave half), \"3\" (Anniversary 2017 Ticket → door 14420)."
         key "b0D2iq2d"
     }
 
     field amount type="i32::str" {
-        doc "TODO"
+        doc "How many of this ticket type the user owns.  Setter: setAmount(int) via CommonUtils::StrToInt per audit — the wire ships a quoted string and the client parses to int.  Backing store: user_summon_tickets_v2.count.  Decremented by 1 per pull when GachaAction is invoked with `324b023k`=1 against an eligible door."
         key "Rs7bCE3t"
     }
 }

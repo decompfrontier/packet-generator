@@ -1,16 +1,538 @@
-json MissionBreakInfo {
-    doc "TODO"
-    
-    field serial_id type="str" {
+// Network types for the MissionStart / MissionEnd / MissionBreak handler trio.
+//
+// Sources: captured deploy/log/http_log_jE6Sp0q4_*.log (MissionStart) and
+// http_log_9TvyNR5H_*.log (MissionEnd); IDA dumps in
+// "BraveFrontier IDA readParam and Handler exports and scripts"
+// (readparam_analysis.json + response_mappings.json + typed_responses);
+// F_MISSION_MST_1_Ver1118.json for the server-side mission table (already
+// covered by mst/mission.kdl).
+//
+// Audit caveats:
+// 1. response_mappings.json lists 5 keys for MissionStartInfoResponse but
+//    the typed readParam helper covers only 4. 1VagK32J is reached via a
+//    hand-coded getValue() path (handbook section 3.2).
+// 2. Most rXvA1E5y / 0xgIw1Ns / Kz7qfSs5 fields have no readparam setter
+//    (these are request-only structs the client builds in createBody;
+//    binary-side parsing not exported). Types are inferred from observed
+//    wire values; every undocumented field is marked UNVERIFIED.
+
+// =============================================================================
+//  MissionStart  (group jE6Sp0q4, aes csiVLDKkxEwBfR70)
+// =============================================================================
+
+json MissionStartReqItem {
+    doc "Inner item in MissionStart 9Q1Lq5FS array. Only mission_id and active_deck are server-meaningful; the other 6 are tutorial/event flags the server acknowledges but does not act on."
+
+    field user_id type=str {
+        key "h7eY3sAK"
+        doc "Always \"0\" in captured player requests. Distinct from IKqx1Cn9.h7eY3sAK (real user UUID). // UNVERIFIED purpose."
+    }
+
+    field unk_J3stQ7jd type="i32::str" {
+        key "J3stQ7jd"
+        doc "Always \"0\" in captured requests. // UNVERIFIED."
+    }
+
+    field mission_id type="i32::str" {
+        key "j28VNcUW"
+        doc "Mission ID being started. Cross-refs F_MISSION_MST.id (see MissionMst in mst/mission.kdl). Quoted on wire."
+    }
+
+    field unk_jkldTrhL type="i32::str" {
+        key "jkldTrhL"
+        doc "Always \"0\" in captured requests. // UNVERIFIED."
+    }
+
+    field active_deck type="i32::str" {
+        key "Z0Y4RoD7"
+        doc "Squad/deck index 0-9 the player selected. Server UPDATEs userinfo.active_deck. IDA setter (other response classes): ActiveGuildDeck."
+    }
+
+    field unk_nA95Bdj6 type="i32::str" {
+        key "nA95Bdj6"
+        doc "Always \"0\" in captured requests. // UNVERIFIED."
+    }
+
+    field unk_5Z1LNoyH type="i32::str" {
+        key "5Z1LNoyH"
+        doc "Always \"0\" in captured requests. // UNVERIFIED."
+    }
+
+    field unk_u1iPEVUq type="i32::str" {
+        key "u1iPEVUq"
+        doc "Always \"-1\" in captured requests. Sentinel/disabled. // UNVERIFIED."
+    }
+}
+
+json MissionStartReqJzS {
+    doc "Inner item in MissionStart JzS3uxsZ array. Single field seen in every capture. // UNVERIFIED purpose."
+
+    field unk_0b4efi1W type="i32::str" {
+        key "0b4efi1W"
+        doc "Always \"1\" in captured requests. // UNVERIFIED."
+    }
+}
+
+json MissionStartReq {
+    doc "Outer envelope for MissionStart. Includes the standard IKqx1Cn9 / 6FrKacq7 / KeC10fuL envelope groups so glaze does not silently fail on unknown keys (handbook section 3.1)."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Standard user-info-tag envelope (handbook section 6.4)."
+    }
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Per-request signal key handshake."
+    }
+
+    field mst_versions type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "Client-known MST version list for cache invalidation. Same shape as InitializeReq.mstRequests."
+    }
+
+    field items type="[MissionStartReqItem]::size(1)" {
+        key "9Q1Lq5FS"
+        doc "Mission-start payload, exactly one element."
+    }
+
+    field jzs type="[MissionStartReqJzS]::size(1)" {
+        key "JzS3uxsZ"
+        doc "Auxiliary single-field group. // UNVERIFIED purpose."
+    }
+}
+
+json MissionStartInfo {
+    doc "fEi17cnx[1] sub-element in MissionStart response. Hash key 9Q1Lq5FS per response_mappings MissionStartInfoResponse. All 5 fields decoded from MissionStartInfo::readParam in libgame.so via a private IDA audit of the handler at func_addr 0x13E46D0."
+
+    field reinforce_user_id type=str {
+        key "h7eY3sAK"
+        doc "setReinforceUserID. Reinforcement friend user_id. Captured live data: \"n9ZMPC0t\". Currently hardcoded pending friend system. Per the IDA setter, this is specifically the REINFORCE user_id (not the player's own h7eY3sAK)."
+    }
+
+    field friend_point type="i32::str" {
+        key "J3stQ7jd"
+        doc "setFriendPoint. Friend point count for the reinforce slot. Previously misidentified as 'account_id' (5-digit value 42640 in captures) — actually friend-point quantity that the player would pay to use the friend's reinforce."
+    }
+
+    field mission_id type="i32::str" {
+        key "j28VNcUW"
+        doc "setMissionID. Echoes the request mission_id. Bug history: echoing wrong value crashed client on second mission load (handbook section 7.4.1)."
+    }
+
+    field reinforce_info type=str {
+        key "1VagK32J"
+        doc "setReinforceInfo. Free-form string blob carrying reinforce metadata (presumably serialized unit/skill snapshot — captured idle value: empty). Previously sent as 0 / omitted; client appears to tolerate empty. Reachable via hand-coded getValue() path so the readparam_analysis.json typed dump didn't list it (handbook section 3.2)."
+    }
+
+    field deck_num type="i32::str" {
+        key "Z0Y4RoD7"
+        doc "setDeckNum. Deck number used for this mission (0-9). Echoes Z0Y4RoD7 from the request 9Q1Lq5FS[0]. Note this is per-MissionStartInfo (the [1] sub-block); UserTeamInfo at [0] has the same wire key Z0Y4RoD7 mapped to a different setter (setActiveDeck / setActiveGuildDeck per other readparam classes) — same key, different semantic in different response contexts."
+    }
+}
+
+// =============================================================================
+//  MissionEnd  (group 9TvyNR5H, aes oINq0rfUFPx5MgmT)
+// =============================================================================
+
+json MissionEndReqBattleResult {
+    doc "Inner item in MissionEnd rXvA1E5y array. 41 fields per captured request. Most are integer counters with no readparam coverage; only BattleCrystalNum, HeartCrystalNum, MaxTurnDamage have IDA setter names. Inferred type i32::str for all (every observed value parses as quoted integer)."
+
+    field earn_zel type="i32::str" {
+        key "Najhr8m6"
+        doc "Zel earned this battle. Same key as userinfo.zel but here the value is the DELTA. Captured: \"182\"."
+    }
+
+    field earn_karma type="i32::str" {
+        key "HTVh8a65"
+        doc "Karma earned this battle. Captured: \"106\"."
+    }
+
+    field item_drops type=str {
+        key "4T0Q2Bh5"
+        doc "Item drops, comma-separated item_id:count pairs. Captured: \"10300:9,10000:10,10301:2\". Kept as str (inner-pair shape does not fit [i32::str]::sep(comma), see handbook section 3.3)."
+    }
+
+    field unit_drops type=str {
+        key "3MAT6quo"
+        doc "Unit drops, comma-separated triples. Captured: \"30030:1:1,10030:1:1,50030:2:2\". Kept as str per handbook section 3.3."
+    }
+
+    field battle_crystal_num type="i32::str" {
+        key "hoG2ieT5"
+        doc "Battle Crystal drops gathered. IDA setter BattleCrystalNum. Captured: \"143\"."
+    }
+
+    field heart_crystal_num type="i32::str" {
+        key "6PLsn8xo"
+        doc "Heart Crystal drops gathered. IDA setter HeartCrystalNum. Captured: \"32\"."
+    }
+
+    field max_turn_damage type="i32::str" {
+        key "5NRJQ1LU"
+        doc "Highest single-turn damage this battle. IDA setter MaxTurnDamage. Captured: \"28145\"."
+    }
+
+    field unk_XP06YWdT type="i32::str" {
+        key "XP06YWdT"
+        doc "Captured \"1\". // UNVERIFIED no readparam setter."
+    }
+
+    field unk_U8uZLA34 type="i32::str" {
+        key "U8uZLA34"
+        doc "Captured \"2\". // UNVERIFIED."
+    }
+
+    field unk_rZQJF5G9 type="i32::str" {
+        key "rZQJF5G9"
+        doc "Captured \"4\". // UNVERIFIED."
+    }
+
+    field unk_TW1Mrtp5 type="i32::str" {
+        key "TW1Mrtp5"
+        doc "Captured \"0\". // UNVERIFIED."
+    }
+
+    field unk_13HeZJ0o type="i32::str" {
+        key "13HeZJ0o"
+        doc "Captured \"59\". // UNVERIFIED."
+    }
+
+    field unk_8vHibp6o type="i32::str" {
+        key "8vHibp6o"
+        doc "Captured \"16\". // UNVERIFIED."
+    }
+
+    field unk_B0p2kASC type="i32::str" {
+        key "B0p2kASC"
+        doc "Captured \"55\". // UNVERIFIED."
+    }
+
+    field unk_EcDR3f6M type="i32::str" {
+        key "EcDR3f6M"
+        doc "Captured \"109\". // UNVERIFIED."
+    }
+
+    field unk_GRCVD1i8 type="i32::str" {
+        key "GRCVD1i8"
+        doc "Captured \"5\". // UNVERIFIED."
+    }
+
+    field unk_Uy15wSJd type="i32::str" {
+        key "Uy15wSJd"
+        doc "Captured \"3\". // UNVERIFIED."
+    }
+
+    field unk_EfwspXXo type="i32::str" {
+        key "EfwspXXo"
+        doc "Captured \"0\". // UNVERIFIED."
+    }
+
+    field unk_C2aU1feD type="i32::str" {
+        key "C2aU1feD"
+        doc "Captured \"45998\". Large value, possibly total damage. // UNVERIFIED."
+    }
+
+    field unk_vELiH4Q1 type="i32::str" {
+        key "vELiH4Q1"
+        doc "Captured \"2\". // UNVERIFIED."
+    }
+
+    field monsters_killed type=str {
+        key "L16VDrk5"
+        doc "Comma-separated monster_id:count pairs of every monster killed. Captured: \"30352:3,40352:1,10352:3,50352:2,20352:1,40401:1\". // UNVERIFIED, kept as str per handbook section 3.3."
+    }
+
+    field element_kills type=str {
+        key "Fw2dr06x"
+        doc "Comma-separated element:count pairs. Captured: \"3:3,4:2,1:3,5:2,2:1\". // UNVERIFIED."
+    }
+
+    field units_killed type=str {
+        key "1CxU2MPn"
+        doc "Comma-separated unit_id:count pairs. Captured: \"30030:3,40030:1,10030:3,50030:2,20030:1,40031:1\". // UNVERIFIED."
+    }
+
+    field unk_Lu0pAk1R type=str {
+        key "Lu0pAk1R"
+        doc "Comma-separated integer list. Captured: \"2,1,2,1,1\". // UNVERIFIED."
+    }
+
+    field unk_32edsbP0 type="i32::str" {
+        key "32edsbP0"
+        doc "Captured \"1783\". // UNVERIFIED."
+    }
+
+    field unk_CwN87TyL type="i32::str" {
+        key "CwN87TyL"
+        doc "Captured \"15967\". // UNVERIFIED."
+    }
+
+    field unk_xFH5i4o8 type="i32::str" {
+        key "xFH5i4o8"
+        doc "Captured \"6\". // UNVERIFIED."
+    }
+
+    field unk_J3EBd90b type="i32::str" {
+        key "J3EBd90b"
+        doc "Captured \"3\". // UNVERIFIED."
+    }
+
+    field unk_2z8kTtBy type="i32::str" {
+        key "2z8kTtBy"
+        doc "Captured \"0\". // UNVERIFIED."
+    }
+
+    field unk_TNtQBS49 type="i32::str" {
+        key "TNtQBS49"
+        doc "Captured \"0\". // UNVERIFIED."
+    }
+
+    field unk_e6BKoYy9 type="i32::str" {
+        key "e6BKoYy9"
+        doc "Captured \"27535\". Also appears in UserTeamArchive, possibly total damage or score. // UNVERIFIED."
+    }
+
+    field unk_VJzlXxyM type=str {
+        key "VJzlXxyM"
+        doc "Comma-separated unit_id:count pairs. Captured: \"10105:6,10011:5\". // UNVERIFIED."
+    }
+
+    field unk_XOlcsuRn type=str {
+        key "XOlcsuRn"
+        doc "Single unit_id:count pair. Captured: \"10011:5\". // UNVERIFIED."
+    }
+
+    field unk_zbPlgZU6 type=str {
+        key "zbPlgZU6"
+        doc "Single unit_id:count pair. Captured: \"10105:3\". // UNVERIFIED."
+    }
+
+    field unk_2IHBUL5i type="i32::str" {
+        key "2IHBUL5i"
+        doc "Captured \"3\". // UNVERIFIED."
+    }
+
+    field unk_GFu2Oh2N type="i32::str" {
+        key "GFu2Oh2N"
+        doc "Captured \"1\". // UNVERIFIED."
+    }
+
+    field unk_qF71DLEw type="i32::str" {
+        key "qF71DLEw"
+        doc "Captured \"0\". // UNVERIFIED."
+    }
+
+    field unk_dx1NV0tP type="i32::str" {
+        key "dx1NV0tP"
+        doc "Captured \"0\". // UNVERIFIED."
+    }
+
+    field unk_BJNh3g2I type=str {
+        key "BJNh3g2I"
+        doc "Comma-separated colon-pair list. Captured: \"3:1,1:1,5:1\". // UNVERIFIED."
+    }
+
+    field unk_vgBY76Ky type=str {
+        key "vgBY76Ky"
+        doc "Comma-separated colon-pair list. Captured: \"1:1,3:1,5:1,2:1,4:1\". // UNVERIFIED."
+    }
+
+    field unk_6Xd2b0Iy type="i32::str" {
+        key "6Xd2b0Iy"
+        doc "Captured \"0\". // UNVERIFIED."
+    }
+}
+
+json MissionEndReqDeckMember {
+    doc "Inner item in MissionEnd 0xgIw1Ns array. Deck composition the player actually fielded. Matches UserPartyDeckInfo leader/sub encoding."
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "user_units.id of the unit in this slot. // CAPTURED FROM http_log_9TvyNR5H_*.log."
+    }
+
+    field member_type type="i32::str" {
+        key "gr48vsdJ"
+        doc "0=leader, 1=member. Same encoding as UserPartyDeckInfo.member_type."
+    }
+
+    field disp_order type="i32::str" {
+        key "XuJL4pc5"
+        doc "Position 0-5 within the squad."
+    }
+}
+
+json MissionEndReqMissionInfo {
+    doc "Inner item in MissionEnd Kz7qfSs5 array. Identifies which battle is ending. // UNVERIFIED no readparam coverage."
+
+    field battle_serial type=str {
         key "k9cxD7Ba"
-        doc "TODO"
+        doc "Captured \"58844709\". Possibly battle session id/serial. Same key appears in MissionBreakInfo. // UNVERIFIED."
     }
+
+    field result_code type="i32::str" {
+        key "j3g5P4cq"
+        doc "Captured \"2\". Possibly result code (win) or wave count. // UNVERIFIED."
+    }
+}
+
+json MissionEndReq {
+    doc "Outer envelope for MissionEnd. Includes standard GME envelope groups."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Standard user-info-tag envelope."
+    }
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Per-request signal key handshake."
+    }
+
+    field mst_versions type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "Client-known MST version list."
+    }
+
+    field mission_info type="[MissionEndReqMissionInfo]::size(1)" {
+        key "Kz7qfSs5"
+        doc "Single-item group naming which mission is ending."
+    }
+
+    field battle_result type="[MissionEndReqBattleResult]::size(1)" {
+        key "rXvA1E5y"
+        doc "Battle result block — currencies, drops, kill stats."
+    }
+
+    field deck type="[MissionEndReqDeckMember]" {
+        key "0xgIw1Ns"
+        doc "Composition the player actually fielded. Server uses this for BB-gauge / active-deck validation."
+    }
+}
+
+// =============================================================================
+//  MissionReward  (Quest Clear Reward screen, response key F5Vs19mb)
+// =============================================================================
+
+json MissionReward {
+    doc "MissionRewardResponse (response key F5Vs19mb). Drives the 'Quest Clear Reward' screen and the post-mission level-up animation. All 19 fields decoded from MissionRewardResponse::readParam pseudocode at func_addr 0x13E3C34 in libgame.so (arm64 APK) via a private IDA audit. See gimuserver/gme/MissionEnd.cpp for the audit story."
+
+    field clear_bonus type=str {
+        key "92ms7J5M"
+        doc "setClearBonus. First-clear bonus indicator. Treated as std::string by readParam. // UNVERIFIED format — captured idle value is empty string."
+    }
+
+    field lvup_flg type="i32::str" {
+        key "wPb5uMR9"
+        doc "setLvupFlg. Level-up animation flag. 0=no animation; non-zero plays the 'You reached Lv N' animation from before_lv up to UserTeamInfo.level. Combined with before_lv, this is the actual control surface for the level-up cascade — earlier MissionEnd code left it at 0 with before_lv=0, which made the client animate from 0 up to whatever team_info.level said (the 'Lv 1, 2, 3, then 900' bug)."
+    }
+
+    field before_lv type="i32::str" {
+        key "81CsGAR9"
+        doc "setBeforeLv. The player's level BEFORE this mission. Paired with lvup_flg to drive the level-up animation: the client animates from before_lv to UserTeamInfo.level when lvup_flg is set. Always pass the player's pre-mission level here; on no-level-up missions, lvup_flg should be 0 and before_lv should equal team_info.level."
+    }
+
+    field inc_exp type="i32::str" {
+        key "d96tuT2E"
+        doc "setIncExp. 'XP Obtained' value displayed on the result screen. This is NOT a cascade trigger (the cascade comes from lvup_flg + before_lv); send the actual exp gained this mission so the player sees a real number."
+    }
+
+    field rein_req_state type="i32::str" {
+        key "0egM9p7I"
+        doc "setReinReqState. Reinforce-request state code. // UNVERIFIED meaning; idle value 0 — likely tracks the reinforce/friend-request UI prompt at result screen."
+    }
+
+    field clear_dungeon_id type=str {
+        key "4sQ8vBXm"
+        doc "setClearDungeonID. The dungeon ID of the mission just cleared. The result-screen header reads from this to render 'Adventurer's Prairie' / 'St. Lamia Palace' / etc. Server should populate from F_MISSION_MST lookup by mission_id, but mission.json isn't decoded yet — currently sent empty so the client falls back to its cached current-dungeon state."
+    }
+
+    field clear_area_id type=str {
+        key "NgPQbA46"
+        doc "setClearAreaID. Area ID of the cleared mission. Same source as clear_dungeon_id (F_MISSION_MST lookup, currently empty)."
+    }
+
+    field clear_mission_id type=str {
+        key "mauD5qZ1"
+        doc "setClearMissionID. Mission ID of the cleared mission. Needs MissionStart to persist active_mission_id to userinfo first so MissionEnd can read it back. Currently empty — the client uses its own cached mission state."
+    }
+
+    field reward_units type=str {
+        key "3MAT6quo"
+        doc "setRewardUnits. Comma-separated unit-drop list (unit_id:rarity:flag triples). Echoed from MissionEndReqBattleResult.unit_drops in the request. Same wire format as the request's 3MAT6quo."
+    }
+
+    field zel type="i32::str" {
+        key "Najhr8m6"
+        doc "setZel. 'Zel Obtained' on the result screen. Set from MissionEndReqBattleResult.earn_zel. IDA setter previously documented in readparam_analysis as 'ActualZel'."
+    }
+
+    field karma type="i32::str" {
+        key "HTVh8a65"
+        doc "setKarma. 'Karma Obtained' on the result screen. Set from MissionEndReqBattleResult.earn_karma. IDA setter previously documented in readparam_analysis as 'ActualKarma'."
+    }
+
+    field exp_up_type type=str {
+        key "3vXLQFjt"
+        doc "setExpUpType. Exp-bonus type indicator (string, e.g. multiplier code or boost-source tag). // UNVERIFIED format; idle value is empty string. Likely populated during event campaigns to show 'x2 EXP' style badges next to the obtained value."
+    }
+
+    field zel_up_type type=str {
+        key "k6MynZkg"
+        doc "setZelUpType. Zel-bonus type indicator. Same shape as exp_up_type."
+    }
+
+    field karma_up_type type=str {
+        key "J1MwgxCL"
+        doc "setKarmaUpType. Karma-bonus type indicator. Same shape as exp_up_type."
+    }
+
+    field exp_guild type="i32::str" {
+        key "b8D18b7e"
+        doc "setExpGuild. Guild-membership exp bonus (additive). 0 when not in a guild — current server has no guild system."
+    }
+
+    field karma_guild type="i32::str" {
+        key "7adBa819"
+        doc "setKarmaGuild. Guild-membership karma bonus. Same as exp_guild."
+    }
+
+    field zel_guild type="i32::str" {
+        key "gzs3Bw10"
+        doc "setZelGuild. Guild-membership zel bonus. Same as exp_guild."
+    }
+
+    field e_token type="i32::str" {
+        key "03fFk30f"
+        doc "setEToken. Event token reward (event-currency drops). 0 when no event is active. Ties into F_ET_MISSION_MST when the event system is implemented."
+    }
+
+    field repeat_clear_bonus type=str {
+        key "S2ChOKo6"
+        doc "setRepeatClearBonus. Bonus payload for repeat clears (e.g. first-clear vs replay rewards differ for some campaign missions). // UNVERIFIED format — idle value empty string. The same hash also appears as a placeholder field in MissionMst (mst/mission.kdl) with idle empty value, suggesting the response copies through some MST-stored bonus string."
+    }
+}
+
+// =============================================================================
+//  MissionBreak  (pause/resume mid-mission)
+// =============================================================================
+
+json MissionBreakInfo {
+    doc "MissionBreakInfoResponse (response key 5PR2VmH1). Pause-mid-mission resume state. All 3 fields decoded from MissionBreakInfo::readParam in libgame.so via a private IDA audit of the handler at func_addr 0x13E20B4."
+
+    field mission_serial_id type=str {
+        key "k9cxD7Ba"
+        doc "setMissionSerialID. Battle session serial. Same wire key appears in MissionEndReqMissionInfo as battle_serial — they're the same opaque token. Treat as a session-scoped string."
+    }
+
     field state type="i32::str" {
-        doc "TODO"
         key "j0Uszek2"
+        doc "setState. 0=paused, 1=cleared (inferred from value range; setter signature is int)."
     }
-    field break_info type="str" {
+
+    field mission_break_info type=str {
         key "K2gIYm0h"
-        doc "TODO"
+        doc "setMissionBreakInfo. Free-form break-state blob the client builds to resume mid-battle. Server passes through unchanged."
     }
 }

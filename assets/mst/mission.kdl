@@ -109,7 +109,8 @@ json MissionMst {
 
     field unknown_wHN6nfh9 type=str {
         key "wHN6nfh9"
-        doc "Unknown nullable string — observed format: '0,0,0:0,0:0'"
+        doc "Unknown nullable string — observed format: '0,0,0:0,0:0'.  Marked optional because mission row 0 (the sentinel) carries `null` here and Glaze rejects null→std::string."
+        optional #true
     }
 
     field unknown_jeR2rN3V type="i32::str" {
@@ -129,12 +130,13 @@ json MissionMst {
 
     field battle_group_ids type=str {
         key "8f4NYKxb"
-        doc "Battle group reference string — colon-separated pairs of order:groupId (e.g. '3:10100,1:10101,0:10102'); null for mission 0"
+        doc "Battle group reference string — colon-separated pairs of order:groupId (e.g. '3:10100,1:10101,0:10102'); null for mission 0.  Marked optional so the loader doesn't reject the sentinel row."
+        optional #true
     }
 
-    field unknown_HSRhkf70 type="i32::str" {
+    field unknown_HSRhkf70 type=str {
         key "HSRhkf70"
-        doc "Unknown integer — 0 or 1 (possibly 'is final dungeon' flag)"
+        doc "Unknown — wire format is HETEROGENEOUS across the 3433-row dataset: 3396 rows hold a single integer (\"0\", \"1\", \"10067\"), 36 rows hold a comma-separated pair (\"666,20067\", \"2100001,2100002\", \"10080,10165\"), 1 row is empty (\"\").  Earlier port typed this as `i32::str` based on the prior 'final-dungeon flag' guess in the doc — the comma-pair rows fail Glaze's single-int parse (`expected_quote` at the comma).  // REVERTED FROM i32::str: comma-pair values invalidate the narrower type.  // CAPTURED FROM: deploy/system/mission.json.  // UNVERIFIED: semantic — possibly 'related mission id pair' or 'flag id pair', but no handler currently reads this field so the right narrowing is unclear."
     }
 
     field unknown_np4K1xtq type=str {
@@ -149,22 +151,26 @@ json MissionMst {
 
     field unknown_N4XVE1uA type=str {
         key "N4XVE1uA"
-        doc "Unknown nullable string — observed: '0,0'"
+        doc "Unknown nullable string — observed: '0,0'.  Null on mission row 0."
+        optional #true
     }
 
     field unknown_L8iA9M6c type=str {
         key "L8iA9M6c"
-        doc "Unknown nullable string"
+        doc "Unknown nullable string.  Null on mission row 0."
+        optional #true
     }
 
     field bgm_map type=str {
         key "3sRN9BPS"
-        doc "Map/field BGM asset name (e.g. 'bf010_map_grass.mp3'); null for mission 0"
+        doc "Map/field BGM asset name (e.g. 'bf010_map_grass.mp3'); null for mission 0."
+        optional #true
     }
 
     field bgm_battle type=str {
         key "nDf28LtU"
-        doc "Battle BGM asset name (e.g. 'bf006_btl_boss.mp3'); null for mission 0"
+        doc "Battle BGM asset name (e.g. 'bf006_btl_boss.mp3'); null for mission 0."
+        optional #true
     }
 
     field unknown_HeA4I2dN type="i32::str" {
@@ -172,14 +178,15 @@ json MissionMst {
         doc "Unknown integer — always 1"
     }
 
-    field npc_encounter_id type="i32::str" {
+    field npc_encounter_id type=str {
         key "1e6jxQzf"
-        doc "NPC encounter ID — references F_MISSION_NPC_UNIT_MST.1e6jxQzf; 0 = no NPC"
+        doc "NPC encounter reference — wire format is HETEROGENEOUS: most rows hold a single int as quoted string (3364/3433: \"0\" = no NPC, \"<id>\" otherwise), but 69 rows hold a colon/comma/at-sign-separated list (\"300010:0,300011:1,...\", \"30020:0,,,,,@1\", \"1:0,2:1,2:1,2:1,310200:1,@1\").  The list encoding is order:state pairs with `@N` suffixes — likely a multi-NPC encounter sequence.  // REVERTED FROM i32::str: list-shaped rows fail single-int parse (`expected_quote` at the colon/comma).  // CAPTURED FROM: deploy/system/mission.json rows 934/943/1054.  // UNVERIFIED: precise encoding semantics — references F_MISSION_NPC_UNIT_MST."
     }
 
     field unknown_PYgkvcsy type=str {
         key "PYgkvcsy"
-        doc "Unknown nullable string — usually empty"
+        doc "Unknown nullable string — usually empty.  Null on mission row 0."
+        optional #true
     }
 
     field description type=str {
