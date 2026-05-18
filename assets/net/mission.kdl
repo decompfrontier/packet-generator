@@ -445,7 +445,7 @@ json MissionReward {
 
     field clear_dungeon_id type=str {
         key "4sQ8vBXm"
-        doc "setClearDungeonID. The dungeon ID of the mission just cleared. The result-screen header reads from this to render 'Adventurer's Prairie' / 'St. Lamia Palace' / etc. Server should populate from F_MISSION_MST lookup by mission_id, but mission.json isn't decoded yet — currently sent empty so the client falls back to its cached current-dungeon state."
+        doc "setClearDungeonID. The dungeon ID of the mission just cleared. The result-screen header reads from this to render 'Adventurer's Prairie' / 'St. Lamia Palace' / etc. Server should populate from F_MISSION_MST lookup by mission_id, but mission_mst.json isn't decoded yet — currently sent empty so the client falls back to its cached current-dungeon state."
     }
 
     field clear_area_id type=str {

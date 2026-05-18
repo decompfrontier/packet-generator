@@ -34,6 +34,7 @@ import "../net/user.kdl"
 import "../net/items.kdl"
 import "../net/unit.kdl"
 import "../net/permit_place.kdl"
+import "../net/reinforcement_info.kdl"
 import "../net/mission.kdl"
 import "../net/raid.kdl"
 import "../net/npc.kdl"
@@ -577,21 +578,35 @@ json UserInfoResp {
     }
 }
 
-json ReinforcementInfo {
-    doc "TODO"
-
-    field mock type="str" {
-        doc "TODO"
-        key "INVALID"
-    }
-}
+// ReinforcementInfo is defined in net/reinforcement_info.kdl (xZH6EIQ7 — 47
+// fields; the local stub here was kept-as-placeholder until the schema was
+// decoded).
+//
+// FriendGetResp emits BOTH wire keys:
+//   - xZH6EIQ7 (ReinforcementInfoResponse) — populates ReinforcementInfoList,
+//     which a captured production response (server/deploy/log_res/2o4axPIC_*.json)
+//     confirms is the canonical key the BF server returns here even when empty
+//   - tojMy68W (FriendInfoResponse) — populates FriendInfoList; per the IDA
+//     dispatch table this is the "friend list" singleton used by other UIs
+//     (general friend roster, friend detail screen).  Cheap to populate both
+//     since we have the same source data.
+//
+// The Reinforcement picker UI almost certainly reads from one of these two
+// singletons; sending both removes the ambiguity until we identify which.
+// FriendInfo schema is in net/friends.kdl, ReinforcementInfo in
+// net/reinforcement_info.kdl.
 
 json FriendGetResp {
-    doc "TODO"
+    doc "FriendGet (2o4axPIC) response — the friend list that populates the Reinforcement / squad-select picker.  Emits both xZH6EIQ7 (ReinforcementInfoList) and tojMy68W (FriendInfoList) with the same source data."
 
-    field info type="[ReinforcementInfo]" {
+    field reinforce_info type="[ReinforcementInfo]" {
         key "xZH6EIQ7"
-        doc "TODO"
+        doc "Friend list entries under the reinforce/helper picker key — matches the captured prod response shape."
+    }
+
+    field friend_info type="[FriendInfo]" {
+        key "tojMy68W"
+        doc "Same entries under the friend-info-list key — populates FriendInfoList for any UI that reads from there."
     }
 }
 

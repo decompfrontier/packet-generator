@@ -6,7 +6,7 @@
 
 json MissionScriptMst {
     hash "N4XVE1uA"
-    doc "F_MISSION_SCRIPT_MST — mission cutscene script definitions.  UNVERIFIED HASH: `N4XVE1uA` is heavily DUAL-USE across the BF wire protocol — it appears as a field key inside `LoginInfoResp` (user_scenario_info), inside DungeonEventUpdate request bodies (dungeon-state field), and inside `deploy/system/arena_rank.json` MST entries (scenario script filenames).  No decoded `deploy/system/mission_script.json` exists on this branch to confirm it's the F_MISSION_SCRIPT_MST top-level key.  Field definitions below are educated guesses based on the script-data format observed in arena_rank.json — replace once mstdec.py output is available."
+    doc "F_MISSION_SCRIPT_MST — mission cutscene script definitions.  UNVERIFIED HASH: `N4XVE1uA` is heavily DUAL-USE across the BF wire protocol — it appears as a field key inside `LoginInfoResp` (user_scenario_info), inside DungeonEventUpdate request bodies (dungeon-state field), and inside `deploy/system/arena_rank_mst.json` MST entries (scenario script filenames).  No decoded `deploy/system/mission_script.json` exists on this branch to confirm it's the F_MISSION_SCRIPT_MST top-level key.  Field definitions below are educated guesses based on the script-data format observed in arena_rank_mst.json — replace once mstdec.py output is available."
 
     field mission_id type="i32::str" {
         key "j28VNcUW"

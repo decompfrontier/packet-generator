@@ -1,10 +1,10 @@
 json UnitExpPatternMst {
     hash "JYFGe9y6"
-    doc "F_UNIT_EXP_PATTERN_MST — unit XP-curve lookup table.  VERIFIED: top-level key in `deploy/system/unit_exp_pattern.json` is `\"JYFGe9y6\": [...]` and IDA `response_mappings.json` confirms response_class=`UnitExpPatternMstResponse`, response_key=`JYFGe9y6`, is_mst=true.  Sample row: `{\"5UvTp7q1\":\"10\",\"D9wXQI2V\":\"1\",\"grKTq15A\":\"0\"}`."
+    doc "F_UNIT_EXP_PATTERN_MST — unit XP-curve lookup table.  VERIFIED: top-level key in `deploy/system/unit_exp_pattern_mst.json` is `\"JYFGe9y6\": [...]` and IDA `response_mappings.json` confirms response_class=`UnitExpPatternMstResponse`, response_key=`JYFGe9y6`, is_mst=true.  Sample row: `{\"5UvTp7q1\":\"10\",\"D9wXQI2V\":\"1\",\"grKTq15A\":\"0\"}`."
 
     field id type="i32::str" {
         key "5UvTp7q1"
-        doc "Pattern id (which curve this row belongs to).  Quoted decimal integer.  Sample values from unit_exp_pattern.json: \"10\", \"11\", etc."
+        doc "Pattern id (which curve this row belongs to).  Quoted decimal integer.  Sample values from unit_exp_pattern_mst.json: \"10\", \"11\", etc."
     }
 
     field lv type="i32::str" {
@@ -20,7 +20,7 @@ json UnitExpPatternMst {
 
 json UnitMst {
     hash "2r9cNSdt"
-    doc "F_UNIT_MST — unit master data (Brave Frontier unit definitions).  VERIFIED: top-level key in `deploy/system/unit.json` is `\"2r9cNSdt\": [...]`.  IDA `response_mappings.json` lists response_class=`UnitMstResponse`, response_key=`fcoRMe14`, is_mst=true — that `fcoRMe14` is the response key used when the SERVER pushes the table to the client, while `2r9cNSdt` is the on-disk JSON top-level key.  Both refer to the same logical table."
+    doc "F_UNIT_MST — unit master data (Brave Frontier unit definitions).  VERIFIED: top-level key in `deploy/system/unit_mst.json` is `\"2r9cNSdt\": [...]`.  IDA `response_mappings.json` lists response_class=`UnitMstResponse`, response_key=`fcoRMe14`, is_mst=true — that `fcoRMe14` is the response key used when the SERVER pushes the table to the client, while `2r9cNSdt` is the on-disk JSON top-level key.  Both refer to the same logical table."
 
     field id  type="i32::str" {
         key "pn16CNah"
@@ -154,7 +154,7 @@ json UnitMst {
 
     field unknown  type=str {
         key "5SUvj4tM"
-        doc "overdriveStats — raw passthrough string.  Kept as `str` rather than `[i32::str]::sep(comma)` because real values include a trailing comma the array codec would drop on round-trip.  Captured values from deploy/system/unit.json: \"\" (empty for most units), \"100,100,100,0,\", \"100,100,100,5000,\""
+        doc "overdriveStats — raw passthrough string.  Kept as `str` rather than `[i32::str]::sep(comma)` because real values include a trailing comma the array codec would drop on round-trip.  Captured values from deploy/system/unit_mst.json: \"\" (empty for most units), \"100,100,100,0,\", \"100,100,100,5000,\""
     }
 
     field extra_passive_skill_id  type="i32::str" {
@@ -219,7 +219,7 @@ json UnitMst {
 
     field bad_state_resists  type=str {
         key "CEeqs63b"
-        doc "Six colon-separated bad-state resistance percentages (poison/weak/sick/injury/curse/paralysis order).  Kept as `str` rather than `[i32::str]::sep(colon)` because real captures include a literal space character in the slot, e.g. \"0:0:0:0: :0\", which the array codec cannot parse as i32.  Other observed values from deploy/system/unit.json: \"0:0:0:0:0:0\", \"0:0:0:0:0:100\", \"100:100:100:100:100:100\""
+        doc "Six colon-separated bad-state resistance percentages (poison/weak/sick/injury/curse/paralysis order).  Kept as `str` rather than `[i32::str]::sep(colon)` because real captures include a literal space character in the slot, e.g. \"0:0:0:0: :0\", which the array codec cannot parse as i32.  Other observed values from deploy/system/unit_mst.json: \"0:0:0:0:0:0\", \"0:0:0:0:0:100\", \"100:100:100:100:100:100\""
     }
 
     field adjust_exp  type="i32::str" {
@@ -229,7 +229,7 @@ json UnitMst {
 
     field home_img_pos  type="[i32::str]::sep(comma)" {
         key "1W9CxaFK"
-        doc "Home-screen image position (x, y, w, h).  Verified across all 2291 unit MST rows: every value is an integer (can be negative), no decimals.  Example values from deploy/system/unit.json: \"1000,905,150,410\", \"101,-13,174,475\", \"103,-33,240,655\""
+        doc "Home-screen image position (x, y, w, h).  Verified across all 2291 unit MST rows: every value is an integer (can be negative), no decimals.  Example values from deploy/system/unit_mst.json: \"1000,905,150,410\", \"101,-13,174,475\", \"103,-33,240,655\""
     }
 
     field detail_img_pos  type="[i32::str]::sep(comma)" {

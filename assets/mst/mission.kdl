@@ -1,11 +1,11 @@
 // F_MISSION_MST_1 and F_MISSION_MST_2 — main campaign/dungeon mission table.
 // MST_1 covers IDs 0-~1200 (story chapters 1-end-game).
 // MST_2 covers IDs 1005000+ (Uncharted Frontier / late end-game content).
-// Merged into deploy/system/mission.json for server use.
+// Merged into deploy/system/mission_mst.json for server use.
 
 json MissionMst {
     hash "oXeC1Ak9"
-    doc "F_MISSION_MST — mission master data (parts 1 & 2).  Hash sourced from IDA `response_mappings.json` (response_class=MissionMstResponse, response_key=oXeC1Ak9, is_mst=true).  UNVERIFIED: no decoded `deploy/system/mission.json` available on this branch to cross-check the top-level key against — confirm once the .dat file is decoded via `scripts/mstdec.py`.  Previous KDL used hash `2I9V0o6J` which IDA labels as `CampaignMissionInfoResponse` (a network response, is_mst=false) — wrong category entirely."
+    doc "F_MISSION_MST — mission master data (parts 1 & 2).  Hash sourced from IDA `response_mappings.json` (response_class=MissionMstResponse, response_key=oXeC1Ak9, is_mst=true).  UNVERIFIED: no decoded `deploy/system/mission_mst.json` available on this branch to cross-check the top-level key against — confirm once the .dat file is decoded via `scripts/mstdec.py`.  Previous KDL used hash `2I9V0o6J` which IDA labels as `CampaignMissionInfoResponse` (a network response, is_mst=false) — wrong category entirely."
 
     field id type="i32::str" {
         key "j28VNcUW"
@@ -136,7 +136,7 @@ json MissionMst {
 
     field unknown_HSRhkf70 type=str {
         key "HSRhkf70"
-        doc "Unknown — wire format is HETEROGENEOUS across the 3433-row dataset: 3396 rows hold a single integer (\"0\", \"1\", \"10067\"), 36 rows hold a comma-separated pair (\"666,20067\", \"2100001,2100002\", \"10080,10165\"), 1 row is empty (\"\").  Earlier port typed this as `i32::str` based on the prior 'final-dungeon flag' guess in the doc — the comma-pair rows fail Glaze's single-int parse (`expected_quote` at the comma).  // REVERTED FROM i32::str: comma-pair values invalidate the narrower type.  // CAPTURED FROM: deploy/system/mission.json.  // UNVERIFIED: semantic — possibly 'related mission id pair' or 'flag id pair', but no handler currently reads this field so the right narrowing is unclear."
+        doc "Unknown — wire format is HETEROGENEOUS across the 3433-row dataset: 3396 rows hold a single integer (\"0\", \"1\", \"10067\"), 36 rows hold a comma-separated pair (\"666,20067\", \"2100001,2100002\", \"10080,10165\"), 1 row is empty (\"\").  Earlier port typed this as `i32::str` based on the prior 'final-dungeon flag' guess in the doc — the comma-pair rows fail Glaze's single-int parse (`expected_quote` at the comma).  // REVERTED FROM i32::str: comma-pair values invalidate the narrower type.  // CAPTURED FROM: deploy/system/mission_mst.json.  // UNVERIFIED: semantic — possibly 'related mission id pair' or 'flag id pair', but no handler currently reads this field so the right narrowing is unclear."
     }
 
     field unknown_np4K1xtq type=str {
@@ -180,7 +180,7 @@ json MissionMst {
 
     field npc_encounter_id type=str {
         key "1e6jxQzf"
-        doc "NPC encounter reference — wire format is HETEROGENEOUS: most rows hold a single int as quoted string (3364/3433: \"0\" = no NPC, \"<id>\" otherwise), but 69 rows hold a colon/comma/at-sign-separated list (\"300010:0,300011:1,...\", \"30020:0,,,,,@1\", \"1:0,2:1,2:1,2:1,310200:1,@1\").  The list encoding is order:state pairs with `@N` suffixes — likely a multi-NPC encounter sequence.  // REVERTED FROM i32::str: list-shaped rows fail single-int parse (`expected_quote` at the colon/comma).  // CAPTURED FROM: deploy/system/mission.json rows 934/943/1054.  // UNVERIFIED: precise encoding semantics — references F_MISSION_NPC_UNIT_MST."
+        doc "NPC encounter reference — wire format is HETEROGENEOUS: most rows hold a single int as quoted string (3364/3433: \"0\" = no NPC, \"<id>\" otherwise), but 69 rows hold a colon/comma/at-sign-separated list (\"300010:0,300011:1,...\", \"30020:0,,,,,@1\", \"1:0,2:1,2:1,2:1,310200:1,@1\").  The list encoding is order:state pairs with `@N` suffixes — likely a multi-NPC encounter sequence.  // REVERTED FROM i32::str: list-shaped rows fail single-int parse (`expected_quote` at the colon/comma).  // CAPTURED FROM: deploy/system/mission_mst.json rows 934/943/1054.  // UNVERIFIED: precise encoding semantics — references F_MISSION_NPC_UNIT_MST."
     }
 
     field unknown_PYgkvcsy type=str {

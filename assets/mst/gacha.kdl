@@ -1,5 +1,5 @@
 json GachaEffectMst {
-    doc "Per-rarity roll-rate table for a gacha door.  Loaded from deploy/system/gacha_effects.json (wrapper key Pf97SzVw, 13763 rows).  Each row binds a (gacha_id, rare) tuple to a roll rate and to the three cutscene scripts that play before / during / after the pull.  IDA: GachaEffectMstResponse, is_mst=true.  No readparam list (the client iterates via index)."
+    doc "Per-rarity roll-rate table for a gacha door.  Loaded from deploy/system/gacha_effect_mst.json (wrapper key Pf97SzVw, 13763 rows).  Each row binds a (gacha_id, rare) tuple to a roll rate and to the three cutscene scripts that play before / during / after the pull.  IDA: GachaEffectMstResponse, is_mst=true.  No readparam list (the client iterates via index)."
 
     field id type="i32::str" {
         key "u0vkt9yH"
@@ -13,7 +13,7 @@ json GachaEffectMst {
 
     field unk type="i32::str" {
         key "TPGXiNmN"
-        doc "Purpose not yet decoded.  Always \"0\" across all 13763 rows of gacha_effects.json — leave i32::str until a non-zero capture surfaces.  // UNVERIFIED:"
+        doc "Purpose not yet decoded.  Always \"0\" across all 13763 rows of gacha_effect_mst.json — leave i32::str until a non-zero capture surfaces.  // UNVERIFIED:"
     }
 
     field rare type="i32::str" {
@@ -43,11 +43,11 @@ json GachaEffectMst {
 }
 
 json GachaCategory {
-    doc "Summon-screen banner tile.  Each category renders as one horizontal banner image on the gacha screen; the image is `img` and tapping it filters the door list to the ids listed in `gatcha_id_list`.  Wire wrapper key IBs49NiH (IDA: GachaCategoryMstResponse, is_mst=true).  Loaded from deploy/system/gacha_categories.json (extracted from the legacy server's gacha.json `gacha_categories` section — see handbook §7.6 banner port).  The client filters by start/end date, so only categories with current-date validity render on screen."
+    doc "Summon-screen banner tile.  Each category renders as one horizontal banner image on the gacha screen; the image is `img` and tapping it filters the door list to the ids listed in `gatcha_id_list`.  Wire wrapper key IBs49NiH (IDA: GachaCategoryMstResponse, is_mst=true).  Loaded from deploy/system/gacha_category_mst.json (extracted from the legacy server's gacha_mst.json `gacha_categories` section — see handbook §7.6 banner port).  The client filters by start/end date, so only categories with current-date validity render on screen."
 
     field id type="i32::int" {
         key "vx9uyQVQ"
-        doc "Category row id (unique within gacha_categories.json).  Emitted as a raw int — the legacy server wrote a quoted string here; both formats are accepted by the client (is_mst=true, no readparam contract).  // UNVERIFIED: raw int vs quoted string."
+        doc "Category row id (unique within gacha_category_mst.json).  Emitted as a raw int — the legacy server wrote a quoted string here; both formats are accepted by the client (is_mst=true, no readparam contract).  // UNVERIFIED: raw int vs quoted string."
     }
 
     field img type="str" {
@@ -57,7 +57,7 @@ json GachaCategory {
 
     field disp_order type="i32::int" {
         key "2r4EoNt4"
-        doc "Render order within a date window (lower = appears first).  Sourced from `display_order` in the legacy gacha.json.  // UNVERIFIED: raw int vs quoted string."
+        doc "Render order within a date window (lower = appears first).  Sourced from `display_order` in the legacy gacha_mst.json.  // UNVERIFIED: raw int vs quoted string."
     }
 
     field gatcha_id_list type="str" {
@@ -77,7 +77,7 @@ json GachaCategory {
 }
 
 json GachaMst {
-    doc "Static catalog of every gacha door ever shipped.  Wrapper key 5Y4GJeo3 (IDA: GachaMstResponse, is_mst=true).  Loaded from deploy/system/gacha.json (1305 rows).  Carries the full historical list — the runtime visibility of any single door is determined by start_date/end_date comparison against the current server time."
+    doc "Static catalog of every gacha door ever shipped.  Wrapper key 5Y4GJeo3 (IDA: GachaMstResponse, is_mst=true).  Loaded from deploy/system/gacha_mst.json (1305 rows).  Carries the full historical list — the runtime visibility of any single door is determined by start_date/end_date comparison against the current server time."
 
     field id type="i32::str" {
         key "7Ffmi96v"
@@ -189,7 +189,7 @@ json GachaMst {
 
 
 json GachaInfoMst {
-    doc "Per-door wire payload at wrapper key 1IR86sAv (IDA: GachaInfoResponse, has_readparam=true with 23 fields).  This is the shape the client reads when populating the door catalog.  Loaded from deploy/system/gacha_info.json (6 active rows) and emitted by UserInfo + GachaList handlers.  Setter names below come from a private IDA readParam audit of the handler at 0x13DC36C.  The 9 fields marked `not in readParam` below are NOT in the response_mappings.json params list AND the audit confirmed no strcmp branch handles them — they're audit-verified server-side bloat that the client never reads via this class.  Safe to omit from the wire; kept here only because they appear in the source gacha_info.json."
+    doc "Per-door wire payload at wrapper key 1IR86sAv (IDA: GachaInfoResponse, has_readparam=true with 23 fields).  This is the shape the client reads when populating the door catalog.  Loaded from deploy/system/gacha_info_mst.json (6 active rows) and emitted by UserInfo + GachaList handlers.  Setter names below come from a private IDA readParam audit of the handler at 0x13DC36C.  The 9 fields marked `not in readParam` below are NOT in the response_mappings.json params list AND the audit confirmed no strcmp branch handles them — they're audit-verified server-side bloat that the client never reads via this class.  Safe to omit from the wire; kept here only because they appear in the source gacha_info_mst.json."
 
     field id type="i32::str" {
         key "7Ffmi96v"
@@ -198,7 +198,7 @@ json GachaInfoMst {
 
     field unk type="str" {
         key "s35idar9"
-        doc "Always empty in observed data.  AUDIT: no strcmp branch in 1IR86sAv readParam — the client never reads this field on the gacha-door class.  // NOT IN READPARAM (audit-verified) — marked optional so we can strip from gacha_info.json without breaking the loader; see §7.11.6 'extras-strip' test for the Veteran ticket-button bug."
+        doc "Always empty in observed data.  AUDIT: no strcmp branch in 1IR86sAv readParam — the client never reads this field on the gacha-door class.  // NOT IN READPARAM (audit-verified) — marked optional so we can strip from gacha_info_mst.json without breaking the loader; see §7.11.6 'extras-strip' test for the Veteran ticket-button bug."
         optional #true
     }
 
@@ -252,7 +252,7 @@ json GachaInfoMst {
 
     field campaign_info type="str" {
         key "8HM3v3gg"
-        doc "Localisation token / rich-text shown as a campaign banner above the door buttons.  Setter: GachaInfo::setGachaCampainInfo(std::string) per audit.  Captured: \"\" for all 6 rows in gacha_info.json — typically populated for promo doors."
+        doc "Localisation token / rich-text shown as a campaign banner above the door buttons.  Setter: GachaInfo::setGachaCampainInfo(std::string) per audit.  Captured: \"\" for all 6 rows in gacha_info_mst.json — typically populated for promo doors."
     }
 
     field brave_coin type="i32::str" {
@@ -362,7 +362,7 @@ json GachaInfoMst {
 }
 
 json ResummonGachaMst {
-    doc "Re-roll session state for doors that support the Resummon flow.  Wrapper key da3qD39b (IDA: ResummonGachaMstResponse, is_mst=true).  Loaded from deploy/system/resummon_gacha.json."
+    doc "Re-roll session state for doors that support the Resummon flow.  Wrapper key da3qD39b (IDA: ResummonGachaMstResponse, is_mst=true).  Loaded from deploy/system/resummon_gacha_mst.json."
 
     field replay_id type="i32::str" {
         doc "Resummon-instance id (uniquely identifies one re-roll session)."
@@ -406,7 +406,7 @@ json ResummonGachaMst {
 }
 
 json SummonTicketV2Mst {
-    doc "Summon-ticket type catalog.  Wrapper key hE1d083b.  Each row defines one ticket type — its id, the gacha door it redeems on, display name, and icon.  Loaded from deploy/system/summon_tickets_v2.json (89 rows).  Joined to SummonTicketV2UserInfo entries (a3d5d12i) by `id`.  // REVERTED FROM swapped labels: the previous schema labelled b0D2iq2d as `image` and b38adb8i as `id`, which was inverted vs the actual data — `b0D2iq2d` carries numeric ticket ids (\"8\" = Brave Summon Ticket) and `b38adb8i` carries icon filenames (\"brave_ticket_event_icon.png\")."
+    doc "Summon-ticket type catalog.  Wrapper key hE1d083b.  Each row defines one ticket type — its id, the gacha door it redeems on, display name, and icon.  Loaded from deploy/system/summon_ticket_v2_mst.json (89 rows).  Joined to SummonTicketV2UserInfo entries (a3d5d12i) by `id`.  // REVERTED FROM swapped labels: the previous schema labelled b0D2iq2d as `image` and b38adb8i as `id`, which was inverted vs the actual data — `b0D2iq2d` carries numeric ticket ids (\"8\" = Brave Summon Ticket) and `b38adb8i` carries icon filenames (\"brave_ticket_event_icon.png\")."
 
     field id type="i32::str" {
         doc "Ticket-type id.  Joins to SummonTicketV2UserInfo.id (also b0D2iq2d).  Captured values: \"8\" (Brave Summon Ticket → door 17160), \"3\" (Anniversary 2017 Ticket → door 14420)."
@@ -433,7 +433,7 @@ json SummonTicketV2Mst {
     }
 
     field required_tickets type="i32::str" {
-        doc "How many of this ticket type are needed for one pull.  Captured: ORIGINAL deploy/system/summon_tickets_v2.json had this absent on all 89 rows — possibly the BF default is 1 when omitted.  Manually patched onto the Brave Summon Ticket row (b0D2iq2d=8, target_gacha=17160) as \"1\" to test the hypothesis that the gacha screen's 'use ticket' button visibility gates on this field being explicitly set > 0.  See handbook §7.11.5."
+        doc "How many of this ticket type are needed for one pull.  Captured: ORIGINAL deploy/system/summon_ticket_v2_mst.json had this absent on all 89 rows — possibly the BF default is 1 when omitted.  Manually patched onto the Brave Summon Ticket row (b0D2iq2d=8, target_gacha=17160) as \"1\" to test the hypothesis that the gacha screen's 'use ticket' button visibility gates on this field being explicitly set > 0.  See handbook §7.11.5."
         key "JRqU2bS6"
         optional #true
     }
