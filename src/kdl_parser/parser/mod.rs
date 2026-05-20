@@ -37,7 +37,7 @@ struct ErrorContext<'a> {
     wrong_type_help: Option<Cow<'a, str>>,
 }
 
-#[allow(dead_code, reason = "the remaining methods may be used at some point")]
+#[expect(dead_code, reason = "the remaining methods may be used at some point")]
 trait KdlNodeUtilsExt {
     fn extract_argument_string(
         &self,
@@ -120,7 +120,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.not_found_help.map(Cow::into_owned),
                 label: None,
@@ -136,7 +136,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     index + 1
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -158,7 +158,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.not_found_help.map(Cow::into_owned),
                 label: None,
@@ -174,7 +174,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     index + 1
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -196,7 +196,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.not_found_help.map(Cow::into_owned),
                 label: None,
@@ -212,7 +212,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     index + 1
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -236,7 +236,7 @@ impl KdlNodeUtilsExt for KdlNode {
                         error_context.context
                     ),
                     severity: Severity::Error,
-                    source_info: error_context.source_info.clone(),
+                    source_info: Arc::clone(&error_context.source_info),
                     span: self.span(),
                     help: error_context.not_found_help.map(Cow::into_owned),
                     label: None,
@@ -252,7 +252,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -276,7 +276,7 @@ impl KdlNodeUtilsExt for KdlNode {
                         error_context.context
                     ),
                     severity: Severity::Error,
-                    source_info: error_context.source_info.clone(),
+                    source_info: Arc::clone(&error_context.source_info),
                     span: self.span(),
                     help: error_context.not_found_help.map(Cow::into_owned),
                     label: None,
@@ -292,7 +292,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -316,7 +316,7 @@ impl KdlNodeUtilsExt for KdlNode {
                         error_context.context
                     ),
                     severity: Severity::Error,
-                    source_info: error_context.source_info.clone(),
+                    source_info: Arc::clone(&error_context.source_info),
                     span: self.span(),
                     help: error_context.not_found_help.map(Cow::into_owned),
                     label: None,
@@ -332,7 +332,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -346,13 +346,37 @@ impl KdlNodeUtilsExt for KdlNode {
             ParsingError::from(Diagnostic {
                 message: format!("{} does not have any child", error_context.context),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.not_found_help.map(Cow::into_owned),
                 label: None,
                 related: vec![],
             })
         })
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct UnparsedKdl<'a> {
+    content: Cow<'a, str>,
+    path: Cow<'a, Path>,
+}
+
+impl<'a> UnparsedKdl<'a> {
+    #[must_use]
+    pub const fn new(content: &'a str, path: &'a Path) -> Self {
+        Self {
+            content: Cow::Borrowed(content),
+            path: Cow::Borrowed(path),
+        }
+    }
+
+    #[must_use]
+    pub const fn new_owned(content: String, path: PathBuf) -> Self {
+        Self {
+            content: Cow::Owned(content),
+            path: Cow::Owned(path),
+        }
     }
 }
 
@@ -414,7 +438,7 @@ fn parse_all_definitions(
             HTTP_DEFINITION_NAME | XML_DEFINITION_NAME | PLIST_DEFINITION_NAME => {}
 
             // Ignore the "import" node.
-            #[allow(
+            #[expect(
                 clippy::match_same_arms,
                 reason = "ignore the `import` node since it is not a definition"
             )]
@@ -424,7 +448,7 @@ fn parse_all_definitions(
                 all_diagnostics.push(Diagnostic {
                     message: format!("unrecognized node `{other}`"),
                     severity: Severity::Warning,
-                    source_info: source_info.clone(),
+                    source_info: Arc::clone(source_info),
                     span: definition.span(),
                     help: None,
                     label: None,
@@ -459,7 +483,7 @@ where
                 .extract_argument_string(
                     0,
                     ErrorContext {
-                        source_info: callee_source_info.clone(),
+                        source_info: Arc::clone(callee_source_info),
                         context: "document definition".into(),
                         not_found_help: Some("".into()),
                         wrong_type_help: Some("".into()),
@@ -482,7 +506,7 @@ where
                     warnings.push(Diagnostic {
                         message: format!("cycle detected when reading \"{cyclic_path}\""),
                         severity: Severity::Warning,
-                        source_info: callee_source_info.clone(),
+                        source_info: Arc::clone(callee_source_info),
                         span: node.span(),
                         help: Some(format!("{cyclic_path} imports\n-> {source_path}, which imports\n--> {cyclic_path} and so on...\nThe parser will parse \"{cyclic_path}\" once, however keep in mind that this cycle implies that the definitions _may_ have cycles between datatypes.")),
                         label: Some("this file imports the current one".to_owned()),
@@ -490,7 +514,7 @@ where
                             Diagnostic {
                                 message: "break the cycle between `import`s".to_owned(),
                                 severity: Severity::Advice,
-                                source_info: callee_source_info.clone(),
+                                source_info: Arc::clone(callee_source_info),
                                 span: node.span(),
                                 help: None,
                                 label: None,
@@ -508,22 +532,29 @@ where
         .collect()
 }
 
-fn parse_single_document<S: AsRef<str>, V: Vfs>(
-    document: S,
-    filepath: &PathBuf,
-    visited_documents: &mut HashSet<VfsPathBuf>,
-    opts: &ParserOpts<V>,
-) -> Result<(RawDocument, ParsingWarnings), ParsingError> {
-    let kdl_document = KdlDocument::parse_v2(document.as_ref())?;
+struct ParseSingleDocumentResult {
+    document: RawDocument,
+    warnings: ParsingWarnings,
+}
 
-    let source_info = Arc::new(SourceInfo::new(filepath.to_string_lossy(), document));
+fn parse_single_document<V: Vfs>(
+    document: &UnparsedKdl<'_>,
+    previously_visited_documents: &mut HashSet<VfsPathBuf>,
+    opts: &ParserOpts<V>,
+) -> Result<ParseSingleDocumentResult, ParsingError> {
+    let kdl_document = KdlDocument::parse_v2(&document.content)?;
+
+    let source_info = Arc::new(SourceInfo::new(
+        document.path.to_string_lossy(),
+        &document.content,
+    ));
 
     let mut erroring_diagnostics = vec![];
 
     let mut non_erroring_diagnostics = vec![];
 
     let mut raw_document = RawDocument {
-        filepath: Some(filepath.into()),
+        filepath: Some(document.path.clone().into()),
         json_definitions: vec![],
         http_definitions: vec![],
         enum_definitions: vec![],
@@ -535,53 +566,51 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
         non_erroring_diagnostics.push(Diagnostic {
             message: "the file is empty".to_owned(),
             severity: Severity::Warning,
-            source_info: source_info.clone(),
+            source_info: Arc::clone(&source_info),
             span: kdl_document.span(),
             help: Some("add some definitions".to_owned()),
             label: None,
             related: vec![],
         });
 
-        return Ok((
-            raw_document,
-            ParsingWarnings {
-                source_info: source_info.clone(),
+        return Ok(ParseSingleDocumentResult {
+            document: raw_document,
+            warnings: ParsingWarnings {
+                source_info: Arc::clone(&source_info),
                 diagnostics: non_erroring_diagnostics,
             },
-        ));
+        });
     }
 
-    let current_directory = filepath
+    let current_directory = document
+        .path
         .parent()
         .map_or_else(|| PathBuf::from(""), ToOwned::to_owned);
 
     let unvisited_includes = extract_unvisited_filepaths::<V, _>(
         children,
         &source_info,
-        visited_documents,
+        previously_visited_documents,
         &current_directory,
         &mut non_erroring_diagnostics,
     )?;
 
     for (path, canonical_path) in unvisited_includes {
-        let other_document = opts.vfs.read_file_to_string(&V::normalize_path(&path)?)?;
-        visited_documents.insert(canonical_path);
-        let (other_root, other_diagnostics) =
-            parse_single_document(other_document, &path, visited_documents, opts)?;
+        let other_document_content = opts.vfs.read_file_to_string(&V::normalize_path(&path)?)?;
+        let other_document = UnparsedKdl {
+            content: Cow::Owned(other_document_content),
+            path: Cow::Owned(path),
+        };
 
-        raw_document
-            .json_definitions
-            .extend(other_root.json_definitions);
+        previously_visited_documents.insert(canonical_path);
 
-        raw_document
-            .http_definitions
-            .extend(other_root.http_definitions);
+        let ParseSingleDocumentResult {
+            document: other_root,
+            warnings: other_warnings,
+        } = parse_single_document(&other_document, previously_visited_documents, opts)?;
 
-        raw_document
-            .enum_definitions
-            .extend(other_root.enum_definitions);
-
-        non_erroring_diagnostics.extend(other_diagnostics.diagnostics);
+        raw_document.extend(other_root);
+        non_erroring_diagnostics.extend(other_warnings.diagnostics);
     }
 
     {
@@ -590,13 +619,13 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
     }
 
     if erroring_diagnostics.is_empty() {
-        Ok((
-            raw_document,
-            ParsingWarnings {
+        Ok(ParseSingleDocumentResult {
+            document: raw_document,
+            warnings: ParsingWarnings {
                 source_info,
                 diagnostics: non_erroring_diagnostics,
             },
-        ))
+        })
     } else {
         Err(ParsingError::Diagnostics {
             source_info,
@@ -605,8 +634,8 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
     }
 }
 
-/// Parses a `document` (as string) to obtain [`RawDocument`] that can be
-/// inspected for further analysis.
+/// Parses one or more `document` (as string) to obtain [`RawDocument`] that can
+/// be inspected for further analysis.
 ///
 /// The [`RawDocument`] can be later converted to a
 /// [`Document`](super::Document) used for generating the IR by calling
@@ -616,13 +645,38 @@ fn parse_single_document<S: AsRef<str>, V: Vfs>(
 ///
 /// Returns `Err` with [`ParsingError`] if there were any errors when parsing
 /// the file.
-pub fn raw_parse_kdl<S: AsRef<str>, V: Vfs>(
-    document: S,
-    filepath: &PathBuf,
+pub fn raw_parse_kdl<V: Vfs>(
+    kdl_documents: &[UnparsedKdl<'_>],
     opts: &ParserOpts<V>,
 ) -> Result<(RawDocument, ParsingWarnings), ParsingError> {
-    let root_canonical_path = V::normalize_path(filepath)?;
+    let mut documents_iter = kdl_documents.iter();
 
-    let mut visited_documents = HashSet::from_iter([root_canonical_path]);
-    parse_single_document(document, filepath, &mut visited_documents, opts)
+    if let Some(document) = documents_iter.next() {
+        let mut visited_paths = HashSet::new();
+        visited_paths.insert(V::normalize_path(&document.path)?);
+
+        let ParseSingleDocumentResult {
+            mut document,
+            mut warnings,
+        } = parse_single_document(document, &mut visited_paths, opts)?;
+
+        for other_unparsed_document in documents_iter {
+            let vfs_path = V::normalize_path(&other_unparsed_document.path)?;
+            if visited_paths.insert(vfs_path) {
+                // The file was not visited, so we add it.
+
+                let ParseSingleDocumentResult {
+                    document: other_document,
+                    warnings: other_warnings,
+                } = parse_single_document(other_unparsed_document, &mut visited_paths, opts)?;
+
+                document.extend(other_document);
+                warnings.diagnostics.extend(other_warnings.diagnostics);
+            }
+        }
+
+        Ok((document, warnings))
+    } else {
+        Err(ParsingError::NoDocumentProvided)
+    }
 }

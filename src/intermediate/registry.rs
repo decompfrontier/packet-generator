@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::marker::PhantomData;
+use std::sync::Arc;
 
 use super::schema::*;
 
@@ -151,7 +152,7 @@ impl DefinitionRegistry<Partial> {
     /// Inserts a [`Definition`] into the registry and returns a
     /// [reference](DefinitionRef) to it.
     pub fn insert(&mut self, definition: Definition) -> DefinitionRef {
-        #[allow(clippy::single_match_else, reason = "May add more cases in the future")]
+        #[expect(clippy::single_match_else, reason = "May add more cases in the future")]
         match definition {
             Definition::Json(ref json) => {
                 let mut dependencies = vec![];
@@ -187,7 +188,7 @@ impl DefinitionRegistry<Partial> {
     ///
     /// Return `Err` if the [`Definition`]s reference non-existing
     /// [`Definition`]s.
-    #[allow(clippy::result_large_err, reason = "We can take the performance hit.")]
+    #[expect(clippy::result_large_err, reason = "We can take the performance hit.")]
     pub fn finalize(mut self) -> Result<DefinitionRegistry, Diagnostic> {
         let all_nodes: Vec<_> = self.definitions.node_indices().collect();
         let mut missing_edges = vec![];
@@ -206,7 +207,7 @@ impl DefinitionRegistry<Partial> {
                             let idx = self.names.get(name).ok_or_else(|| Diagnostic {
                                 message: format!("could not find definition `{name}`"),
                                 severity: miette::Severity::Error,
-                                source_info: json.source.clone(),
+                                source_info: Arc::clone(&json.source),
                                 span: field.span,
                                 help: None,
                                 label: None,
@@ -216,7 +217,7 @@ impl DefinitionRegistry<Partial> {
                                         json.name, field.name
                                     ),
                                     severity: miette::Severity::Advice,
-                                    source_info: json.source.clone(),
+                                    source_info: Arc::clone(&json.source),
                                     span: field.span,
                                     help: None,
                                     label: None,
@@ -236,7 +237,7 @@ impl DefinitionRegistry<Partial> {
                                         json.name
                                     ),
                                     severity: miette::Severity::Error,
-                                    source_info: json.source.clone(),
+                                    source_info: Arc::clone(&json.source),
                                     span: json.span,
                                     help: None,
                                     label: None,
@@ -350,7 +351,7 @@ mod tests {
                 String::from("Foo"),
                 0,
                 String::from("some documentation"),
-                source.clone(),
+                Arc::clone(&source),
                 SourceSpan::from((0, 0)),
             );
             s.add_field(field);

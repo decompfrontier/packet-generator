@@ -240,8 +240,12 @@ mod tests {
         assert_eq!(path_a.to_string_lossy(), Cow::Borrowed("a"));
 
         #[cfg(not(windows))]
-        let os_str =
-            unsafe { std::ffi::OsStr::from_encoded_bytes_unchecked(&[0x61, 0x62, 0xE3, 0x82]) };
+        let os_str = {
+            // SAFETY:
+            // the string is _not_ valid UTF-8, but this is necessary for test
+            // purposes.
+            unsafe { std::ffi::OsStr::from_encoded_bytes_unchecked(&[0x61, 0x62, 0xE3, 0x82]) }
+        };
 
         #[cfg(windows)]
         let os_string = {

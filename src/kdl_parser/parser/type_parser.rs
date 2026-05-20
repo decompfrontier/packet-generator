@@ -40,7 +40,7 @@ pub fn generic_parse(
 
             Err(ParsingError::from(convert_error_to_diagnostic(
                 inner,
-                source_code.clone(),
+                Arc::clone(source_code),
                 new_span,
             )))
         }
@@ -58,7 +58,7 @@ fn convert_error_to_diagnostic(
         .map(|e| Diagnostic {
             message: e.message.clone(),
             severity: e.severity,
-            source_info: source_code.clone(),
+            source_info: Arc::clone(&source_code),
             span,
             help: e.help.clone(),
             label: None,
@@ -89,7 +89,6 @@ fn convert_error_to_diagnostic(
     }
 }
 
-#[allow(dead_code)]
 mod combinators {
     use std::fmt::Display;
     use std::num::NonZeroUsize;
@@ -118,6 +117,8 @@ mod combinators {
     pub struct Error {
         pub cause: Option<MiniDiagnostic>,
         pub context: Vec<MiniDiagnostic>,
+
+        #[expect(dead_code, reason = "We don't record span info yet")]
         pub span: Option<SourceSpan>,
     }
 
@@ -258,6 +259,11 @@ mod combinators {
 
         Named {
             name: &'a str,
+
+            #[expect(
+                dead_code,
+                reason = "The map type does not yet use the named parameter"
+            )]
             params: Vec<(&'a str, &'a str)>,
         },
     }
@@ -876,7 +882,7 @@ mod combinators {
             size_or_separator.prop_map(move |extra| format!("[{inner}]{extra}"))
         }
 
-        #[allow(
+        #[expect(
             clippy::needless_pass_by_value,
             reason = "proptest and rustc throw a fit if we use references"
         )]
@@ -926,7 +932,7 @@ mod combinators {
             };
             let val = parse_datatype(&mut input);
             println!("{val:?}");
-            assert!(val.is_err());
+            val.unwrap_err();
         }
 
         #[test]

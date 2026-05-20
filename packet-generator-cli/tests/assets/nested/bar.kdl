@@ -1,0 +1,8 @@
+json Bar {
+    doc "Contains a Baz"
+
+    field baz type="Baz" {
+        key "baz"
+        doc "The Baz"
+    }
+}

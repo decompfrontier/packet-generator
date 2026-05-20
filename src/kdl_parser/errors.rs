@@ -145,6 +145,9 @@ pub enum ParsingError {
     #[error(transparent)]
     KdlError(#[from] KdlError),
 
+    #[error("no document found")]
+    NoDocumentProvided,
+
     #[error("problems when parsing packet definition")]
     Diagnostics {
         source_info: Arc<SourceInfo>,
@@ -166,7 +169,7 @@ pub enum ParsingError {
 impl From<Diagnostic> for ParsingError {
     fn from(diag: Diagnostic) -> Self {
         Self::Diagnostics {
-            source_info: diag.source_info.clone(),
+            source_info: Arc::clone(&diag.source_info),
             diagnostics: vec![diag],
         }
     }

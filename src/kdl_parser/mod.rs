@@ -10,6 +10,7 @@ mod to_intermediate;
 
 // Exports
 pub use errors::{Diagnostic, ParsingError, ParsingWarnings, SourceInfo};
+pub use parser::UnparsedKdl;
 pub use parser::raw_parse_kdl;
 
 /// A valid KDL document.
@@ -43,7 +44,7 @@ impl<V: Vfs> ParserOpts<V> {
 }
 
 #[must_use = "Converting a `Document` to the IR representation implies that you want to use the resulting registry."]
-#[allow(clippy::result_large_err, reason = "We can take the performance hit.")]
+#[expect(clippy::result_large_err, reason = "We can take the performance hit.")]
 /// Converts a [`Document`] into a [`DefinitionRegistry`] (IR), returning
 /// diagnostics in the process.
 ///

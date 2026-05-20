@@ -1,20 +1,23 @@
-#![allow(clippy::expect_used, reason = "Sir, this is a benchmark")]
-#![allow(clippy::unwrap_used, reason = "Sir, this is a benchmark")]
+#![allow(
+    clippy::unwrap_used,
+    clippy::panic_in_result_fn,
+    clippy::expect_used,
+    reason = "Sir, this is a benchmark"
+)]
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use packet_generator::{
     intermediate::DefinitionRegistry,
-    kdl_parser::{ParserOpts, ParsingError, ParsingWarnings},
+    kdl_parser::{ParserOpts, ParsingError, ParsingWarnings, UnparsedKdl},
     vfs::{InMemoryFS, VfsPath},
 };
 use std::path::PathBuf;
 
 fn parse_files(
-    main_content: &'static str,
-    path: &PathBuf,
+    unparsed_kdls: &[UnparsedKdl<'_>],
     parser_opts: &ParserOpts<InMemoryFS>,
 ) -> Result<(DefinitionRegistry, ParsingWarnings), ParsingError> {
-    let res = packet_generator::parse_kdl(main_content, path, parser_opts);
+    let res = packet_generator::parse_kdl(unparsed_kdls, parser_opts);
 
     assert!(
         res.is_ok(),
@@ -35,7 +38,7 @@ fn add_all_paths(prefix: &str, directory: &str, fs: &mut InMemoryFS) {
 
         let vfs_path = path.strip_prefix(prefix).expect("can remove assets prefix");
 
-        let _ = fs.add_file(VfsPath::new(vfs_path), &content);
+        let _file = fs.add_file(VfsPath::new(vfs_path), &content);
     }
 }
 
@@ -59,7 +62,7 @@ fn build_gamefrontier_input() -> (&'static str, PathBuf, ParserOpts<InMemoryFS>)
     add_all_paths("assets", "mst", &mut fs);
     add_all_paths("assets", "net", &mut fs);
 
-    let _ = fs.add_file(VfsPath::new("all.kdl"), main_content);
+    let _file = fs.add_file(VfsPath::new("all.kdl"), main_content);
 
     let opts = ParserOpts::new(fs);
 
@@ -74,7 +77,11 @@ fn criterion_benchmark(c: &mut Criterion) {
         group.bench_with_input(
             criterion::BenchmarkId::from_parameter("stress-test files"),
             &(main_content, path, &opts),
-            |b, input| b.iter_with_large_drop(|| parse_files(input.0, &input.1, input.2)),
+            |b, input| {
+                let unparsed_kdl = UnparsedKdl::new(input.0, &input.1);
+                let files = &[unparsed_kdl];
+                b.iter_with_large_drop(|| parse_files(files, input.2));
+            },
         );
     }
 
@@ -83,7 +90,11 @@ fn criterion_benchmark(c: &mut Criterion) {
         group.bench_with_input(
             criterion::BenchmarkId::from_parameter("Brave Frontier files"),
             &(main_content, path, &opts),
-            |b, input| b.iter_with_large_drop(|| parse_files(input.0, &input.1, input.2)),
+            |b, input| {
+                let unparsed_kdl = UnparsedKdl::new(input.0, &input.1);
+                let files = &[unparsed_kdl];
+                b.iter_with_large_drop(|| parse_files(files, input.2));
+            },
         );
     }
 
