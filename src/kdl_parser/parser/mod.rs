@@ -37,7 +37,7 @@ struct ErrorContext<'a> {
     wrong_type_help: Option<Cow<'a, str>>,
 }
 
-#[allow(dead_code, reason = "the remaining methods may be used at some point")]
+#[expect(dead_code, reason = "the remaining methods may be used at some point")]
 trait KdlNodeUtilsExt {
     fn extract_argument_string(
         &self,
@@ -120,7 +120,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.not_found_help.map(Cow::into_owned),
                 label: None,
@@ -136,7 +136,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     index + 1
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -158,7 +158,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.not_found_help.map(Cow::into_owned),
                 label: None,
@@ -174,7 +174,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     index + 1
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -196,7 +196,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.not_found_help.map(Cow::into_owned),
                 label: None,
@@ -212,7 +212,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     index + 1
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -236,7 +236,7 @@ impl KdlNodeUtilsExt for KdlNode {
                         error_context.context
                     ),
                     severity: Severity::Error,
-                    source_info: error_context.source_info.clone(),
+                    source_info: Arc::clone(&error_context.source_info),
                     span: self.span(),
                     help: error_context.not_found_help.map(Cow::into_owned),
                     label: None,
@@ -252,7 +252,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -276,7 +276,7 @@ impl KdlNodeUtilsExt for KdlNode {
                         error_context.context
                     ),
                     severity: Severity::Error,
-                    source_info: error_context.source_info.clone(),
+                    source_info: Arc::clone(&error_context.source_info),
                     span: self.span(),
                     help: error_context.not_found_help.map(Cow::into_owned),
                     label: None,
@@ -292,7 +292,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -316,7 +316,7 @@ impl KdlNodeUtilsExt for KdlNode {
                         error_context.context
                     ),
                     severity: Severity::Error,
-                    source_info: error_context.source_info.clone(),
+                    source_info: Arc::clone(&error_context.source_info),
                     span: self.span(),
                     help: error_context.not_found_help.map(Cow::into_owned),
                     label: None,
@@ -332,7 +332,7 @@ impl KdlNodeUtilsExt for KdlNode {
                     error_context.context
                 ),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: entry.span(),
                 help: error_context.wrong_type_help.map(Cow::into_owned),
                 label: None,
@@ -346,7 +346,7 @@ impl KdlNodeUtilsExt for KdlNode {
             ParsingError::from(Diagnostic {
                 message: format!("{} does not have any child", error_context.context),
                 severity: Severity::Error,
-                source_info: error_context.source_info.clone(),
+                source_info: Arc::clone(&error_context.source_info),
                 span: self.span(),
                 help: error_context.not_found_help.map(Cow::into_owned),
                 label: None,
@@ -438,7 +438,7 @@ fn parse_all_definitions(
             HTTP_DEFINITION_NAME | XML_DEFINITION_NAME | PLIST_DEFINITION_NAME => {}
 
             // Ignore the "import" node.
-            #[allow(
+            #[expect(
                 clippy::match_same_arms,
                 reason = "ignore the `import` node since it is not a definition"
             )]
@@ -448,7 +448,7 @@ fn parse_all_definitions(
                 all_diagnostics.push(Diagnostic {
                     message: format!("unrecognized node `{other}`"),
                     severity: Severity::Warning,
-                    source_info: source_info.clone(),
+                    source_info: Arc::clone(source_info),
                     span: definition.span(),
                     help: None,
                     label: None,
@@ -483,7 +483,7 @@ where
                 .extract_argument_string(
                     0,
                     ErrorContext {
-                        source_info: callee_source_info.clone(),
+                        source_info: Arc::clone(callee_source_info),
                         context: "document definition".into(),
                         not_found_help: Some("".into()),
                         wrong_type_help: Some("".into()),
@@ -506,7 +506,7 @@ where
                     warnings.push(Diagnostic {
                         message: format!("cycle detected when reading \"{cyclic_path}\""),
                         severity: Severity::Warning,
-                        source_info: callee_source_info.clone(),
+                        source_info: Arc::clone(callee_source_info),
                         span: node.span(),
                         help: Some(format!("{cyclic_path} imports\n-> {source_path}, which imports\n--> {cyclic_path} and so on...\nThe parser will parse \"{cyclic_path}\" once, however keep in mind that this cycle implies that the definitions _may_ have cycles between datatypes.")),
                         label: Some("this file imports the current one".to_owned()),
@@ -514,7 +514,7 @@ where
                             Diagnostic {
                                 message: "break the cycle between `import`s".to_owned(),
                                 severity: Severity::Advice,
-                                source_info: callee_source_info.clone(),
+                                source_info: Arc::clone(callee_source_info),
                                 span: node.span(),
                                 help: None,
                                 label: None,
@@ -566,7 +566,7 @@ fn parse_single_document<V: Vfs>(
         non_erroring_diagnostics.push(Diagnostic {
             message: "the file is empty".to_owned(),
             severity: Severity::Warning,
-            source_info: source_info.clone(),
+            source_info: Arc::clone(&source_info),
             span: kdl_document.span(),
             help: Some("add some definitions".to_owned()),
             label: None,
@@ -576,7 +576,7 @@ fn parse_single_document<V: Vfs>(
         return Ok(ParseSingleDocumentResult {
             document: raw_document,
             warnings: ParsingWarnings {
-                source_info: source_info.clone(),
+                source_info: Arc::clone(&source_info),
                 diagnostics: non_erroring_diagnostics,
             },
         });

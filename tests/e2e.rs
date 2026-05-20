@@ -39,7 +39,7 @@ fn generic_e2e_cxx_glaze_harness(path_entrypoint: PathBuf, test_name: &str) {
     let generation_basepath =
         PathBuf::from_iter([PROJECT_DIR, "target", &format!("test-e2e-{test_name}")]);
 
-    let _ = std::fs::create_dir_all(&generation_basepath);
+    let _file = std::fs::create_dir_all(&generation_basepath);
 
     let mut generator = generators::CxxGenerator::new();
     generator.add_addon(GlazeGenerator {});

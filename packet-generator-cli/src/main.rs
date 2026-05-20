@@ -10,8 +10,8 @@ use miette::{Context, IntoDiagnostic, miette};
 use packet_generator::generators::write_sources;
 use packet_generator::kdl_parser::UnparsedKdl;
 use packet_generator::{
-    generators::{CxxGenerator, GenerationError, Generator, GlazeGenerator, WithAddons},
-    kdl_parser::{Diagnostic, ParserOpts, ParsingError},
+    generators::{CxxGenerator, Generator, GlazeGenerator, WithAddons},
+    kdl_parser::ParserOpts,
 };
 
 use packet_generator_cli::read_all_kdls_from_directory;
@@ -19,19 +19,6 @@ use packet_generator_cli::read_all_kdls_from_directory;
 use crate::cli::CxxSerializer;
 
 mod cli;
-
-#[derive(Debug, thiserror::Error)]
-#[expect(dead_code)]
-enum ApplicationError {
-    #[error(transparent)]
-    MietteReport(#[from] ParsingError),
-
-    #[error(transparent)]
-    Diagnostic(#[from] Diagnostic),
-
-    #[error(transparent)]
-    Generation(#[from] GenerationError),
-}
 
 fn main() -> Result<(), miette::Report> {
     let args = cli::parse_args();

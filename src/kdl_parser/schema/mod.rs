@@ -30,7 +30,7 @@ impl RawDocument {
     ///
     /// Returns `Err` if after this post-processing the [`Document`] is still
     /// not valid.
-    #[allow(clippy::result_large_err)]
+    #[expect(clippy::result_large_err, reason = "A Diagnostic is huge.")]
     pub const fn finalize(self) -> Result<Document, Diagnostic> {
         validator::validate(self)
     }
@@ -46,7 +46,6 @@ impl RawDocument {
 }
 
 #[derive(Debug)]
-#[allow(dead_code)]
 pub enum EnumDefinition {
     StringEnum(StringEnumDefinition),
 
@@ -232,7 +231,6 @@ pub struct JsonDefinition {
 }
 
 #[derive(Debug, Clone, Copy)]
-#[allow(dead_code)]
 pub enum ArraySeparator {
     /// Array separated by ','
     ///
@@ -319,7 +317,6 @@ impl From<ArraySize> for crate::intermediate::schema::ArraySize {
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
 pub enum DataType {
     I32 {
         encoding: IntLikeEncoding,

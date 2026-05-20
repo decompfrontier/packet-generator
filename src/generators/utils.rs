@@ -42,6 +42,8 @@ pub fn split_documentation(doc: &str, tab: &str, comment_str: &str, indent_level
 
 #[cfg(test)]
 mod tests {
+    // #![expect(clippy::string_slice, reason = "Sir this is a test")]
+
     use super::*;
     use proptest::prelude::*;
 
@@ -61,15 +63,19 @@ Bar. Baz. Quox.
         let res = split_documentation(DOC_FIELD, TAB, COMMENT_STR, INDENT_LEVEL);
 
         for (line, doc_line) in res.lines().zip(DOC_FIELD.lines()) {
-            let until_tab = &line[0..INDENT_LEVEL];
+            let until_tab = line.get(0..INDENT_LEVEL).expect("Valid UTF-8 boundary");
             assert_eq!(until_tab, TAB.repeat(INDENT_LEVEL));
 
-            let until_comment_str = &line[(INDENT_LEVEL)..(INDENT_LEVEL + COMMENT_STR.len())];
+            let until_comment_str = line
+                .get((INDENT_LEVEL)..(INDENT_LEVEL + COMMENT_STR.len()))
+                .expect("Valid UTF-8 boundary");
             assert_eq!(until_comment_str, COMMENT_STR);
 
             let skip_whitespace = usize::from(!doc_line.is_empty());
 
-            let rest_of_line = &line[(INDENT_LEVEL + COMMENT_STR.len() + skip_whitespace)..];
+            let rest_of_line = line
+                .get((INDENT_LEVEL + COMMENT_STR.len() + skip_whitespace)..)
+                .expect("Valid UTF-8 boundary");
 
             assert_eq!(rest_of_line, doc_line);
         }
@@ -83,14 +89,14 @@ Bar. Baz. Quox.
 
             for (line, doc_line) in res.lines().zip(doc.lines()) {
                 if !tab_repeats.is_empty() {
-                    let until_tab = &line[..(tab_repeats.len())];
+                    let until_tab = line.get(..(tab_repeats.len())).expect("Valid UTF-8 buondary");
                     assert_eq!(until_tab, tab_repeats);
                 }
 
-                let until_comment_str = &line[(tab_repeats.len())..(tab_repeats.len() + comment_str.len())];
+                let until_comment_str = line.get((tab_repeats.len())..(tab_repeats.len() + comment_str.len())).expect("Valid UTF-8 boundary");
                 assert_eq!(until_comment_str, &comment_str);
 
-                let rest_of_line = &line[(tab_repeats.len() + comment_str.len() + 1)..];
+                let rest_of_line = line.get((tab_repeats.len() + comment_str.len() + 1)..).expect("Valid UTF-8 boundary");
 
                 assert_eq!(rest_of_line, doc_line);
 

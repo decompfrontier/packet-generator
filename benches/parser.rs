@@ -1,5 +1,9 @@
-#![allow(clippy::expect_used, reason = "Sir, this is a benchmark")]
-#![allow(clippy::unwrap_used, reason = "Sir, this is a benchmark")]
+#![allow(
+    clippy::unwrap_used,
+    clippy::panic_in_result_fn,
+    clippy::expect_used,
+    reason = "Sir, this is a benchmark"
+)]
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use packet_generator::{
@@ -34,7 +38,7 @@ fn add_all_paths(prefix: &str, directory: &str, fs: &mut InMemoryFS) {
 
         let vfs_path = path.strip_prefix(prefix).expect("can remove assets prefix");
 
-        let _ = fs.add_file(VfsPath::new(vfs_path), &content);
+        let _file = fs.add_file(VfsPath::new(vfs_path), &content);
     }
 }
 
@@ -58,7 +62,7 @@ fn build_gamefrontier_input() -> (&'static str, PathBuf, ParserOpts<InMemoryFS>)
     add_all_paths("assets", "mst", &mut fs);
     add_all_paths("assets", "net", &mut fs);
 
-    let _ = fs.add_file(VfsPath::new("all.kdl"), main_content);
+    let _file = fs.add_file(VfsPath::new("all.kdl"), main_content);
 
     let opts = ParserOpts::new(fs);
 

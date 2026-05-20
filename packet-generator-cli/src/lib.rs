@@ -39,6 +39,7 @@ pub fn read_all_kdls_from_directory(
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::panic_in_result_fn, reason = "Sir, this is a test")]
     use packet_generator::intermediate::schema::Definition;
 
     use super::*;
@@ -52,9 +53,10 @@ mod tests {
 
         let (document, warnings) = read_all_kdls_from_directory(&assets_dir)?;
 
-        warnings.clone().print_warnings_if_any();
-
-        assert!(!warnings.are_there_any(), "There were warnings :(");
+        if !warnings.are_there_any() {
+            warnings.print_warnings_if_any();
+            miette::bail!("There were warnings");
+        }
 
         let document = document.finalize()?;
 
@@ -71,7 +73,7 @@ mod tests {
             assert_eq!(j.fields.len(), 1);
             assert!(j.fields.contains("bar"));
         } else {
-            panic!("Foo is not a JSON!")
+            miette::bail!("Foo is not a JSON!")
         }
 
         assert_eq!(bar.name(), "Bar");
@@ -79,7 +81,7 @@ mod tests {
             assert_eq!(j.fields.len(), 1);
             assert!(j.fields.contains("baz"));
         } else {
-            panic!("Bar is not a JSON!")
+            miette::bail!("Bar is not a JSON!")
         }
 
         assert_eq!(baz.name(), "Baz");
@@ -87,7 +89,7 @@ mod tests {
             assert_eq!(j.variants.len(), 1);
             assert!(j.variants.contains("test"));
         } else {
-            panic!("Baz is not a string enum!")
+            miette::bail!("Baz is not a string enum!")
         }
 
         Ok(())
