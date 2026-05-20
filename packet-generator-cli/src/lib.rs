@@ -53,7 +53,7 @@ mod tests {
 
         let (document, warnings) = read_all_kdls_from_directory(&assets_dir)?;
 
-        if !warnings.are_there_any() {
+        if warnings.are_there_any() {
             warnings.print_warnings_if_any();
             miette::bail!("There were warnings");
         }
