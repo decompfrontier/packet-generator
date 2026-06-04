@@ -824,6 +824,11 @@ json LoginInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not sup
         doc "TODO"
     }
 
+    field unk5 type="i32::str" {
+        key "37d2Hi5p"
+        doc "TODO"
+    }
+
     field device_id type="str" {
         key "Ma5GnU0H"
         doc "Device advertisement ID (the same as vid in the gumi api login)"

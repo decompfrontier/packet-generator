@@ -25,6 +25,7 @@ import "../mst/sound.kdl"
 import "../mst/first_desc.kdl"
 import "../mst/frontier_hunter.kdl"
 import "../net/signal_key.kdl"
+import "../net/tutorial.kdl"
 import "../net/challenge_arena.kdl"
 import "../net/guild.kdl"
 import "../net/daily_login.kdl"
@@ -337,6 +338,25 @@ json UserInfoReq {
     field unk type="[UnkUserInfoNetReq]::size(1)" {
         key "563Dtye3"
         doc "TODO"
+    }
+}
+
+json CreateUserReq {
+    doc "Creates the game user after the tutorial name/starter prompt."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information containing user, Gumi Live, device, and handle fields."
+    }
+
+    field selectedElement type="[TutorialSelectedElement]::size(1)" {
+        key "9u45RGcV"
+        doc "Starter element selected by the player."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
     }
 }
 
