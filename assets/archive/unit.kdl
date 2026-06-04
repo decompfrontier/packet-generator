@@ -1,0 +1,44 @@
+json UnitRecordStats {
+    doc "Generic hp, atk, def, rec stats for a given unit."
+
+    field hp type="u32::int" {
+        key "hp"
+        doc "hp of this unit."
+    }
+
+    field atk type="u32::int" {
+        key "atk"
+        doc "atk of this unit."
+    }
+
+    field def type="u32::int" {
+        key "def"
+        doc "def of this unit."
+    }
+
+    field rec type="u32::int" {
+        key "rec"
+        doc "rec of this unit."
+    }
+}
+
+json UnitRecord {
+    doc """
+    Server-owned curated unit archive data. This intentionally contains fewer
+    fields than the official unit MSTs because we should only preserve fields
+    that we understand and use.
+    """
+
+    field unit_id type="u32::int" {
+        key "unit_id"
+        doc """
+        Unique identifier for the unit's archive record.
+        Used to look up this unit when creating player-owned units.
+        """
+    }
+
+    field lord_stats type=UnitRecordStats {
+        key "lord_stats"
+        doc "Base stats for lord type."
+    }
+}

@@ -507,11 +507,14 @@ json UserTeamInfo {
 }
 
 json UserUnitInfo {
-    doc "TODO"
+    doc "Player-owned unit records."
 
-    field user_unit_id type="i32::str" {
+    field user_unit_id type="u32::str" {
         key "edy7fq3L"
-        doc "TODO"
+        doc """
+        Unique id attributed to a specific unit of a given user.
+        Duplicates of the same unit will receive unique user unit ids.
+        """
     }
 
     field user_id type="str" {
@@ -519,14 +522,20 @@ json UserUnitInfo {
         doc "ID of the user for this session."
     }
 
-    field unit_id type="i32::str" {
+    field unit_id type="u32::str" {
         key "pn16CNah"
-        doc "TODO"
+        doc """
+        Unique identifier for the unit's archive record.
+        Used to look up this unit in the MST assets.
+        """
     }
 
-    field unit_type_id type="i32::str" {
+    field unit_type_id type="u32::str" {
         key "nBTx56W9"
-        doc "TODO"
+        doc """
+        Specifies the unit type, e.g. Lord, Anima, Breaker, Guardian, or Oracle.
+        TODO: Figure out which numeric value maps to each type.
+        """
     }
 
     field unit_lv type="i32::str" {
@@ -544,9 +553,16 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field base_hp type="i32::str" {
+    field base_hp type="u32::str" {
         key "e7DK0FQT"
-        doc "TODO"
+        doc """
+        Current HP stat for this unit before imp/stat-up bonuses.
+        Includes level-based stat growth because this client passes
+        base_hp into GameUtils::getUnitHp(base_hp, unit_lv, ...),
+        which currently returns base_hp unchanged. This suggests the
+        server is expected to store the unit's level-adjusted normal
+        HP in this bucket. Naturally, this applies to all base_* stats.
+        """
     }
 
     field add_hp type="i32::str" {
@@ -554,9 +570,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field ext_hp type="i32::str" {
+    field ext_hp type="u32::str" {
         key "TokWs1B3"
-        doc "TODO"
+        doc """
+        Imp/stat-up HP bucket.
+        We should cap this against the unit's HP stat-up limit from MST data.
+        """
     }
 
     field limit_over_hp type="i32::int" {
@@ -564,9 +583,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field base_atk type="i32::str" {
+    field base_atk type="u32::str" {
         key "67CApcti"
-        doc "TODO"
+        doc """
+        Current ATK stat for this unit before imp/stat-up bonuses.
+        See base_hp for why base_* stores the unit's level-adjusted normal stats.
+        """
     }
 
     field add_atk type="i32::str" {
@@ -574,9 +596,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field ext_atk type="i32::str" {
+    field ext_atk type="u32::str" {
         key "t4m1RH6Y"
-        doc "TODO"
+        doc """
+        Imp/stat-up ATK bucket.
+        We should cap this against the unit's ATK stat-up limit from MST data.
+        """
     }
 
     field limit_over_atk type="i32::int" {
@@ -584,9 +609,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field base_def type="i32::str" {
+    field base_def type="u32::str" {
         key "q08xLEsy"
-        doc "TODO"
+        doc """
+        Current DEF stat for this unit before imp/stat-up bonuses.
+        See base_hp for why base_* stores the unit's level-adjusted normal stats.
+        """
     }
 
     field add_def type="i32::str" {
@@ -594,9 +622,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field ext_def type="i32::str" {
+    field ext_def type="u32::str" {
         key "e6mY8Z0k"
-        doc "TODO"
+        doc """
+        Imp/stat-up DEF bucket.
+        We should cap this against the unit's DEF stat-up limit from MST data.
+        """
     }
 
     field limit_over_def type="i32::int" {
@@ -604,22 +635,28 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field base_heal type="i32::str" {
+    field base_rec type="u32::str" {
         key "PWXu25cg"
-        doc "TODO"
+        doc """
+        Current REC stat for this unit before imp/stat-up bonuses.
+        See base_hp for why base_* stores the unit's level-adjusted normal stats.
+        """
     }
 
-    field add_heal type="i32::str" {
+    field add_rec type="i32::str" {
         key "C1HZr3pb"
         doc "TODO"
     }
 
-    field ext_heal type="i32::str" {
+    field ext_rec type="u32::str" {
         key "X6jf8DUw"
-        doc "TODO"
+        doc """
+        Imp/stat-up REC bucket.
+        We should cap this against the unit's REC stat-up limit from MST data.
+        """
     }
 
-    field limit_over_heal type="i32::int" {
+    field limit_over_rec type="i32::int" {
         key "XJs2rPx0"
         doc "TODO"
     }
@@ -784,6 +821,11 @@ json LoginInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not sup
 
     field build_platform_id type="str" {
         key "j2lk52Be"
+        doc "TODO"
+    }
+
+    field unk5 type="i32::str" {
+        key "37d2Hi5p"
         doc "TODO"
     }
 

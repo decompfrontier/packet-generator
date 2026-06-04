@@ -1,0 +1,8 @@
+json TutorialSelectedElement {
+    doc "Starter element selected during the new-user tutorial."
+
+    field element type="u32::str" {
+        key "Kn51uR4Y"
+        doc "Selected starter element id sent by the client."
+    }
+}
