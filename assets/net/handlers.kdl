@@ -39,6 +39,7 @@ import "../net/npc.kdl"
 import "../net/friends.kdl"
 import "../net/event.kdl"
 import "../net/featuring_gate.kdl"
+import "../net/badge_info.kdl"
 
 json InitializeReq {
     doc "Initialization command"
@@ -360,6 +361,73 @@ json CreateUserReq {
     }
 }
 
+json TutorialUpdateReq {
+    doc "Persists the current tutorial chapter posted by TutorialUpdateRequest."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information containing the current tutorial chapter id."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json DeckEditReq {
+    doc "Persists the active party deck selected by DeckEditRequest."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field partyDeckInfo type="[UserPartyDeckInfo]" {
+        key "dX7S2Lc1"
+        doc "Party deck rows sent by the client."
+    }
+
+    field teamInfo type="[DeckEditTeamInfo]::size(1)" {
+        key "Ti62XfZK"
+        doc "Team information containing the active deck number."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json MissionStartReq {
+    doc "Request payload for starting a mission."
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field start_info type="[MissionStartInfo]::size(1)" {
+        key "9Q1Lq5FS"
+        doc "Mission-start info posted by the client."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
 json UserInfoResp {
     doc "TODO"
 
@@ -627,5 +695,97 @@ json BadgeInfoResp {
     field badge_info type="BadgeInfo" {
         key "h23iRjGN"
         doc "TODO"
+    }
+}
+
+json MissionStartResp {
+    doc "Response payload for starting a mission."
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key response included in captured mission-start payloads."
+    }
+
+    field battle_groups type="[BattleGroupMst]" {
+        key "pj41dy9g"
+        doc "Battle group rows for each stage."
+    }
+
+    field battle_monster_groups type="[BattleMonsterGroupMst]" {
+        key "75t0sx9z"
+        doc "Monster placement rows for each battle group."
+    }
+
+    field monsters type="[MonsterMst]" {
+        key "U0v5IeJo"
+        doc "Mission-local monster MST rows."
+    }
+
+    field ais type="[AIMst]" {
+        key "89ausgc4"
+        doc "Mission-local AI rows."
+    }
+
+    field mission_num type="[MissionNumInfo]::size(1)" {
+        key "Kz7qfSs5"
+        doc "Mission serial state required by MissionStartScene."
+    }
+
+    field start_info type="[MissionStartInfo]::size(1)" {
+        key "9Q1Lq5FS"
+        doc "Mission-start info consumed by the battle scene."
+    }
+}
+
+json MissionEndReq {
+    doc "Request payload sent after a mission battle ends."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login/user identity included with mission-end requests."
+    }
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key sent by the client."
+    }
+
+    field mission_num type="[MissionNumInfo]::size(1)" {
+        key "Kz7qfSs5"
+        doc "Mission serial state being completed."
+    }
+
+    field battle_result type="[MissionBattleResultInfo]::size(1)" {
+        key "rXvA1E5y"
+        doc "Client-reported mission reward/result values."
+    }
+
+    field party_deck_info type="[UserPartyDeckInfo]" {
+        key "0xgIw1Ns"
+        doc "Party deck state after the mission."
+    }
+}
+
+json MissionEndResp {
+    doc "Response payload sent after a mission battle ends."
+
+    field loginInfo type="[LoginInfoResp]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Updated login/tutorial state after mission end."
+    }
+
+    field reward_info type="[MissionRewardInfo]::size(1)" {
+        key "F5Vs19mb"
+        doc "Mission reward values consumed by the result scenes."
+    }
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated user team state after applying mission rewards."
+    }
+
+    field unit_info type="[UserUnitInfo]" {
+        key "4ceMWH6k"
+        doc "Newly awarded units that must be present in the client unit list."
     }
 }

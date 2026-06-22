@@ -1,0 +1,190 @@
+json TreasureDrop {
+    doc "One possible treasure chest reward for a mission-local monster."
+
+    field target_type type="u32::int" {
+        key "target_type"
+        doc "Client target type: 1=zel, 2=karma, 3=battle/heart crystal, 4=item."
+    }
+
+    field weight type="u32::int" {
+        key "weight"
+        doc "Selection weight for this reward inside the treasure chest table."
+    }
+
+    field amount type="u32::int" {
+        key "amount"
+        doc "Reward amount, item count, or crystal count depending on target_type."
+    }
+
+    field target_id type=str {
+        key "target_id"
+        doc "Item id for target_type 4; empty for zel, karma, and crystals."
+    }
+}
+
+json BattleMonster {
+    doc """
+    Logical monster entry for a mission stage.
+
+    This stores the official monster id used by client monster text/MST lookups.
+    Client battle group ids are still transient and generated while formatting
+    mission-start responses.
+    """
+
+    field id type="u32::int" {
+        key "id"
+        doc "Official monster id used by the client's monster text/MST lookups."
+    }
+
+    field name type=str {
+        key "name"
+        doc "Human-readable monster name."
+    }
+
+    field unit_id type="u32::int" {
+        key "unit_id"
+        doc "Unit archive id backing this monster's visuals and stable MST data."
+    }
+
+    field position type=str {
+        key "position"
+        doc "Battlefield position formatted as x:y."
+    }
+
+    field hp type="u32::int" {
+        key "hp"
+        doc "Monster hp for this mission."
+    }
+
+    field atk type="u32::int" {
+        key "atk"
+        doc "Monster atk for this mission."
+    }
+
+    field def type="u32::int" {
+        key "def"
+        doc "Monster def for this mission."
+    }
+
+    field ai_id type="u32::int" {
+        key "ai_id"
+        doc "AI archive id used by this monster."
+    }
+
+    field act_min type="u32::int" {
+        key "act_min"
+        doc "Minimum number of actions this monster may take per turn."
+    }
+
+    field act_max type="u32::int" {
+        key "act_max"
+        doc "Maximum number of actions this monster may take per turn."
+    }
+
+    field wait type="i32::int" {
+        key "wait"
+        doc "Monster wait value (Not sure where this comes from yet)."
+    }
+
+    field unit_drop_id type="u32::int" {
+        key "unit_drop_id"
+        doc "Dropped unit id, or 0 when this monster does not drop a unit."
+    }
+
+    field unit_drop_level type="u32::int" {
+        key "unit_drop_level"
+        doc "Dropped unit level, or 0 when this monster does not drop a unit."
+    }
+
+    field unit_drop_type type="u32::int" {
+        key "unit_drop_type"
+        doc "Dropped unit type emitted in MissionNumInfo drop info, or 0 when this monster does not drop a unit."
+    }
+
+    field unit_drop_chance type="u32::int" {
+        key "unit_drop_chance"
+        doc "Dropped unit chance percent, or 0 when this monster does not drop a unit."
+    }
+
+    field zel_max_drop type="u32::int" {
+        key "zel_max_drop"
+        doc "Maximum zel this monster can drop."
+    }
+
+    field zel_drop_count type="u32::int" {
+        key "zel_drop_count"
+        doc "Number of zel drop rolls for this monster."
+    }
+
+    field karma_max_drop type="u32::int" {
+        key "karma_max_drop"
+        doc "Maximum karma this monster can drop."
+    }
+
+    field karma_drop_count type="u32::int" {
+        key "karma_drop_count"
+        doc "Number of karma drop rolls for this monster."
+    }
+
+    field treasure_chest_chance type="u32::int" {
+        key "treasure_chest_chance"
+        doc "Treasure chest chance percent, or 0 when there is no treasure drop."
+    }
+
+    field treasure_drops type="[TreasureDrop]" {
+        key "treasure_drops"
+        doc "Possible rewards when the treasure chest roll succeeds."
+    }
+}
+
+json MissionStage {
+    doc """
+    Logical stage inside an archived mission.
+
+    A stage becomes one client BattleGroupMst row and one generated client
+    battle monster group id. Its battle_monsters become BattleMonsterGroupMst rows.
+    """
+
+    field is_boss type=bool {
+        key "is_boss"
+        doc "Whether this stage should be marked as the boss battle."
+    }
+
+    field first_attack_rate type="u32::int" {
+        key "first_attack_rate"
+        doc """
+        Chance that monsters attack before the player.
+        Use 0 to disable preemptive attacks.
+        """
+    }
+
+    field battle_monsters type="[BattleMonster]" {
+        key "battle_monsters"
+        doc "Battle monster entries that should appear in this stage."
+    }
+}
+
+json MissionRecord {
+    doc """
+    Server-owned curated mission archive data.
+
+    This stores the stable logical mission layout. Client-specific ids and
+    encoded response strings should be produced when the server formats the
+    mission-start response.
+    """
+
+    field id type="u32::int" {
+        key "id"
+        doc "Mission archive id."
+    }
+
+    field name type=str {
+        key "name"
+        doc "Human-readable mission name."
+    }
+
+    field stages type="[MissionStage]" {
+        key "stages"
+        doc "Ordered stages in this mission."
+    }
+}

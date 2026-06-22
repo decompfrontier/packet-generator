@@ -14,3 +14,411 @@ json MissionBreakInfo {
         doc "TODO"
     }
 }
+
+json MissionStartInfo {
+    doc "Mission-start state of the client battle scene."
+
+    field mission_id type="u32::str" {
+        key "j28VNcUW"
+        doc "Mission id being started."
+    }
+
+    field deck_num type="u32::str" {
+        key "Z0Y4RoD7"
+        doc "Deck number used for the mission."
+    }
+}
+
+json MissionNumInfo {
+    doc "Mission serial state required by the battle scene."
+
+    field serial_id type="u32::str" {
+        key "k9cxD7Ba"
+        doc "Nonzero mission serial id stored by the client before battle starts."
+    }
+
+    field drop_info type="str" {
+        key "LE6JkUp7"
+        doc "Encoded mission drop info."
+    }
+}
+
+json MissionBattleResultInfo {
+    doc "Client-reported mission reward/result values sent when a mission ends."
+
+    field use_item_log type="str" {
+        key "47cJBUxz"
+        doc "Battle item usage log."
+    }
+
+    field zel type="i32::str" {
+        key "Najhr8m6"
+        doc "Zel earned during the mission."
+    }
+
+    field karma type="i32::str" {
+        key "HTVh8a65"
+        doc "Karma earned during the mission."
+    }
+
+    field item_rewards type="str" {
+        key "4T0Q2Bh5"
+        doc "Encoded item rewards."
+    }
+
+    field unit_rewards type="str" {
+        key "3MAT6quo"
+        doc "Encoded unit rewards."
+    }
+
+    field battle_crystal_num type="i32::str" {
+        key "hoG2ieT5"
+        doc "Battle crystal count collected during the mission."
+    }
+
+    field heart_crystal_num type="i32::str" {
+        key "6PLsn8xo"
+        doc "Heart crystal count collected during the mission."
+    }
+}
+
+json MissionRewardInfo {
+    doc "Mission reward values consumed by the result scenes."
+
+    field clear_bonus type="str" {
+        key "92ms7J5M"
+        doc "Encoded clear bonus flags."
+    }
+
+    field lvlup_flag type="i32::str" {
+        key "wPb5uMR9"
+        doc "Whether the mission caused a player level-up."
+    }
+
+    field before_level type="i32::str" {
+        key "81CsGAR9"
+        doc "Player level before applying mission experience."
+    }
+
+    field inc_exp type="i32::str" {
+        key "d96tuT2E"
+        doc "Experience earned from the mission."
+    }
+
+    field reinforcement_request_state type="i32::str" {
+        key "0egM9p7I"
+        doc "Friend/reinforcement request state shown after the mission."
+    }
+
+    field clear_dungeon_id type="str" {
+        key "4sQ8vBXm"
+        doc "Dungeon id cleared by this mission result."
+    }
+
+    field clear_area_id type="str" {
+        key "NgPQbA46"
+        doc "Area id cleared by this mission result."
+    }
+
+    field clear_mission_id type="u32::str" {
+        key "mauD5qZ1"
+        doc "Mission id cleared by this mission result."
+    }
+
+    field reward_units type="str" {
+        key "3MAT6quo"
+        doc "Encoded unit rewards."
+    }
+
+    field zel type="i32::str" {
+        key "Najhr8m6"
+        doc "Zel earned from the mission."
+    }
+
+    field karma type="i32::str" {
+        key "HTVh8a65"
+        doc "Karma earned from the mission."
+    }
+
+    field exp_up_type type="str" {
+        key "3vXLQFjt"
+        doc "Encoded experience bonus type."
+        optional #true
+    }
+
+    field zel_up_type type="str" {
+        key "k6MynZkg"
+        doc "Encoded zel bonus type."
+        optional #true
+    }
+
+    field karma_up_type type="str" {
+        key "J1MwgxCL"
+        doc "Encoded karma bonus type."
+        optional #true
+    }
+
+    field guild_exp type="i32::str" {
+        key "b8D18b7e"
+        doc "Guild experience earned from the mission."
+    }
+
+    field guild_karma type="i32::str" {
+        key "7adBa819"
+        doc "Guild karma earned from the mission."
+    }
+
+    field guild_zel type="i32::str" {
+        key "gzs3Bw10"
+        doc "Guild zel earned from the mission."
+    }
+
+    field event_token type="i32::str" {
+        key "03fFk30f"
+        doc "Event token count earned from the mission."
+    }
+
+    field repeat_clear_bonus type="str" {
+        key "S2ChOKo6"
+        doc "Encoded repeat-clear bonus."
+    }
+}
+
+json BattleGroupMst {
+    doc """
+    This represent a single stage of the dungeon.
+
+    It references a battle monster group ID, which
+    points to a collection of all battle monster
+    groups assigned to this specific stage.
+    """
+
+    field battle_group_id type="u32::str" {
+        key "ZSf8e1MG"
+        doc "Transient battle group id."
+    }
+
+    field battle_monster_group_id type="u32::str" {
+        key "Qzhp8B40"
+        doc "Transient battle monster group id referenced by this stage."
+    }
+
+    field mission_id type="u32::str" {
+        key "j28VNcUW"
+        doc "Mission id that owns this battle group."
+    }
+
+    field battle_order type="u32::str" {
+        key "VETu07N6"
+        doc "One-based order of this stage within the mission."
+    }
+
+    field first_attack_rate type="u32::str" {
+        key "5aetPz3C"
+        doc "Chance that monsters in this battle group attack before the player."
+    }
+
+    field boss_flag type="bool::str" {
+        key "etM5TCb9"
+        doc "Whether this battle group is the boss stage."
+    }
+}
+
+json BattleMonsterGroupMst {
+    doc """
+    Describes a single monster within a single stage.
+    """
+
+    field battle_monster_group_id type="u32::str" {
+        key "Qzhp8B40"
+        doc "Transient battle monster group id."
+    }
+
+    field monster_id type="u32::str" {
+        key "o49dYfpH"
+        doc "Monster id referenced by this placement row."
+    }
+
+    field group_order type="u32::str" {
+        key "hZtF1s8B"
+        doc "Zero-based order of this monster within the group."
+    }
+
+    field position type=str {
+        key "3g8PW6x0"
+        doc "Battlefield position formatted as x:y."
+    }
+
+    field unit_drop type=str {
+        key "hw3L0uVj"
+        doc "Encoded unit drop data for this monster."
+    }
+}
+
+json MonsterMst {
+    doc "Describes the mechanics of a single monster."
+
+    field monster_id type="u32::str" {
+        key "o49dYfpH"
+        doc "Monster id."
+    }
+
+    field base_name type=str {
+        key "3evIn0zZ"
+        doc "Base display name for this mission-local monster."
+    }
+
+    field hp type="u32::str" {
+        key "e7DK0FQT"
+        doc "Monster hp for this mission."
+    }
+
+    field atk type="u32::str" {
+        key "67CApcti"
+        doc "Monster atk for this mission."
+    }
+
+    field def type="u32::str" {
+        key "q08xLEsy"
+        doc "Monster def for this mission."
+    }
+
+    field element type="u32::str" {
+        key "iNy0ZU5M"
+        doc "Monster element id."
+    }
+
+    field effect_frame type=str {
+        key "eyUo6a8c"
+        doc "Effect frame data."
+    }
+
+    field damage_frame type=str {
+        key "6Aou5M9r"
+        doc "Damage frame data."
+    }
+
+    field drop_check_count type="u32::str" {
+        key "n9h7p02P"
+        doc "Drop check count."
+    }
+
+    field unit_id type="u32::str" {
+        key "pn16CNah"
+        doc "Unit id backing this monster's stable client MST data."
+    }
+
+    field move_speed type="i32::str" {
+        key "J2hPXGo5"
+        doc "Monster movement speed."
+    }
+
+    field attack_move_type type="i32::str" {
+        key "mv4o39Uz"
+        doc "Monster attack movement type."
+    }
+
+    field back_move_type type="i32::str" {
+        key "h2L1YI90"
+        doc "Monster return movement type."
+    }
+
+    field ai_id type="u32::str" {
+        key "i74vGUFa"
+        doc "AI id used by this monster."
+    }
+
+    field after_image type="i32::str" {
+        key "D4Y5bWK7"
+        doc "After-image flag/value."
+    }
+
+    field max_act_count type="u32::str" {
+        key "oMGC3hW0"
+        doc "Maximum action count per turn."
+    }
+
+    field min_act_count type="u32::str" {
+        key "m4EK7Gt6"
+        doc "Minimum action count per turn."
+    }
+
+    field skill_move_type type="i32::str" {
+        key "XE7Yi5c3"
+        doc "Skill movement type."
+    }
+
+    field max_zel_drop type="u32::str" {
+        key "Najhr8m6"
+        doc "Maximum zel dropped by this monster."
+    }
+
+    field zel_drop_count type="u32::str" {
+        key "9FN0GAei"
+        doc "Number of zel drop rolls."
+    }
+
+    field max_karma_drop type="u32::str" {
+        key "HTVh8a65"
+        doc "Maximum karma dropped by this monster."
+    }
+
+    field karma_drop_count type="u32::str" {
+        key "vNk2sI4X"
+        doc "Number of karma drop rolls."
+    }
+
+    field wait type="i32::str" {
+        key "9pXSKmn1"
+        doc "Wait value."
+    }
+
+    field cursor_disp_pos type=str {
+        key "Lkh6gYkT"
+        doc "Cursor display position."
+    }
+}
+
+json AIMst {
+    doc "Client AI MST action row."
+
+    field ai_id type="u32::str" {
+        key "4eEVw5hL"
+        doc "AI id referenced by MonsterMst."
+    }
+
+    field priority type="u32::str" {
+        key "yu18xScw"
+        doc "Priority/order of this AI action."
+    }
+
+    field name type=str {
+        key "L8PCsu0K"
+        doc "Human-readable AI action name."
+    }
+
+    field conditions type=str {
+        key "q7Nit8JW"
+        doc "Encoded party and self condition string parsed by AIMst."
+    }
+
+    field act_target type="u32::str" {
+        key "4xctV8gF"
+        doc "Target pool before applying search_term."
+    }
+
+    field search_term type=str {
+        key "VBj9u0ot"
+        doc "Client target search term."
+    }
+
+    field action type=str {
+        key "Hhgi79M1"
+        doc "Encoded AI action command."
+    }
+
+    field percent type="f32::str" {
+        key "ug9xV4Fz"
+        doc "Chance percent for this AI action."
+    }
+}

@@ -228,17 +228,17 @@ json LoginInfoResp {
 json UserPartyDeckInfo {
     doc "TODO"
 
-    field user_unit_id type="i32::str" {
+    field user_unit_id type="u32::str" {
         key "edy7fq3L"
         doc "TODO"
     }
 
-    field deck_type type="i32::int" {
+    field deck_type type="u32::str" {
         key "U9ABSYEp"
         doc "TODO"
     }
 
-    field deck_num type="i32::int" {
+    field deck_num type="u32::str" {
         key "zsiAn9P1"
         doc "TODO"
     }
@@ -251,6 +251,16 @@ json UserPartyDeckInfo {
     field disp_order type="i32::str" {
         key "XuJL4pc5"
         doc "TODO"
+    }
+
+}
+
+json DeckEditTeamInfo {
+    doc "Team fields posted by DeckEditRequest."
+
+    field activeDeck type="u32::str" {
+        key "Z0Y4RoD7"
+        doc "Active deck selected by the client."
     }
 
 }
@@ -538,7 +548,7 @@ json UserUnitInfo {
         """
     }
 
-    field unit_lv type="i32::str" {
+    field unit_lvl type="u32::str" {
         key "D9wXQI2V"
         doc "TODO"
     }
@@ -558,7 +568,7 @@ json UserUnitInfo {
         doc """
         Current HP stat for this unit before imp/stat-up bonuses.
         Includes level-based stat growth because this client passes
-        base_hp into GameUtils::getUnitHp(base_hp, unit_lv, ...),
+        base_hp into GameUtils::getUnitHp(base_hp, unit_lvl, ...),
         which currently returns base_hp unchanged. This suggests the
         server is expected to store the unit's level-adjusted normal
         HP in this bucket. Naturally, this applies to all base_* stats.
@@ -676,25 +686,27 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-
-    field skill_id type="i32::str" {
+    field bb_id type="str" {
         key "nj9Lw7mV"
-        doc "TODO"
+        doc "Denotes the bb skill id for this unit."
     }
 
-    field skill_lv type="i32::str" {
+    field bb_lvl type="u32::str" {
         key "3NbeC8AB"
-        doc "TODO"
+        doc "Denote bb skill level; max should be level 10."
     }
 
-    field extra_skill_id type="i32::str" {
+    field sbb_id type="str" {
         key "iEFZ6H19"
-        doc "TODO"
+        doc """
+        Denotes the sbb skill id for this unit.
+        Leave empty if not unlocked.
+        """
     }
 
-    field extra_skill_lv type="i32::str" {
+    field sbb_lvl type="u32::str" {
         key "RQ5GnFE2"
-        doc "TODO"
+        doc "Denote sbb skill level; max should be level 10."
     }
 
     field equipitem_frame_id type="i32::str" {
@@ -864,6 +876,22 @@ json LoginInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not sup
         doc "Country code"
     }
 
+    field scenario_info type="str" {
+        key "N4XVE1uA"
+        doc "Scenario progress marker included by some login-info requests."
+        optional #true
+    }
+
+    field tutorial_status type="i32::str" {
+        key "9sQM2XcN"
+        doc "Current tutorial chapter id posted by TutorialUpdateRequest."
+    }
+
+    field tutorial_end_flag type="bool::str" {
+        key "sv6BEI8X"
+        doc "Whether the client considers the tutorial complete."
+    }
+
     // # TODO: MOVE TO GUMILIVEINFO !!!!!
     field gumi_live_userid type="str" {
         key "iN7buP2h"
@@ -918,7 +946,6 @@ json UserClearMissionInfo {
 		doc "TODO"
 	}
 }
-
 json UserWarehouseInfo {
 	doc "TODO"
 	
@@ -1336,21 +1363,21 @@ json UserReleaseInfo {
 }
 
 json UserEquipItemInfo {
-    doc "TODO"
+    doc "Battle item equipped for use inside missions."
     
-    field unk type="i32::str" {
+    field item_id type="u32::str" {
         key "kixHbe54"
-        doc "TODO"
+        doc "Battle item id."
     }
 
-    field unk2 type="i32::str" {
+    field disp_order type="u32::str" {
         key "XuJL4pc5"
-        doc "TODO"
+        doc "Display/order slot in the mission item bar."
     }
 
-    field unk3 type="i32::str" {
+    field item_num type="u32::str" {
         key "wgV86x1q"
-        doc "TODO"
+        doc "Number of this item available in the mission."
     }
 
 }

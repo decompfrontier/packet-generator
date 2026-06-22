@@ -1,6 +1,5 @@
 // TODO(arves): I can't be bothered to fix the cli now...
 
 import "net/feature_check.kdl"
-import "net/badge_info.kdl"
 import "net/gme.kdl"
 import "net/handlers.kdl"
