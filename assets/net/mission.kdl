@@ -51,12 +51,12 @@ json MissionBattleResultInfo {
         doc "Battle item usage log."
     }
 
-    field zel type="i32::str" {
+    field zel type="u32::str" {
         key "Najhr8m6"
         doc "Zel earned during the mission."
     }
 
-    field karma type="i32::str" {
+    field karma type="u32::str" {
         key "HTVh8a65"
         doc "Karma earned during the mission."
     }
@@ -130,12 +130,12 @@ json MissionRewardInfo {
         doc "Encoded unit rewards."
     }
 
-    field zel type="i32::str" {
+    field zel type="u32::str" {
         key "Najhr8m6"
         doc "Zel earned from the mission."
     }
 
-    field karma type="i32::str" {
+    field karma type="u32::str" {
         key "HTVh8a65"
         doc "Karma earned from the mission."
     }

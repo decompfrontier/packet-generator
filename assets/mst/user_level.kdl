@@ -6,7 +6,7 @@ json UserLevelMst {
         doc "TODO"
     }
 
-    field exp type="i64::str" {
+    field exp type="u32::str" {
         key "d96tuT2E"
         doc "TODO"
     }

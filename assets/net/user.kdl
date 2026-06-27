@@ -273,14 +273,17 @@ json UserTeamInfo {
         doc "ID of the user for this session."
     }
 
-    field level type="i32::str" {
+    field level type="u32::str" {
         key "D9wXQI2V"
-        doc "TODO"
+        doc "Current player level."
     }
 
-    field exp type="i64::str" {
+    field exp type="u32::str" {
         key "d96tuT2E"
-        doc "TODO"
+        doc """
+        Current EXP progress within this level.
+        This is residual EXP toward the next level.
+        """
     }
 
     field max_action_point type="i32::str" {
@@ -378,14 +381,14 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field zel type="i64::str" {
+    field zel type="u64::str" {
         key "Najhr8m6"
-        doc "TODO"
+        doc "Current total Zel owned by the player."
     }
 
-    field karma type="i64::str" {
+    field karma type="u64::str" {
         key "HTVh8a65"
-        doc "TODO"
+        doc "Current total Karma owned by the player."
     }
 
     field brave_coin type="i32::int" {

@@ -183,6 +183,21 @@ json MissionRecord {
         doc "Human-readable mission name."
     }
 
+    field zel type="u32::int" {
+        key "zel"
+        doc "Zel awarded for clearing this mission."
+    }
+
+    field karma type="u32::int" {
+        key "karma"
+        doc "Karma awarded for clearing this mission."
+    }
+
+    field exp type="u32::int" {
+        key "exp"
+        doc "Experience awarded for clearing this mission."
+    }
+
     field stages type="[MissionStage]" {
         key "stages"
         doc "Ordered stages in this mission."
