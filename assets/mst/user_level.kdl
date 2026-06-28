@@ -11,9 +11,9 @@ json UserLevelMst {
         doc "TODO"
     }
 
-    field action_points type="i32::str" {
+    field energy type="u32::str" {
         key "0P9X1YHs"
-        doc "TODO"
+        doc "Maximum energy/action points for this player level."
     }
 
     field unk type="i32::str" {

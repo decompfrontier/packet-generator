@@ -198,6 +198,11 @@ json MissionRecord {
         doc "Experience awarded for clearing this mission."
     }
 
+    field energy_cost type="u32::int" {
+        key "energy_cost"
+        doc "Energy consumed when starting this mission."
+    }
+
     field stages type="[MissionStage]" {
         key "stages"
         doc "Ordered stages in this mission."

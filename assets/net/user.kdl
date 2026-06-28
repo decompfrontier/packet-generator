@@ -291,9 +291,9 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field action_point type="i32::str" {
+    field energy type="u32::str" {
         key "0P9X1YHs"
-        doc "TODO"
+        doc "Current energy/action point count."
     }
 
     field unk type="i32::str" {
@@ -301,9 +301,9 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field action_rest_timer type="i32::str" {
+    field energy_full_seconds type="i32::str" {
         key "f0IY4nj8"
-        doc "TODO"
+        doc "Seconds until energy/action points are full."
     }
 
     field max_fight_point type="i32::str" {

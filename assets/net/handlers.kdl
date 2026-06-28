@@ -412,6 +412,11 @@ json DeckEditReq {
 json MissionStartReq {
     doc "Request payload for starting a mission."
 
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
     field signal_key type="[SignalKey]::size(1)" {
         key "6FrKacq7"
         doc "Signal key request block."
