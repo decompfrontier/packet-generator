@@ -342,6 +342,25 @@ json UserInfoReq {
     }
 }
 
+json GatchaListReq {
+    doc "Requests the summon/gacha list shown by the summon screen."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
 json CreateUserReq {
     doc "Creates the game user after the tutorial name/starter prompt."
 
@@ -645,10 +664,6 @@ json UserInfoResp {
         key "Bm1WNDQ0"
         doc "TODO"
     }
-    field gachaInfo type="[GachaInfoMst]" {
-        key "1IR86sAv"
-        doc "TODO"
-    }
     field videoAdInfo type="[VideoAdInfo]" {
         key "j129kD6r"
         doc "TODO"
@@ -664,6 +679,25 @@ json UserInfoResp {
     field excludedDungeonMissions type="[ExcludedDungeonMissionMst]" {
         key "3aDk1xk7"
         doc "TODO"
+    }
+}
+
+json GatchaListResp {
+    doc "Gacha list data returned when opening the summon screen."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key response block."
+    }
+
+    field gachaInfo type="[GachaInfoMst]" {
+        key "1IR86sAv"
+        doc "Current gacha info rows."
+    }
+
+    field gachaCategories type="[GachaCategory]" {
+        key "IBs49NiH"
+        doc "Current summon screen category rows."
     }
 }
 
