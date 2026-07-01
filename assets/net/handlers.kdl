@@ -399,6 +399,15 @@ json TutorialUpdateReq {
     }
 }
 
+json TutorialSkipResp {
+    doc "Simple acknowledgement after the player skips the tutorial."
+
+    field tutorialSkipInfo type="TutorialSkipInfo" {
+        key "2bD8ak3D"
+        doc "Tutorial skip response object parsed by the client."
+    }
+}
+
 json DeckEditReq {
     doc "Persists the active party deck selected by DeckEditRequest."
 

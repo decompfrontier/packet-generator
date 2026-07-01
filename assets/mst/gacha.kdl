@@ -240,6 +240,9 @@ json GachaInfoMst {
         doc """
         Summon gate id.
         Must match GachaMst.id and appear in GachaCategory.gatcha_id_list.
+        Friend-point summon gates that need the summon-list count badge must
+        use id 1000, because the client hard-codes that id for the Honor
+        summon count path.
         """
     }
 
