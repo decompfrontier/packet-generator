@@ -76,9 +76,13 @@ json InteractiveBannerInfoMst {
         doc "TODO"
     }
 
-    field param type="str" { // TODO(arves): [i32::int]::size(2)
+    field param type="str" {
         key "t5R47iwj"
-        doc "TODO"
+        doc """
+        Click routing parameter.
+        For summon routing, use `1,<gacha_category_id>,<gacha_id>`.
+        Example: `1,1,11960` opens gacha id 11960 through category id 1.
+        """
     }
 
     field start_date type="datetime" {
