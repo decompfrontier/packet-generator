@@ -42,6 +42,8 @@ import "../net/friends.kdl"
 import "../net/event.kdl"
 import "../net/featuring_gate.kdl"
 import "../net/town.kdl"
+import "../net/tutorial.kdl"
+import "../net/badge_info.kdl"
 
 json InitializeReq {
     doc "Initialization command"
@@ -578,15 +580,15 @@ json UserInfoResp {
     }
 }
 
-// ReinforcementInfo is defined in net/reinforcement_info.kdl (xZH6EIQ7 — 47
+// ReinforcementInfo is defined in net/reinforcement_info.kdl (xZH6EIQ7 â€” 47
 // fields; the local stub here was kept-as-placeholder until the schema was
 // decoded).
 //
 // FriendGetResp emits BOTH wire keys:
-//   - xZH6EIQ7 (ReinforcementInfoResponse) — populates ReinforcementInfoList,
+//   - xZH6EIQ7 (ReinforcementInfoResponse) â€” populates ReinforcementInfoList,
 //     which a captured production response (server/deploy/log_res/2o4axPIC_*.json)
 //     confirms is the canonical key the BF server returns here even when empty
-//   - tojMy68W (FriendInfoResponse) — populates FriendInfoList; per the IDA
+//   - tojMy68W (FriendInfoResponse) â€” populates FriendInfoList; per the IDA
 //     dispatch table this is the "friend list" singleton used by other UIs
 //     (general friend roster, friend detail screen).  Cheap to populate both
 //     since we have the same source data.
@@ -597,16 +599,16 @@ json UserInfoResp {
 // net/reinforcement_info.kdl.
 
 json FriendGetResp {
-    doc "FriendGet (2o4axPIC) response — the friend list that populates the Reinforcement / squad-select picker.  Emits both xZH6EIQ7 (ReinforcementInfoList) and tojMy68W (FriendInfoList) with the same source data."
+    doc "FriendGet (2o4axPIC) response â€” the friend list that populates the Reinforcement / squad-select picker.  Emits both xZH6EIQ7 (ReinforcementInfoList) and tojMy68W (FriendInfoList) with the same source data."
 
     field reinforce_info type="[ReinforcementInfo]" {
         key "xZH6EIQ7"
-        doc "Friend list entries under the reinforce/helper picker key — matches the captured prod response shape."
+        doc "Friend list entries under the reinforce/helper picker key â€” matches the captured prod response shape."
     }
 
     field friend_info type="[FriendInfo]" {
         key "tojMy68W"
-        doc "Same entries under the friend-info-list key — populates FriendInfoList for any UI that reads from there."
+        doc "Same entries under the friend-info-list key â€” populates FriendInfoList for any UI that reads from there."
     }
 }
 
@@ -647,7 +649,7 @@ json UnitFavoriteResp {
 }
 
 json UnitEvoReq {
-    doc "Evolve a base unit by consuming evo materials.  Body field layout still pending — should be replaced once `extract_createbody(\"UnitEvoRequest\")` output is incorporated.  The old hand-written handler did not parse the body in detail; it returned a stubbed response."
+    doc "Evolve a base unit by consuming evo materials.  Body field layout still pending â€” should be replaced once `extract_createbody(\"UnitEvoRequest\")` output is incorporated.  The old hand-written handler did not parse the body in detail; it returned a stubbed response."
 
     field placeholder type="str" {
         key "_unused"
@@ -656,10 +658,240 @@ json UnitEvoReq {
 }
 
 json UnitEvoResp {
-    doc "Empty response stub.  Real fields will land when the handler is implemented against actual DB + MST data, keyed off the readparam for response_class=UnitOpeEvoResponse (response_key=I82p0wCL, params include pn16CNah/edy7fq3L/t9FEW2KC/u1ECvfg8/dV3qji4I — see response_mappings.json)."
+    doc "Empty response stub.  Real fields will land when the handler is implemented against actual DB + MST data, keyed off the readparam for response_class=UnitOpeEvoResponse (response_key=I82p0wCL, params include pn16CNah/edy7fq3L/t9FEW2KC/u1ECvfg8/dV3qji4I â€” see response_mappings.json)."
 
     field placeholder type="str" {
         key "_unused"
         doc "Schema placeholder; never populated by the current stub"
+    }
+}
+
+json CreateUserReq {
+    doc "Creates the game user after the tutorial name/starter prompt."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information containing user, Gumi Live, device, and handle fields."
+    }
+
+    field selectedElement type="[TutorialSelectedElement]::size(1)" {
+        key "9u45RGcV"
+        doc "Starter element selected by the player."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json DeckEditReq {
+    doc "Persists the active party deck selected by DeckEditRequest."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field partyDeckInfo type="[UserPartyDeckInfo]" {
+        key "dX7S2Lc1"
+        doc "Party deck rows sent by the client."
+    }
+
+    field teamInfo type="[DeckEditTeamInfo]::size(1)" {
+        key "Ti62XfZK"
+        doc "Team information containing the active deck number."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json GatchaListReq {
+    doc "Requests the summon/gacha list shown by the summon screen."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json GatchaListResp {
+    doc "Gacha list data returned when opening the summon screen."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key response block."
+    }
+
+    field gachaInfo type="[GachaInfoMst]" {
+        key "1IR86sAv"
+        doc "Current gacha info rows."
+    }
+
+    field gachaCategories type="[GachaCategory]" {
+        key "IBs49NiH"
+        doc "Current summon screen category rows."
+    }
+}
+
+json MissionStartReq {
+    doc "Request payload for starting a mission."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field start_info type="[MissionStartInfo]::size(1)" {
+        key "9Q1Lq5FS"
+        doc "Mission-start info posted by the client."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json MissionStartResp {
+    doc "Response payload for starting a mission."
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key response included in captured mission-start payloads."
+    }
+
+    field battle_groups type="[BattleGroupMst]" {
+        key "pj41dy9g"
+        doc "Battle group rows for each stage."
+    }
+
+    field battle_monster_groups type="[BattleMonsterGroupMst]" {
+        key "75t0sx9z"
+        doc "Monster placement rows for each battle group."
+    }
+
+    field monsters type="[MonsterMst]" {
+        key "U0v5IeJo"
+        doc "Mission-local monster MST rows."
+    }
+
+    field ais type="[AIMst]" {
+        key "89ausgc4"
+        doc "Mission-local AI rows."
+    }
+
+    field mission_num type="[MissionNumInfo]::size(1)" {
+        key "Kz7qfSs5"
+        doc "Mission serial state required by MissionStartScene."
+    }
+
+    field start_info type="[MissionStartInfo]::size(1)" {
+        key "9Q1Lq5FS"
+        doc "Mission-start info consumed by the battle scene."
+    }
+}
+
+json MissionEndReq {
+    doc "Request payload sent after a mission battle ends."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login/user identity included with mission-end requests."
+    }
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key sent by the client."
+    }
+
+    field mission_num type="[MissionNumInfo]::size(1)" {
+        key "Kz7qfSs5"
+        doc "Mission serial state being completed."
+    }
+
+    field battle_result type="[MissionBattleResultInfo]::size(1)" {
+        key "rXvA1E5y"
+        doc "Client-reported mission reward/result values."
+    }
+
+    field party_deck_info type="[UserPartyDeckInfo]" {
+        key "0xgIw1Ns"
+        doc "Party deck state after the mission."
+    }
+}
+
+json MissionEndResp {
+    doc "Response payload sent after a mission battle ends."
+
+    field loginInfo type="[LoginInfoResp]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Updated login/tutorial state after mission end."
+    }
+
+    field reward_info type="[MissionRewardInfo]::size(1)" {
+        key "F5Vs19mb"
+        doc "Mission reward values consumed by the result scenes."
+    }
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated user team state after applying mission rewards."
+    }
+
+    field unit_info type="[UserUnitInfo]" {
+        key "4ceMWH6k"
+        doc "Newly awarded units that must be present in the client unit list."
+    }
+}
+
+json TutorialSkipResp {
+    doc "Simple acknowledgement after the player skips the tutorial."
+
+    field tutorialSkipInfo type="TutorialSkipInfo" {
+        key "2bD8ak3D"
+        doc "Tutorial skip response object parsed by the client."
+    }
+}
+
+json TutorialUpdateReq {
+    doc "Persists the current tutorial chapter posted by TutorialUpdateRequest."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information containing the current tutorial chapter id."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
     }
 }

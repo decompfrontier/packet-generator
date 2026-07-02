@@ -228,19 +228,19 @@ json LoginInfoResp {
 json UserPartyDeckInfo {
     doc "TODO"
 
-    field user_unit_id type="i32::str" {
+    field user_unit_id type="u32::str" {
         key "edy7fq3L"
         doc "TODO"
     }
 
-    field deck_type type="i32::str" {
+    field deck_type type="u32::str" {
         key "U9ABSYEp"
-        doc "Deck slot kind, usually 1 (party). // CAPTURED FROM: deploy/log/http_log_m2Ve9PkJ_*.log DeckEdit request had \"U9ABSYEp\":\"1\" (quoted). // REVERTED FROM i32::int: that made glaze silently fail to parse the DeckEdit body, so the deck array was always empty and saves were dropped."
+        doc "TODO"
     }
 
-    field deck_num type="i32::str" {
+    field deck_num type="u32::str" {
         key "zsiAn9P1"
-        doc "Deck index within the slot (0-9). // CAPTURED FROM: deploy/log/http_log_m2Ve9PkJ_*.log DeckEdit request had \"zsiAn9P1\":\"0\" (quoted). // REVERTED FROM i32::int: same silent-parse-fail story as deck_type."
+        doc "TODO"
     }
 
     field member_type type="i32::str" {
@@ -255,6 +255,16 @@ json UserPartyDeckInfo {
 
 }
 
+json DeckEditTeamInfo {
+    doc "Team fields posted by DeckEditRequest."
+
+    field activeDeck type="u32::str" {
+        key "Z0Y4RoD7"
+        doc "Active deck selected by the client."
+    }
+
+}
+
 json UserTeamInfo {
     doc "TODO"
 
@@ -263,14 +273,17 @@ json UserTeamInfo {
         doc "ID of the user for this session."
     }
 
-    field level type="i32::str" {
+    field level type="u32::str" {
         key "D9wXQI2V"
-        doc "TODO"
+        doc "Current player level."
     }
 
-    field exp type="i64::str" {
+    field exp type="u32::str" {
         key "d96tuT2E"
-        doc "TODO"
+        doc """
+        Current EXP progress within this level.
+        This is residual EXP toward the next level.
+        """
     }
 
     field max_action_point type="i32::str" {
@@ -278,9 +291,9 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field action_point type="i32::str" {
+    field energy type="u32::str" {
         key "0P9X1YHs"
-        doc "TODO"
+        doc "Current energy/action point count."
     }
 
     field unk type="i32::str" {
@@ -288,9 +301,9 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field action_rest_timer type="i32::str" {
+    field energy_full_seconds type="i32::str" {
         key "f0IY4nj8"
-        doc "TODO"
+        doc "Seconds until energy/action points are full."
     }
 
     field max_fight_point type="i32::str" {
@@ -368,14 +381,14 @@ json UserTeamInfo {
         doc "TODO"
     }
 
-    field zel type="i64::str" {
+    field zel type="u64::str" {
         key "Najhr8m6"
-        doc "TODO"
+        doc "Current total Zel owned by the player."
     }
 
-    field karma type="i64::str" {
+    field karma type="u64::str" {
         key "HTVh8a65"
-        doc "TODO"
+        doc "Current total Karma owned by the player."
     }
 
     field brave_coin type="i32::int" {
@@ -507,11 +520,14 @@ json UserTeamInfo {
 }
 
 json UserUnitInfo {
-    doc "TODO"
+    doc "Player-owned unit records."
 
-    field user_unit_id type="i32::str" {
+    field user_unit_id type="u32::str" {
         key "edy7fq3L"
-        doc "TODO"
+        doc """
+        Unique id attributed to a specific unit of a given user.
+        Duplicates of the same unit will receive unique user unit ids.
+        """
     }
 
     field user_id type="str" {
@@ -519,17 +535,23 @@ json UserUnitInfo {
         doc "ID of the user for this session."
     }
 
-    field unit_id type="i32::str" {
+    field unit_id type="u32::str" {
         key "pn16CNah"
-        doc "TODO"
+        doc """
+        Unique identifier for the unit's archive record.
+        Used to look up this unit in the MST assets.
+        """
     }
 
-    field unit_type_id type="i32::str" {
+    field unit_type_id type="u32::str" {
         key "nBTx56W9"
-        doc "TODO"
+        doc """
+        Specifies the unit type, e.g. Lord, Anima, Breaker, Guardian, or Oracle.
+        TODO: Figure out which numeric value maps to each type.
+        """
     }
 
-    field unit_lv type="i32::str" {
+    field unit_lvl type="u32::str" {
         key "D9wXQI2V"
         doc "TODO"
     }
@@ -544,9 +566,16 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field base_hp type="i32::str" {
+    field base_hp type="u32::str" {
         key "e7DK0FQT"
-        doc "TODO"
+        doc """
+        Current HP stat for this unit before imp/stat-up bonuses.
+        Includes level-based stat growth because this client passes
+        base_hp into GameUtils::getUnitHp(base_hp, unit_lvl, ...),
+        which currently returns base_hp unchanged. This suggests the
+        server is expected to store the unit's level-adjusted normal
+        HP in this bucket. Naturally, this applies to all base_* stats.
+        """
     }
 
     field add_hp type="i32::str" {
@@ -554,9 +583,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field ext_hp type="i32::str" {
+    field ext_hp type="u32::str" {
         key "TokWs1B3"
-        doc "TODO"
+        doc """
+        Imp/stat-up HP bucket.
+        We should cap this against the unit's HP stat-up limit from MST data.
+        """
     }
 
     field limit_over_hp type="i32::int" {
@@ -564,9 +596,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field base_atk type="i32::str" {
+    field base_atk type="u32::str" {
         key "67CApcti"
-        doc "TODO"
+        doc """
+        Current ATK stat for this unit before imp/stat-up bonuses.
+        See base_hp for why base_* stores the unit's level-adjusted normal stats.
+        """
     }
 
     field add_atk type="i32::str" {
@@ -574,9 +609,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field ext_atk type="i32::str" {
+    field ext_atk type="u32::str" {
         key "t4m1RH6Y"
-        doc "TODO"
+        doc """
+        Imp/stat-up ATK bucket.
+        We should cap this against the unit's ATK stat-up limit from MST data.
+        """
     }
 
     field limit_over_atk type="i32::int" {
@@ -584,9 +622,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field base_def type="i32::str" {
+    field base_def type="u32::str" {
         key "q08xLEsy"
-        doc "TODO"
+        doc """
+        Current DEF stat for this unit before imp/stat-up bonuses.
+        See base_hp for why base_* stores the unit's level-adjusted normal stats.
+        """
     }
 
     field add_def type="i32::str" {
@@ -594,9 +635,12 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field ext_def type="i32::str" {
+    field ext_def type="u32::str" {
         key "e6mY8Z0k"
-        doc "TODO"
+        doc """
+        Imp/stat-up DEF bucket.
+        We should cap this against the unit's DEF stat-up limit from MST data.
+        """
     }
 
     field limit_over_def type="i32::int" {
@@ -604,22 +648,28 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field base_heal type="i32::str" {
+    field base_rec type="u32::str" {
         key "PWXu25cg"
-        doc "TODO"
+        doc """
+        Current REC stat for this unit before imp/stat-up bonuses.
+        See base_hp for why base_* stores the unit's level-adjusted normal stats.
+        """
     }
 
-    field add_heal type="i32::str" {
+    field add_rec type="i32::str" {
         key "C1HZr3pb"
         doc "TODO"
     }
 
-    field ext_heal type="i32::str" {
+    field ext_rec type="u32::str" {
         key "X6jf8DUw"
-        doc "TODO"
+        doc """
+        Imp/stat-up REC bucket.
+        We should cap this against the unit's REC stat-up limit from MST data.
+        """
     }
 
-    field limit_over_heal type="i32::int" {
+    field limit_over_rec type="i32::int" {
         key "XJs2rPx0"
         doc "TODO"
     }
@@ -639,25 +689,27 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-
-    field skill_id type="i32::str" {
+    field bb_id type="str" {
         key "nj9Lw7mV"
-        doc "TODO"
+        doc "Denotes the bb skill id for this unit."
     }
 
-    field skill_lv type="i32::str" {
+    field bb_lvl type="u32::str" {
         key "3NbeC8AB"
-        doc "TODO"
+        doc "Denote bb skill level; max should be level 10."
     }
 
-    field extra_skill_id type="i32::str" {
+    field sbb_id type="str" {
         key "iEFZ6H19"
-        doc "TODO"
+        doc """
+        Denotes the sbb skill id for this unit.
+        Leave empty if not unlocked.
+        """
     }
 
-    field extra_skill_lv type="i32::str" {
+    field sbb_lvl type="u32::str" {
         key "RQ5GnFE2"
-        doc "TODO"
+        doc "Denote sbb skill level; max should be level 10."
     }
 
     field equipitem_frame_id type="i32::str" {
@@ -787,6 +839,11 @@ json LoginInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not sup
         doc "TODO"
     }
 
+    field unk5 type="i32::str" {
+        key "37d2Hi5p"
+        doc "TODO"
+    }
+
     field device_id type="str" {
         key "Ma5GnU0H"
         doc "Device advertisement ID (the same as vid in the gumi api login)"
@@ -820,6 +877,22 @@ json LoginInfoReq {  // # TODO: actually support (GumiLiveInfo), as it's not sup
     field country_code type="str" {
         key "hceYTcAK"
         doc "Country code"
+    }
+
+    field scenario_info type="str" {
+        key "N4XVE1uA"
+        doc "Scenario progress marker included by some login-info requests."
+        optional #true
+    }
+
+    field tutorial_status type="i32::str" {
+        key "9sQM2XcN"
+        doc "Current tutorial chapter id posted by TutorialUpdateRequest."
+    }
+
+    field tutorial_end_flag type="bool::str" {
+        key "sv6BEI8X"
+        doc "Whether the client considers the tutorial complete."
     }
 
     // # TODO: MOVE TO GUMILIVEINFO !!!!!
@@ -869,44 +942,13 @@ json UserFavorite {
 }
 
 json UserClearMissionInfo {
-	doc "UserClearMissionInfoResponse (wire key UT1SVg59). Per-mission clear-history record carried in the MissionEnd response so the client can keep its mission-clear list synced. ALL 7 fields decoded from UserClearMissionInfo::readParam in libgame.so via a private IDA audit. Every field uses std::string-typed setters even when the value is numeric (clear count, BC/HC totals) — BF stores them as quoted strings on the wire."
-
-	field user_id type=str {
-		key "h7eY3sAK"
-		doc "setUserID. The player's user_id (not a friend / reinforce id)."
-	}
-
-	field mission_id type=str {
-		key "j28VNcUW"
-		doc "setMissionID. The mission this record is for. Combined with user_id forms the unique key (one row per (user, mission))."
-	}
-
-	field clear_date type=str {
-		key "JATWnN57"
-		doc "setClearDate. Timestamp of the most recent clear. Format // UNVERIFIED — likely either Unix epoch as a quoted int or the BF datetime string `YYYY-MM-DD HH:MM:SS`."
-	}
-
-	field clear_cnt type=str {
-		key "HIQoGb10"
-		doc "setClearCnt. How many times the player has cleared this mission. Stored as a quoted string on the wire (\"1\", \"2\", ...). Server has no per-mission clear counter yet — currently sent as \"1\" placeholder."
-	}
-
-	field most_time type=str {
-		key "Wi4EFe6f"
-		doc "setMostTime. Fastest clear time the player has ever recorded for this mission. Format // UNVERIFIED — likely seconds as quoted int (\"42\") or m:ss formatted string. Server has no per-mission best-time tracking yet — sent as empty string."
-	}
-
-	field get_bc type=str {
-		key "RWX38boG"
-		doc "setGetBc. Lifetime Battle Crystal count obtained from THIS specific mission across all clears. Quoted-int wire format. Server has no per-mission BC ledger yet — sent as \"0\" placeholder."
-	}
-
-	field get_hc type=str {
-		key "bGx5ku0F"
-		doc "setGetHc. Lifetime Heart Crystal count obtained from THIS specific mission. Same shape as get_bc."
+	doc "TODO"
+	
+	field mock type="str" {
+		key "INVALID"
+		doc "TODO"
 	}
 }
-
 json UserWarehouseInfo {
 	doc "TODO"
 	
@@ -1324,21 +1366,21 @@ json UserReleaseInfo {
 }
 
 json UserEquipItemInfo {
-    doc "TODO"
+    doc "Battle item equipped for use inside missions."
     
-    field unk type="i32::str" {
+    field item_id type="u32::str" {
         key "kixHbe54"
-        doc "TODO"
+        doc "Battle item id."
     }
 
-    field unk2 type="i32::str" {
+    field disp_order type="u32::str" {
         key "XuJL4pc5"
-        doc "TODO"
+        doc "Display/order slot in the mission item bar."
     }
 
-    field unk3 type="i32::str" {
+    field item_num type="u32::str" {
         key "wgV86x1q"
-        doc "TODO"
+        doc "Number of this item available in the mission."
     }
 
 }
@@ -1390,15 +1432,15 @@ json UserUnitDbbLevelInfo {
 }
 
 json SummonTicketV2UserInfo {
-    doc "User's owned-ticket entry in the V2 typed-ticket inventory.  Wire wrapper a3d5d12i (IDA: SummonTicketV2UserInfoResponse, is_array=true).  Per a private IDA readParam audit of the handler at 0x1C6EBB4, it reads TWO fields — `b0D2iq2d → setSummonTicketV2Id(std::string)` and `Rs7bCE3t → setAmount(int)` parsed via CommonUtils::StrToInt.  readparam_analysis.json only lists the first one; the audit confirmed the second comes through a hand-coded path inside the same readParam.  // REVERTED FROM single-field struct: earlier port (§7.10) dropped Rs7bCE3t guessing the wire-strict client rejected unknown fields.  Audit proves both fields are read; the shape that matters is one entry per ticket TYPE with `amount` carrying the owned count — not N entries per type."
+    doc "TODO"
 
     field id type="i32::str" {
-        doc "Ticket-type id.  Setter: setSummonTicketV2Id(std::string) per audit.  Joins to SummonTicketV2Mst.id (b0D2iq2d).  Captured: \"8\" (Brave Summon Ticket → door 17160 / Veteran summon's Brave half), \"3\" (Anniversary 2017 Ticket → door 14420)."
+        doc "TODO"
         key "b0D2iq2d"
     }
 
     field amount type="i32::str" {
-        doc "How many of this ticket type the user owns.  Setter: setAmount(int) via CommonUtils::StrToInt per audit — the wire ships a quoted string and the client parses to int.  Backing store: user_summon_tickets_v2.count.  Decremented by 1 per pull when GachaAction is invoked with `324b023k`=1 against an eligible door."
+        doc "TODO"
         key "Rs7bCE3t"
     }
 }

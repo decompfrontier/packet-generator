@@ -1,0 +1,113 @@
+json UnitRecordStats {
+    doc "Generic hp, atk, def, rec stats for a given unit."
+
+    field hp type="u32::int" {
+        key "hp"
+        doc "hp of this unit."
+    }
+
+    field atk type="u32::int" {
+        key "atk"
+        doc "atk of this unit."
+    }
+
+    field def type="u32::int" {
+        key "def"
+        doc "def of this unit."
+    }
+
+    field rec type="u32::int" {
+        key "rec"
+        doc "rec of this unit."
+    }
+}
+
+json UnitRecord {
+    doc """
+    Server-owned curated unit archive data. This intentionally contains fewer
+    fields than the official unit MSTs because we should only preserve fields
+    that we understand and use.
+    """
+
+    field id type="u32::int" {
+        key "id"
+        doc """
+        Unique identifier for the unit's archive record.
+        Used to look up this unit when creating player-owned units.
+        """
+    }
+
+    field name type=str {
+        key "name"
+        doc "Human-readable unit name."
+    }
+
+    field element type="u32::int" {
+        key "element"
+        doc "Element id from UnitMST element."
+    }
+
+    field bb_id type=str {
+        key "bb_id"
+        doc "Brave Burst skill id."
+    }
+
+    field sbb_id type=str {
+        key "sbb_id"
+        doc "Super Brave Burst skill id."
+    }
+
+    field effect_frame type=str {
+        key "effect_frame"
+        doc "From UnitMST effectFrames."
+    }
+
+    field damage_frame type=str {
+        key "damage_frame"
+        doc "From UnitMST damageFrames."
+    }
+
+    field drop_check_count type="u32::int" {
+        key "drop_check_count"
+        doc "From UnitMST dropCheckCount."
+    }
+
+    field move_speed type="i32::int" {
+        key "move_speed"
+        doc "Movement speed type."
+    }
+
+    field attack_move_type type="i32::int" {
+        key "attack_move_type"
+        doc "Attack movement type."
+    }
+
+    field back_move_type type="i32::int" {
+        key "back_move_type"
+        doc "Return movement type."
+    }
+
+    field after_image type="i32::int" {
+        key "after_image"
+        doc "After-image type."
+    }
+
+    field skill_move_type type="i32::int" {
+        key "skill_move_type"
+        doc "Skill movement type."
+    }
+
+    field cursor_disp_pos type=str {
+        key "cursor_disp_pos"
+        doc "Cursor display position."
+    }
+
+    field stats type="[UnitRecordStats]::size(2)" {
+        key "stats"
+        doc """
+        Fixed stat blocks for the currently supported unit type.
+        Index 0 is the base stat block from MST.
+        Index 1 is the final stat block for a fully leveled unit with lord type.
+        """
+    }
+}

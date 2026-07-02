@@ -72,7 +72,7 @@ json GachaCategory {
 
     field end_date type="datetime-unix" {
         key "SzV0Nps7"
-        doc "Unix epoch when this category disappears.  Captured: most rows have 2019/2020 expiry; the three currently-active categories (Veteran, Honor, Burst Hero Selector) expire 2030-11-11.  Client filters categories where end_date < now."
+        doc "Unix epoch when this category disappears.  Captured: most rows have 2019/2020 expiry; the three currently-active categories (Veteran, Honor, Burst Hero Selector) expire 2030-11-11.  Client filters categories where end_date < now.  NOTE (dev-branch audit): the client truncates this to signed 32-bit -- never set beyond 2147483647 (2038-01-19) or the comparison wraps negative."
     }
 }
 

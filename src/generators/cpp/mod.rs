@@ -301,11 +301,11 @@ fn generate_json_cxx(
             }
 
             let name = struct_field_format(&field.name);
-            let doc = split_documentation(&field.doc, 0);
+            let doc = split_documentation(&field.doc, 1);
 
             Ok(format!(
                 "
-{TAB}{doc}
+{doc}
 {TAB}{datatype} {name};"
             ))
         })

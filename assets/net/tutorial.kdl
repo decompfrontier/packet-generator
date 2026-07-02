@@ -1,0 +1,17 @@
+json TutorialSelectedElement {
+    doc "Starter element selected during the new-user tutorial."
+
+    field element type="u32::str" {
+        key "Kn51uR4Y"
+        doc "Selected starter element id sent by the client."
+    }
+}
+
+json TutorialSkipInfo {
+    doc "Acknowledgement after the player accepts the tutorial skip prompt."
+
+    field ack type="bool::str" {
+        key "3tWuc7de"
+        doc "Tutorial skip acknowledgement encoded as 1/0."
+    }
+}
