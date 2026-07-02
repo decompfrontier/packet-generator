@@ -11,7 +11,7 @@ json UserLevelMst {
         doc "PER-LEVEL EXP CHUNK — exp the player must accumulate AT level N-1 to reach level N. NOT cumulative. Captured values: lv 1=0, lv 2=20, lv 3=40, lv 900=1009680, lv 901=1009853, lv 1000=1023143. The values across rows happen to be monotonically increasing but the small inter-row deltas (e.g. 1009853-1009680=173) are an artifact of the curve shape, not evidence of cumulative-ness — chunk[N] is the FULL amount needed to ding from level N-1, so at endgame each level requires ~1M exp on its own. userinfo.exp is the player's progress AT THE CURRENT LEVEL; on level-up the server subtracts the consumed chunk and the residual carries over. Seed userinfo.exp=1009680 leaves the player almost ready to ding lv 901 from lv 900 (1009680 of 1009853 needed). // CAPTURED FROM: deploy/system/user_level_mst.json. // HISTORY: this field's interpretation flipped three times during the MissionEnd level-up debugging — see comments in gimuserver/gme/MissionEnd.cpp for the full story. Per-level chunk is the final correct reading, anchored by the player's expectation that 'XP to next Lv' at endgame should be in the millions, not the hundreds."
     }
 
-    field action_points type="i32::str" {
+    field energy type="u32::str" {
         key "0P9X1YHs"
         doc "Maximum energy at this level. Used by team_info builder to set max_action_point. On level-up, the server should also refill current energy to this value (see MissionEnd handler). Captured: lv 1=15, lv 900=398, lv 1000=431."
     }
