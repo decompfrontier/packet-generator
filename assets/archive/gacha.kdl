@@ -1,6 +1,11 @@
 json GachaPull {
     doc "One possible unit pull from a summon gate."
 
+    field name type=str {
+        key "name"
+        doc "Human-readable unit name."
+    }
+
     field unit_id type="u32::int" {
         key "unit_id"
         doc "Unit archive id that can be pulled."
