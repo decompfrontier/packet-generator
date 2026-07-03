@@ -34,6 +34,7 @@ import "../net/user.kdl"
 import "../net/items.kdl"
 import "../net/permit_place.kdl"
 import "../net/mission.kdl"
+import "../net/gacha.kdl"
 import "../net/raid.kdl"
 import "../net/npc.kdl"
 import "../net/friends.kdl"
@@ -358,6 +359,62 @@ json GatchaListReq {
     field mstRequests type="[MstUrlList]" {
         key "KeC10fuL"
         doc "MST versions requested by the client."
+    }
+}
+
+json GachaActionReq {
+    doc "Requests a summon pull from the currently selected summon gate."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field gachaActionInfo type="[GachaActionInfo]::size(1)" {
+        key "1IR86sAv"
+        doc "Selected gate and summon-count information."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json GachaActionResp {
+    doc "Response payload sent after resolving a summon pull."
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key echoed back to the client."
+    }
+
+    field ope_user_unit type="[OpeUserUnitInfo]" {
+        key "Km35HAXv"
+        doc """
+        Summoned unit ids and animation metadata.
+
+        The client accepts multiple rows here for multi-summon result data.
+        However, only the last row controls which unit gets the gate-opening
+        animation.
+        """
+    }
+
+    field unit_info type="[UserUnitInfo]" {
+        key "qC2tJs4E"
+        doc """
+        Newly summoned owned-unit rows appended to the client unit list.
+        """
+    }
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated user team state after spending summon currency."
     }
 }
 
@@ -833,7 +890,7 @@ json MissionEndResp {
     }
 
     field unit_info type="[UserUnitInfo]" {
-        key "4ceMWH6k"
-        doc "Newly awarded units that must be present in the client unit list."
+        key "qC2tJs4E"
+        doc "Newly awarded units from this mission."
     }
 }

@@ -42,6 +42,11 @@ json UnitRecord {
         doc "Human-readable unit name."
     }
 
+    field rarity type="u32::int" {
+        key "rarity"
+        doc "Unit star rarity."
+    }
+
     field element type="u32::int" {
         key "element"
         doc "Element id from UnitMST element."

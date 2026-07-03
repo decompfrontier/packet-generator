@@ -1,9 +1,9 @@
 json GachaEffectMst {
     doc "TODO"
 
-    field id type="i32::str" {
+    field id type="u32::str" {
         key "u0vkt9yH"
-        doc "TODO"
+        doc "Unique gacha effect id."
     }
 
     field gatcha_id type="i32::str" {
@@ -16,14 +16,14 @@ json GachaEffectMst {
         doc "TODO"
     }
 
-    field rare type="i32::str" {
+    field rarity type="u32::str" {
         key "7ofj5xa1"
-        doc "TODO"
+        doc "Unit rarity bucket for this gacha effect."
     }
 
-    field rate type="f32::str" {
+    field weight type="u32::str" {
         key "ug9xV4Fz"
-        doc "TODO"
+        doc "Selection weight for this gacha effect."
     }
 
     field effect_before type="str" {
@@ -156,12 +156,12 @@ json GachaMst {
         doc "TODO"
     }
 
-    field need_friend_point type="i32::str" {
+    field need_friend_point type="u32::str" {
         key "J3stQ7jd"
         doc "Friend point cost for friend-point summon gates."
     }
 
-    field need_gems type="i32::str" {
+    field need_gems type="u32::str" {
         key "03UGMHxF"
         doc "Gem cost shown/used for gem summon gates."
     }
@@ -229,7 +229,6 @@ json GachaMst {
 
 json GachaInfoMst {
     doc """
-    Supplemental summon gate display rows from deploy/system/gacha_info.json.
     The client relies on this to see which summon gates are actually available.
     The summon list request sends this alongside category data. It overlaps with
     GachaMst, and some fields must be consistent with its counterpart in GachaMst.
@@ -246,66 +245,7 @@ json GachaInfoMst {
         """
     }
 
-    field unk type="str" {
-        key "s35idar9"
-        doc "TODO"
-        // NOTE: not used in last version
-    }
-
-    field unk2 type="str" {
-        key "2T4c7YRb"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk3 type="str" {
-        key "c7U6RwNH"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk4 type="str" {
-        key "Ss7Pdc2w"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk5 type="i32::int" {
-        key "Qm5oN7XM"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk6 type="i32::int" {
-        key "d04gRmkE"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk7 type="str" {
-        key "S6bqJqpA"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk8 type="str" {
-        key "a329kbl8"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk9 type="i32::int" {
-        key "324b023k"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field campaign_info type="str" {
-        key "8HM3v3gg"
-        doc "TODO"
-    }
-
-    field brave_coin type="i32::str" {
+    field gems type="u32::str" {
         key "03UGMHxF"
         doc """
         Displayed summon cost.
@@ -313,7 +253,7 @@ json GachaInfoMst {
         """
     }
 
-    field button_img type="str" {
+    field button type="str" {
         key "W9ABuJj2"
         doc """
         Summon button image.
@@ -321,7 +261,7 @@ json GachaInfoMst {
         """
     }
 
-    field background_img type="str" {
+    field background type="str" {
         key "1Dg0vUX3"
         doc """
         Summon gate detail/background image.
@@ -343,11 +283,6 @@ json GachaInfoMst {
         Formatted short/detail message for this summon gate.
         Can differ from GachaMst.detail_msg.
         """
-    }
-
-    field resummon_gacha_flag type="bool::int" {
-        key "a632bkyQ"
-        doc "TODO"
     }
 
     field name type="str" {
@@ -374,53 +309,17 @@ json GachaInfoMst {
         """
     }
 
-    field start_date type="str" { // TODO(arves): Fix type...
-        key "qA7M9EjP"
-        doc """
-        Info-row start date. Probably not used.
-        Does not need to match GachaMst.start_date.
-        """
-    }
-
-    field end_date type="datetime-unix" {
-        key "SzV0Nps7"
-        doc """
-        Info-row end date. Probably not used.
-        Does not need to match GachaMst.end_date.
-        """
-    }
-
-    field start_hour type="str" { // TODO(arves): Fix type...
-        key "2HY3jpgu"
-        doc "TODO"
-    }
-
-    field end_hour type="str" {
-        key "v9TR3cDz"
-        doc "TODO"
-    }
-
-    field need_friends_point type="i32::str" {
+    field friend_points type="u32::str" {
         key "J3stQ7jd"
         doc "Friend point cost for friend-point summon gates."
     }
 
-    field once_day_flag type="bool::str" {
-        key "4tswNoV9"
-        doc "TODO"
-    }
-
-    field door_img type="str" {
+    field door type="str" {
         key "uKYf13AH"
         doc """
         Summon door/animation image for this gate.
         TODO: verify if this needs to match its counterpart in GachaMst.
         """
-    }
-
-    field description type="str" {
-        key "qp37xTDh"
-        doc "TODO"
     }
 
     field group_id type="i32::str" {
@@ -431,20 +330,6 @@ json GachaInfoMst {
         """
     }
 
-    field comment type="str" {
-        key "gVSj32QH"
-        doc "TODO"
-    }
-
-    field detail_id type="str" {
-        key "8Z9CYQDq"
-        doc "TODO"
-    }
-
-    field content_banner_img type="str" {
-        key "sA9dDAqB"
-        doc "TODO"
-    }
 }
 
 json ResummonGachaMst {

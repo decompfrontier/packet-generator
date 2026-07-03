@@ -1,0 +1,66 @@
+json GachaPull {
+    doc "One possible unit pull from a summon gate."
+
+    field unit_id type="u32::int" {
+        key "unit_id"
+        doc "Unit archive id that can be pulled."
+    }
+
+    field weight type="u32::int" {
+        key "weight"
+        doc "Relative pull weight for this unit within the summon gate."
+    }
+}
+
+json GachaRecord {
+    doc """
+    Server-owned curated summon gate archive data. Optional fields override
+    the images/text copied from GachaMst; all other GachaInfoMst fields are
+    populated automatically by the archiver.
+    """
+
+    field id type="u32::int" {
+        key "id"
+        doc "Summon gate id. This must match with entries in GachaMst."
+    }
+
+    field button type=str {
+        key "button"
+        doc "Summon button image."
+        optional #true
+    }
+
+    field background type=str {
+        key "background"
+        doc "Summon gate detail/background image."
+        optional #true
+    }
+
+    field door type=str {
+        key "door"
+        doc "Summon door/animation image for this gate."
+        optional #true
+    }
+
+    field caption_msg type=str {
+        key "caption_msg"
+        doc "Long formatted gate caption/body text."
+        optional #true
+    }
+
+    field detail_msg type=str {
+        key "detail_msg"
+        doc "Formatted short/detail message for this summon gate."
+        optional #true
+    }
+
+    field priority type="u32::int" {
+        key "priority"
+        doc "Display/order value."
+    }
+
+    field pool type="[GachaPull]" {
+        key "pool"
+        doc "Weighted unit pool for this summon gate."
+    }
+}

@@ -732,9 +732,14 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field receive_date type="datetime-unix" {
+    field received_order type="u32::str" {
         key "Bvkx8s6M"
-        doc "TODO"
+        doc """
+        Numeric acquired-sort key.
+        The client only uses this value for acquired-order unit sorting, so the
+        server populates it from the monotonically increasing user_unit_id
+        instead of storing a separate timestamp.
+        """
     }
 
     field unk2 type="i32::str" {

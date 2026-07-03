@@ -1,0 +1,37 @@
+json GachaActionInfo {
+    doc "Summon action payload sent when the player pulls on a summon gate."
+
+    field gacha_id type="u32::str" {
+        key "7Ffmi96v"
+        doc "Selected summon gate id."
+    }
+
+    field request_count type="u32::str" {
+        key "a329kbl8"
+        doc "Number of summon pulls requested by the client."
+    }
+
+    field using_gacha_ticket type="bool::str" {
+        key "324b023k"
+        doc "Whether this summon should consume a summon ticket instead of currency."
+    }
+}
+
+json OpeUserUnitInfo {
+    doc "Summon result metadata consumed by the summon animation scene."
+
+    field user_unit_id type="u32::str" {
+        key "edy7fq3L"
+        doc "Owned unit id selected for the summon result animation."
+    }
+
+    field change_rate_info type="str" {
+        key "g30VnzQh"
+        doc "Gacha change-rate info string. Leave empty until understood."
+    }
+
+    field gacha_effect_id type="u32::str" {
+        key "u0vkt9yH"
+        doc "Summon animation effect id selected from GachaEffectMst."
+    }
+}
