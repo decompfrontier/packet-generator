@@ -343,7 +343,7 @@ json UserInfoReq {
     }
 }
 
-json GatchaListReq {
+json GachaListReq {
     doc "Requests the summon/gacha list shown by the summon screen."
 
     field signalKey type="[SignalKey]::size(1)" {
@@ -748,7 +748,7 @@ json UserInfoResp {
     }
 }
 
-json GatchaListResp {
+json GachaListResp {
     doc "Gacha list data returned when opening the summon screen."
 
     field signalKey type="[SignalKey]::size(1)" {

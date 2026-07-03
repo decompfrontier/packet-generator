@@ -6,7 +6,7 @@ json GachaEffectMst {
         doc "Unique gacha effect id."
     }
 
-    field gatcha_id type="i32::str" {
+    field gacha_id type="i32::str" {
         key "7Ffmi96v"
         doc "TODO"
     }
@@ -47,7 +47,7 @@ json GachaCategory {
     doc """
     Banner/category rows for the summon top screen.
     A category is the visible banner entry the player taps on. The client uses
-    gatcha_id_list to decide which summon gates are available behind that
+    gacha_id_list to decide which summon gates are available behind that
     banner. One category can point at one gate or multiple gates.
     """
 
@@ -66,7 +66,7 @@ json GachaCategory {
         doc "Display order of this banner category."
     }
 
-    field gatcha_id_list type="str" {
+    field gacha_id_list type="str" {
         key "3rCmq58M"
         doc """
         Comma-separated summon gate ids opened by this banner.
@@ -109,7 +109,7 @@ json GachaMst {
 
     field id type="i32::str" {
         key "7Ffmi96v"
-        doc "Summon gate id. This is the id referenced by gatcha_id_list."
+        doc "Summon gate id. This is the id referenced by gacha_id_list."
     }
 
     field name type="str" {
@@ -201,7 +201,7 @@ json GachaMst {
         doc "TODO"
     }
 
-    field gatcha_group_id type="i32::str" {
+    field gacha_group_id type="i32::str" {
         key "TCnm1F4v"
         doc "TODO"
     }
@@ -211,7 +211,7 @@ json GachaMst {
         doc "TODO"
     }
 
-    field gatcha_detail_id type="str" {
+    field gacha_detail_id type="str" {
         key "8Z9CYQDq"
         doc "TODO"
         optional #true
@@ -238,7 +238,7 @@ json GachaInfoMst {
         key "7Ffmi96v"
         doc """
         Summon gate id.
-        Must match GachaMst.id and appear in GachaCategory.gatcha_id_list.
+        Must match GachaMst.id and appear in GachaCategory.gacha_id_list.
         Friend-point summon gates that need the summon-list count badge must
         use id 1000, because the client hard-codes that id for the Honor
         summon count path.

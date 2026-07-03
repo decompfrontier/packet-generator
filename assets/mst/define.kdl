@@ -262,7 +262,7 @@ json DefineMst {
         doc "TODO"
     }
 
-    field tutorial_gatcha_id type="i32::str" {
+    field tutorial_gacha_id type="i32::str" {
         key "uALQnngx"
         doc "TODO"
     }
