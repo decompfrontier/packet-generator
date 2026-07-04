@@ -412,6 +412,11 @@ json GachaActionResp {
         """
     }
 
+    field unit_dictionary type="[UserUnitDictionary]" {
+        key "GV81ctzR"
+        doc "Unit dictionary rows for units returned by this summon."
+    }
+
     field team_info type="[UserTeamInfo]::size(1)" {
         key "fEi17cnx"
         doc "Updated user team state after spending summon currency."
@@ -892,5 +897,10 @@ json MissionEndResp {
     field unit_info type="[UserUnitInfo]" {
         key "qC2tJs4E"
         doc "Newly awarded units from this mission."
+    }
+
+    field unit_dictionary type="[UserUnitDictionary]" {
+        key "GV81ctzR"
+        doc "Unit dictionary rows for units awarded by this mission."
     }
 }

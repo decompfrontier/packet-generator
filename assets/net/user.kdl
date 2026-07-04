@@ -747,9 +747,14 @@ json UserUnitInfo {
         doc "TODO"
     }
 
-    field new_flag type="bool::str" {
+    field is_new type="bool::str" {
         key "dJNpLc81"
-        doc "TODO"
+        doc """
+        Client-visible new badge for an owned unit row.
+
+        This only marks a newly obtained owned unit, not whether the unit is
+        new to the player.
+        """
     }
 
     field extra_passive_skill_id type="i32::str" {
@@ -929,11 +934,27 @@ json MstUrlList {
 }
 
 json UserUnitDictionary {
-	doc "TODO"
-	
-	field mock type="str" {
-		key "INVALID"
-		doc "TODO"
+	doc """
+    Discovered unit entries used by the client unit dictionary.
+
+    Every time the client reads this response, it adds/de-dupes these rows by
+    unit id in its runtime dictionary, and also rebuilds a response-local
+    reference list used by result screens.
+    """
+
+	field user_id type="str" {
+		key "h7eY3sAK"
+		doc "User id that owns this dictionary entry."
+	}
+
+	field unit_id type="u32::str" {
+		key "pn16CNah"
+		doc "Discovered unit id."
+	}
+
+	field img_type_flag type="i32::str" {
+		key "2pAyFjmZ"
+		doc "Unit dictionary image/display variant flag."
 	}
 }
 
