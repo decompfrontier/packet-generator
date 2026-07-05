@@ -5,6 +5,7 @@ import "../mst/town.kdl"
 import "../mst/dungeon_key.kdl"
 import "../mst/arena.kdl"
 import "../mst/gacha.kdl"
+import "../mst/item.kdl"
 import "../mst/define.kdl"
 import "../mst/npc.kdl"
 import "../mst/slots.kdl"
@@ -737,10 +738,6 @@ json UserInfoResp {
     }
     field gift type="[GiftItemMst]" {
         key "Bm1WNDQ0"
-        doc "TODO"
-    }
-    field gachaInfo type="[GachaInfoMst]" {
-        key "1IR86sAv"
         doc "TODO"
     }
     field videoAdInfo type="[VideoAdInfo]" {

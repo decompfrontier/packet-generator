@@ -1,0 +1,145 @@
+// F_ITEM_MST — the master item catalog (potions, materials, spheres, etc).
+// Wrapper key 2C7LDzYk; 1668 rows in deploy/system/item_mst.json.
+// Types are data-driven (scanned across all rows: numeric-looking columns are
+// i32::str, free-text columns str).  Semantic labels marked // UNVERIFIED:
+// still need an ItemMstResponse readParam audit — the class has no entry in
+// readparam_analysis.json, so field meanings below are inferred from the data
+// distribution and BF conventions, not from setter names.
+json ItemMst {
+    doc "F_ITEM_MST row.  Wrapper key 2C7LDzYk.  Loaded into ServerCache for server-side item lookup (drop validation, sphere stats); not blanket-forwarded to the client (the client bundles item art/text)."
+
+    field id type="i32::str" {
+        key "kixHbe54"
+        doc "Item master id.  1668 distinct values; joins to user_items.item_id, UserWarehouseInfo.item_id, UserEquipItemInfo.item_id.  Captured: \"10000\" (Green Grass material)."
+    }
+
+    field name type="str" {
+        key "c7Z6xDB2"
+        doc "Display name.  Captured: JP text e.g. \"緑壮草\"."
+    }
+
+    field name_kana type="str" {
+        key "kP3zJ9Ra"
+        doc "Name reading / sort key.  Usually equals name."
+    }
+
+    field item_type type="i32::str" {
+        key "h0K7wjeH"
+        doc "Item category enum (6 distinct values).  // UNVERIFIED: likely material / consumable / sphere / etc."
+    }
+
+    field rarity type="i32::str" {
+        key "LH7JB1xI"
+        doc "Rarity tier (4 distinct values: 0-3).  // UNVERIFIED:"
+    }
+
+    field thumbnail type="str" {
+        key "Mt3Y0bo5"
+        doc "Icon filename served from /content/.  Captured: \"item_thum_102.png\"."
+    }
+
+    field unk_92udyUrJ type="i32::str" {
+        key "92udyUrJ"
+        doc "// UNVERIFIED: small enum, 15 distinct values."
+    }
+
+    field unk_97yTNbfr type="i32::str" {
+        key "97yTNbfr"
+        doc "// UNVERIFIED: small enum, 12 distinct values."
+    }
+
+    field unk_7ofj5xa1 type="i32::str" {
+        key "7ofj5xa1"
+        doc "// UNVERIFIED: small enum, 8 distinct values."
+    }
+
+    field price type="i32::str" {
+        key "XuJL4pc5"
+        doc "Sell/exchange value (1426 distinct values).  // UNVERIFIED: likely zel sell price."
+    }
+
+    field unk_EIN6D3xJ type="i32::str" {
+        key "EIN6D3xJ"
+        doc "// UNVERIFIED: 9 distinct values."
+    }
+
+    field unk_eKtE6k0n type="i32::str" {
+        key "eKtE6k0n"
+        doc "// UNVERIFIED: 53 distinct values."
+    }
+
+    field unk_y4jAZ9nI type="i32::str" {
+        key "y4jAZ9nI"
+        doc "// UNVERIFIED: boolean-ish (2 distinct)."
+    }
+
+    field unk_0UwMg18F type="i32::str" {
+        key "0UwMg18F"
+        doc "// UNVERIFIED: 26 distinct values; shares wire key with several MST cost fields."
+    }
+
+    field unk_moWQ30GH type="i32::str" {
+        key "moWQ30GH"
+        doc "// UNVERIFIED: 4 distinct values."
+    }
+
+    field unk_6E2fGPWT type="i32::str" {
+        key "6E2fGPWT"
+        doc "// UNVERIFIED: 3 distinct values."
+    }
+
+    field recipe type="str" {
+        key "hjAy9St3"
+        doc "Synthesis recipe / material list.  `@`-delimited pairs, kept as str.  Captured: \"34@1\".  // UNVERIFIED: exact encoding (likely materialId@count)."
+    }
+
+    field effect_params type="str" {
+        key "2Smu5Mtq"
+        doc "Effect parameters as a comma list (empty for inert items like materials).  For spheres these are stat boosts; for potions the heal amount — item 20000 (回復薬 potion) has \"100,120,0,0\".  Kept as str because the array codec drops trailing/empty slots.  // UNVERIFIED: slot order and per-type meaning."
+    }
+
+    field max_stack type="i32::str" {
+        key "m9gd5h1u"
+        doc "Max quantity held (3 distinct: 1 / 99 / 999)."
+    }
+
+    field unk_t1i2vIbT type="i32::str" {
+        key "t1i2vIbT"
+        doc "// UNVERIFIED: 12 distinct values (0-99)."
+    }
+
+    field unk_S4ezp6uK type="i32::str" {
+        key "S4ezp6uK"
+        doc "// UNVERIFIED: boolean-ish (2 distinct)."
+    }
+
+    field description type="str" {
+        key "qp37xTDh"
+        doc "Short flavor description (JP text)."
+    }
+
+    field description_long type="str" {
+        key "ZC0msu2L"
+        doc "Long flavor description (JP text); empty on a few rows."
+    }
+
+    field unk_ZKQ1X69a type="i32::str" {
+        key "ZKQ1X69a"
+        doc "// UNVERIFIED: boolean-ish (2 distinct)."
+    }
+
+    field unk_PEhNd0B4 type="i32::str" {
+        key "PEhNd0B4"
+        doc "// UNVERIFIED: 4 distinct values."
+    }
+
+    field unk_jkldTrhL type="i32::str" {
+        key "jkldTrhL"
+        doc "// UNVERIFIED: boolean-ish (2 distinct).  Shares wire key with the FriendGet mode flag in a different context."
+    }
+
+    field unk_rNmJkH6K type="i32::str" {
+        key "rNmJkH6K"
+        doc "// UNVERIFIED: constant 0 across all rows."
+    }
+}

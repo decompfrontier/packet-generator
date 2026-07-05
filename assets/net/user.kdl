@@ -976,12 +976,32 @@ json UserClearMissionInfo {
 	}
 }
 json UserWarehouseInfo {
-	doc "TODO"
-	
-	field mock type="str" {
-		key "INVALID"
-		doc "TODO"
-	}
+    doc "One owned item stack in the player's warehouse (potions, materials, spheres).  Response key 9wjrh74P (UserWarehouseInfoResponse).  Params per response_mappings.json: n6E8iMf3, kixHbe54, wgV86x1q, dJNpLc81, DbMVG16I."
+
+    field instance_id type="u32::str" {
+        key "n6E8iMf3"
+        doc "Warehouse row instance id (distinct from item_id).  The legacy ItemSphereEqp handler keys equips by this instance id; we use the user_items rowid."
+    }
+
+    field item_id type="u32::str" {
+        key "kixHbe54"
+        doc "Item master id (joins to ItemMst.id)."
+    }
+
+    field item_num type="u32::str" {
+        key "wgV86x1q"
+        doc "Quantity held in this stack."
+    }
+
+    field favorite_flg type="i32::str" {
+        key "dJNpLc81"
+        doc "Lock/favorite flag.  // UNVERIFIED: dJNpLc81 vs DbMVG16I order not yet confirmed against a capture; both default 0."
+    }
+
+    field disp_order type="i32::str" {
+        key "DbMVG16I"
+        doc "Display order in the item list.  // UNVERIFIED: see favorite_flg note."
+    }
 }
 
 json UserGiftInfo {
