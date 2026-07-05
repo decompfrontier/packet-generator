@@ -1,439 +1,410 @@
 json GachaEffectMst {
-    doc "Per-rarity roll-rate table for a gacha door.  Loaded from deploy/system/gacha_effect_mst.json (wrapper key Pf97SzVw, 13763 rows).  Each row binds a (gacha_id, rare) tuple to a roll rate and to the three cutscene scripts that play before / during / after the pull.  IDA: GachaEffectMstResponse, is_mst=true.  No readparam list (the client iterates via index)."
+    doc "TODO"
 
-    field id type="i32::str" {
+    field id type="u32::str" {
         key "u0vkt9yH"
-        doc "Row id (1..13763).  Captured values: \"1\", \"2\", \"3\".  Shares wire key with OpeUserUnit.u0vkt9yH (the summon-gate animation flag) — same hash, different semantics in their respective contexts."
+        doc "Unique gacha effect id."
     }
 
-    field gatcha_id type="i32::str" {
+    field gacha_id type="i32::str" {
         key "7Ffmi96v"
-        doc "Gacha door id this rate-row belongs to.  Joins back to GachaMst.id / GachaInfoMst.id.  Captured: \"1000\", \"1001\"."
+        doc "TODO"
     }
 
     field unk type="i32::str" {
         key "TPGXiNmN"
-        doc "Purpose not yet decoded.  Always \"0\" across all 13763 rows of gacha_effect_mst.json — leave i32::str until a non-zero capture surfaces.  // UNVERIFIED:"
+        doc "TODO"
     }
 
-    field rare type="i32::str" {
+    field rarity type="u32::str" {
         key "7ofj5xa1"
-        doc "Rarity tier (1..8) this rate row covers."
+        doc "Unit rarity bucket for this gacha effect."
     }
 
-    field rate type="f32::str" {
+    field weight type="u32::str" {
         key "ug9xV4Fz"
-        doc "Roll probability as a float-in-string.  Captured: \"60.0000\", \"45.0000\", \"1.0000\".  All entries are percent-style (sum across same gacha_id ≈ 100) — keep f32::str rather than i32::str because non-integer rates are observed."
+        doc "Selection weight for this gacha effect."
     }
 
     field effect_before type="str" {
         key "7ZNcmYS2"
-        doc "Filename of the .txt cutscene script played BEFORE the pull reveals — drives the orb-charge animation.  Captured: \"gWaitStone.txt\", \"gWaitGold.txt\", \"gWaitRainbow.txt\", \"gWaitRed.txt\"."
+        doc "TODO"
     }
 
     field effect type="str" {
         key "YTx3c1jQ"
-        doc "Filename of the .txt cutscene played as the orb morphs colour (rare-up animation).  Empty when no colour change happens.  Captured: \"\", \"gChange(Gold-Rainbow).txt\", \"gChange(Gold-Red).txt\", \"gChange(Red-Rainbow).txt\"."
+        doc "TODO"
     }
 
     field effect_after type="str" {
         key "tj0i9JhC"
-        doc "Filename of the .txt cutscene played AFTER the orb opens — drives the unit reveal flash.  Captured: \"gOpenStone(N).txt\", \"gOpenGold(R).txt\", \"gOpenGold(SR).txt\", \"gOpenGold(SSR).txt\", \"gOpenRainbow(SSR).txt\"."
+        doc "TODO"
     }
+
 }
 
 json GachaCategory {
-    doc "Summon-screen banner tile.  Each category renders as one horizontal banner image on the gacha screen; the image is `img` and tapping it filters the door list to the ids listed in `gatcha_id_list`.  Wire wrapper key IBs49NiH (IDA: GachaCategoryMstResponse, is_mst=true).  Loaded from deploy/system/gacha_category_mst.json (extracted from the legacy server's gacha_mst.json `gacha_categories` section — see handbook §7.6 banner port).  The client filters by start/end date, so only categories with current-date validity render on screen."
+    doc """
+    Banner/category rows for the summon top screen.
+    A category is the visible banner entry the player taps on. The client uses
+    gacha_id_list to decide which summon gates are available behind that
+    banner. One category can point at one gate or multiple gates.
+    """
 
-    field id type="i32::int" {
+    field id type="i32::str" {
         key "vx9uyQVQ"
-        doc "Category row id (unique within gacha_category_mst.json).  Emitted as a raw int — the legacy server wrote a quoted string here; both formats are accepted by the client (is_mst=true, no readparam contract).  // UNVERIFIED: raw int vs quoted string."
+        doc "Category id. Encoded as a string in the live data."
     }
 
     field img type="str" {
         key "In7lGGLn"
-        doc "Banner image filename, served from /content/gacha/.  Captured: \"top_banner_summon2019.png\", \"small_banner_01Special.png\", \"small_banner_02Veteran.png\", \"small_banner_03Honor.png\", \"small_banner_Burst_Hero_Selector.png\"."
+        doc "Banner image shown on the summon top/list screen."
     }
 
     field disp_order type="i32::int" {
         key "2r4EoNt4"
-        doc "Render order within a date window (lower = appears first).  Sourced from `display_order` in the legacy gacha_mst.json.  // UNVERIFIED: raw int vs quoted string."
+        doc "Display order of this banner category."
     }
 
-    field gatcha_id_list type="str" {
+    field gacha_id_list type="str" {
         key "3rCmq58M"
-        doc "Comma-separated door ids this category groups (joined to GachaInfoMst.id / GachaMst.id).  Kept as plain `str` rather than `[i32::str]::sep(comma)` because the legacy serializer produced a trailing comma in some entries that the array codec would silently drop.  Captured: \"17080,17090,17070\", \"15850,17160\", \"1001\".  // REVERTED FROM [i32::str]::sep(comma): trailing-comma cases."
+        doc """
+        Comma-separated summon gate ids opened by this banner.
+        Example: "11960" shows one summon gate; "2000,2010,2020" creates one
+        banner that can page through multiple summon gates.
+        """
     }
 
     field start_date type="datetime-unix" {
         key "qA7M9EjP"
-        doc "Unix epoch when this category becomes visible.  Emitted as a raw int.  Captured: 1563984000 (2019-07-24 UTC), 1620216000 (2021-05-05 UTC)."
+        doc """
+        Category start time.
+        The client actually checks this field (now needs to be > this),
+        so we default to 0.
+        """
     }
 
     field end_date type="datetime-unix" {
         key "SzV0Nps7"
-        doc "Unix epoch when this category disappears.  Captured: most rows have 2019/2020 expiry; the three currently-active categories (Veteran, Honor, Burst Hero Selector) expire 2030-11-11.  Client filters categories where end_date < now.  NOTE (dev-branch audit): the client truncates this to signed 32-bit -- never set beyond 2147483647 (2038-01-19) or the comparison wraps negative."
+        doc """
+        Category end time.
+        The client actually checks this field (now needs to be < this)
+        and truncates it to signed 32-bit, so the safest maximum would
+        be 2147483647 (which in unix time is around 2038).
+
+        This also means that in roughly ~12 years, we would need to worry
+        about manipulating the client's own clock so that it doesn't trip
+        over itself truncating to an int32. 
+        """
     }
 }
 
 json GachaMst {
-    doc "Static catalog of every gacha door ever shipped.  Wrapper key 5Y4GJeo3 (IDA: GachaMstResponse, is_mst=true).  Loaded from deploy/system/gacha_mst.json (1305 rows).  Carries the full historical list — the runtime visibility of any single door is determined by start_date/end_date comparison against the current server time."
+    doc """
+    Core summon gate MST rows from deploy/system/gacha.json.
+    These rows define the actual summon gates by id: type, order, cost,
+    open/close dates, images, and text. GachaCategory points at these ids to
+    decide which gates a visible banner opens.
+    """
 
     field id type="i32::str" {
         key "7Ffmi96v"
-        doc "Door id.  Captured: \"1000\", \"1001\", \"2000\"."
+        doc "Summon gate id. This is the id referenced by gacha_id_list."
     }
 
     field name type="str" {
         key "4N27mkt1"
-        doc "Display name shown on the door tile and detail header.  Captured: \"Honor Summon\", \"Super Honor Summon\", \"Rare Summon\"."
+        doc "Display/internal name for the summon gate."
     }
 
     field type type="i32::str" {
         key "S1oz60Hc"
-        doc "Door class enum.  Observed: \"1\" (honor-points door), \"2\" (gem door), \"20000\" (rare-summon variant).  Drives the tab the door appears under and which currency the buy button charges."
+        doc """
+        Summon gate type.
+        """
     }
 
+    // TODO: an enum?
     field priority type="i32::str" {
         key "yu18xScw"
-        doc "Render priority within the same date window.  Lower numbers appear first.  Captured: \"1\", \"2\", \"3\"."
+        doc "Gate ordering/priority used by the summon UI."
     }
 
     field start_date type="datetime" {
         key "qA7M9EjP"
-        doc "Server time when the door opens, parsed via `datetime` codec.  Captured wire format: \"2017-10-24 08:00:00\"."
+        doc """
+        Gate start time. Probably not used.
+        """
     }
 
+    // (2017-10-24 08:00:00)
     field end_date type="datetime" {
         key "SzV0Nps7"
-        doc "Server time when the door closes.  Same wire format as start_date.  Captured: \"2017-10-31 07:59:59\", \"2099-11-01 07:59:59\"."
+        doc """
+        Gate end time. Probably not used.
+        """
     }
 
+    // (2017-10-24 08:00:00)
     field start_hour type="str" {
         key "2HY3jpgu"
-        doc "Daily-window start hour (used for once-per-day doors).  Empty when no daily window applies.  Captured: \"\"."
+        doc "TODO"
     }
 
     field end_hour type="str" {
         key "v9TR3cDz"
-        doc "Daily-window end hour, pairs with start_hour.  Captured: \"\"."
+        doc "TODO"
     }
 
-    field need_friend_point type="i32::str" {
+    field need_friend_point type="u32::str" {
         key "J3stQ7jd"
-        doc "Friend-point cost for one pull (0 if this door uses gems instead).  Captured: \"200\" (Honor), \"0\" (Rare)."
+        doc "Friend point cost for friend-point summon gates."
     }
 
-    field need_gems type="i32::str" {
+    field need_gems type="u32::str" {
         key "03UGMHxF"
-        doc "Gem cost for one pull (0 if this door uses friend points instead).  Captured: \"0\" (Honor), \"5\" (Rare), \"999\" (ticket-only doors use sentinel 999)."
+        doc "Gem cost shown/used for gem summon gates."
     }
 
     field once_day_flag type="bool::str" {
         key "4tswNoV9"
-        doc "True if the door is limited to one pull per day.  Wire format is \"0\"/\"1\" — `bool::str` emits exactly that (see pkg_glaze_helpers.hpp line 167), not \"true\"/\"false\"."
+        doc "TODO"
     }
 
     field bg_img type="str" {
         key "1Dg0vUX3"
-        doc "Background image filename rendered behind the door interior.  Captured: \"gacha_normal_bg_img.png\", \"gacha_rare_bg_img_20170524.png\".  Served from /content/gacha/."
+        doc "Summon gate detail/background image."
     }
 
     field btn_img type="str" {
         key "W9ABuJj2"
-        doc "Pull-button image filename.  Captured: \"gacha_normal_summons_btn1.png\", \"gacha_rare_summons_btn1.png\"."
+        doc "Summon button image for this gate."
     }
 
     field door_img type="str" {
         key "uKYf13AH"
-        doc "Door tile sprite (the closed-door visual on the gacha list).  Captured: \"gacha_normal_door.png\", \"gacha_rare_door.png\"."
+        doc "Summon door/animation image for this gate."
     }
 
     field caption_msg type="str" {
         key "3sdHQb69"
-        doc "Hero-line text on the door detail screen, often a localisation token (\"MST_SUMMONDATA_1000_SHORTDESCRIPTION\") but sometimes literal rich-text with embedded <color> / <center> markup."
+        doc "Long formatted gate caption/body text."
     }
 
     field detail_msg type="str" {
         key "W2c9g0Je"
-        doc "Long-form blurb beneath caption_msg.  Same format as caption_msg (token or rich text)."
+        doc "Formatted short/detail message shown by the summon gate UI."
     }
 
     field comment_msg type="str" {
         key "gVSj32QH"
-        doc "Auxiliary comment line.  Captured: \"\" for nearly every row."
+        doc "TODO"
     }
 
-    field gatcha_group_id type="i32::str" {
+    field gacha_group_id type="i32::str" {
         key "TCnm1F4v"
-        doc "Group id used by the client to associate this door with a pickup banner / featured-unit list.  Captured: \"101\", \"466\", \"201\"."
+        doc "TODO"
     }
 
     field description type="str" {
         key "qp37xTDh"
-        doc "Long-form description (separate from detail_msg).  Captured: \"\" for nearly every row."
+        doc "TODO"
     }
 
-    field gatcha_detail_id type="str" {
+    field gacha_detail_id type="str" {
         key "8Z9CYQDq"
-        doc "Optional pointer to a GachaFixInfoResponse entry (GachaFixAction flow — selector / fixed-unit doors).  Empty for plain doors."
+        doc "TODO"
         optional #true
+        // "default": DefaultType.Omit
     }
 
     field contents_banner_img type="str" {
         key "sA9dDAqB"
-        doc "Optional in-screen promo image displayed inside the door (separate from bg_img).  Empty for most rows; populated for featured-banner doors.  Disk has matching /content/gacha/gacha_banner_<id>.png files for some doors."
+        doc "TODO"
         optional #true
+        // "default": DefaultType.Omit
     }
 }
 
 
 json GachaInfoMst {
-    doc "Per-door wire payload at wrapper key 1IR86sAv (IDA: GachaInfoResponse, has_readparam=true with 23 fields).  This is the shape the client reads when populating the door catalog.  Loaded from deploy/system/gacha_info_mst.json (6 active rows) and emitted by UserInfo + GachaList handlers.  Setter names below come from a private IDA readParam audit of the handler at 0x13DC36C.  The 9 fields marked `not in readParam` below are NOT in the response_mappings.json params list AND the audit confirmed no strcmp branch handles them — they're audit-verified server-side bloat that the client never reads via this class.  Safe to omit from the wire; kept here only because they appear in the source gacha_info_mst.json."
+    doc """
+    The client relies on this to see which summon gates are actually available.
+    The summon list request sends this alongside category data. It overlaps with
+    GachaMst, and some fields must be consistent with its counterpart in GachaMst.
+    """
 
     field id type="i32::str" {
         key "7Ffmi96v"
-        doc "Door id.  Setter: GachaInfo::setGachaID(std::string) per audit (1IR86sAv_audit.txt line 145).  Captured: \"1001\" (Super Honor), \"2000\" (Rare), \"15850\" (Legacy), \"17160\" (Brave), \"20154\" (Burst Heroes Selector), \"20213\" (Light Featured)."
+        doc """
+        Summon gate id.
+        Must match GachaMst.id and appear in GachaCategory.gacha_id_list.
+        Friend-point summon gates that need the summon-list count badge must
+        use id 1000, because the client hard-codes that id for the Honor
+        summon count path.
+        """
     }
 
-    field unk type="str" {
-        key "s35idar9"
-        doc "Always empty in observed data.  AUDIT: no strcmp branch in 1IR86sAv readParam — the client never reads this field on the gacha-door class.  // NOT IN READPARAM (audit-verified) — marked optional so we can strip from gacha_info_mst.json without breaking the loader; see §7.11.6 'extras-strip' test for the Veteran ticket-button bug."
-        optional #true
-    }
-
-    field unk2 type="str" {
-        key "2T4c7YRb"
-        doc "Always empty.  AUDIT: no strcmp branch in 1IR86sAv readParam.  // NOT IN READPARAM (audit-verified) — optional so loader tolerates absence."
-        optional #true
-    }
-
-    field unk3 type="str" {
-        key "c7U6RwNH"
-        doc "Always empty.  AUDIT: no strcmp branch in 1IR86sAv readParam.  // NOT IN READPARAM (audit-verified) — optional so loader tolerates absence."
-        optional #true
-    }
-
-    field unk4 type="str" {
-        key "Ss7Pdc2w"
-        doc "Always empty.  AUDIT: no strcmp branch in 1IR86sAv readParam.  // NOT IN READPARAM (audit-verified) — optional so loader tolerates absence."
-        optional #true
-    }
-
-    field unk5 type="i32::int" {
-        key "Qm5oN7XM"
-        doc "Always 1 in observed data.  AUDIT: no strcmp branch in 1IR86sAv readParam.  // NOT IN READPARAM (audit-verified) — optional so loader tolerates absence."
-        optional #true
-    }
-
-    field unk6 type="i32::int" {
-        key "d04gRmkE"
-        doc "Always 0 in observed data.  AUDIT: no strcmp branch in 1IR86sAv readParam.  Cross-class anchor for this key in GachaFixInfoResponse is setDrawCnt (multi-pull discount count) — but irrelevant here because GachaInfoResponse doesn't read it.  // NOT IN READPARAM (audit-verified) — optional so loader tolerates absence."
-        optional #true
-    }
-
-    field unk7 type="str" {
-        key "S6bqJqpA"
-        doc "Always empty.  AUDIT: no strcmp branch in 1IR86sAv readParam.  // NOT IN READPARAM (audit-verified) — optional so loader tolerates absence."
-        optional #true
-    }
-
-    field unk8 type="str" {
-        key "a329kbl8"
-        doc "Always empty in MST rows.  AUDIT: no strcmp branch in 1IR86sAv readParam — this same key is reused in GachaActionRequest as a request-field carrying the number of pulls (\"a329kbl8\":\"1\" or \"10\").  // NOT IN READPARAM (audit-verified) — optional so loader tolerates absence."
-        optional #true
-    }
-
-    field unk9 type="i32::int" {
-        key "324b023k"
-        doc "Always 0 on the response side.  AUDIT: no strcmp branch in 1IR86sAv readParam — reused on the request side as GachaActionRequest's `using_gacha_ticket` flag (0 = currency, 1 = ticket).  // NOT IN READPARAM (audit-verified) — optional so loader tolerates absence.  Suspected of confusing the client: emitting 0 may be interpreted by the gacha-screen UI as 'this door does not support tickets' (legacy server omits it entirely and tickets worked there).  Strip test in progress; see handbook §7.11.6."
-        optional #true
-    }
-
-    field campaign_info type="str" {
-        key "8HM3v3gg"
-        doc "Localisation token / rich-text shown as a campaign banner above the door buttons.  Setter: GachaInfo::setGachaCampainInfo(std::string) per audit.  Captured: \"\" for all 6 rows in gacha_info_mst.json — typically populated for promo doors."
-    }
-
-    field brave_coin type="i32::str" {
+    field gems type="u32::str" {
         key "03UGMHxF"
-        doc "Gem cost for one pull.  Setter: GachaInfo::setNeedBraveCoin(int) parsed via CommonUtils::StrToInt per audit.  Captured: \"0\" (Honor — uses FP), \"5\" (Rare/Brave/Light Featured), \"4\" (Legacy), \"999\" (Burst Heroes Selector — sentinel for ticket-only)."
+        doc """
+        Displayed summon cost.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
-    field button_img type="str" {
+    field button type="str" {
         key "W9ABuJj2"
-        doc "Pull-button image filename.  Setter: GachaInfo::setBtnImg(std::string) per audit.  Captured: \"gacha_normal_summons_btn1.png\", \"gacha_rare_summons_btn1.png\"."
+        doc """
+        Summon button image.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
-    field background_img type="str" {
+    field background type="str" {
         key "1Dg0vUX3"
-        doc "Background image filename rendered behind the door interior.  Setter: GachaInfo::setBgImg(std::string) per audit.  Captured: \"gacha_normal_bg_img_20150917.png\", \"gacha_img_20190807BraveSummon_All.png\", \"gacha_Light_Featured_img_2022_s2.png\" (currently 404s — the actual file on disk is `_s1` not `_s2`; see handbook §6.10-style DLC path notes)."
+        doc """
+        Summon gate detail/background image.
+        Can differ from GachaMst.bg_img.
+        """
     }
 
     field caption_msg type="str" {
         key "3sdHQb69"
-        doc "Hero-line text on the door detail screen.  Setter: GachaInfo::setCaptionMsg(std::string) per audit.  Often a localisation token like \"SUMMON_PROMO_SUPER_HONOR_2_DESC\", sometimes literal rich-text with <color>/<center> markup."
+        doc """
+        Long formatted gate caption/body text.
+        Can differ from GachaMst.caption_msg.
+        """
     }
 
     field detail_msg type="str" {
         key "W2c9g0Je"
-        doc "Long-form description shown beneath caption_msg.  Same format as caption_msg."
-    }
-
-    field resummon_gacha_flag type="bool::int" {
-        key "a632bkyQ"
-        doc "Raw int 0/1.  When 1, the door supports the Resummon flow (re-roll until satisfied — pairs with ResummonGachaMst entries at wrapper key da3qD39b).  Captured: 0 for every current door."
+        doc """
+        Formatted short/detail message for this summon gate.
+        Can differ from GachaMst.detail_msg.
+        """
     }
 
     field name type="str" {
         key "4N27mkt1"
-        doc "Display name.  Captured: \"Super Honor Summon\", \"Rare Summon\", \"Legacy Summon\", \"Brave Summon\", \"Burst Heroes Selector Summon\", \"Light Featured Summon\"."
+        doc """
+        Display/internal name for this summon gate info row.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
     field type type="i32::str" {
         key "S1oz60Hc"
-        doc "Door class enum.  Captured: \"1\" (honor-points door), \"2\" (gem door), \"20000\" (rare-summon variant).  Drives which tab the door appears under and how the buy flow works."
+        doc """
+        Summon gate type.
+        Must match GachaMst.type.
+        """
     }
 
     field priority type="i32::str" {
         key "yu18xScw"
-        doc "Render priority within the same date window.  Lower numbers render first.  Captured: \"1\" (Super Honor), \"2\" (Legacy / Brave / Burst HS / Light Featured), \"3\" (Rare)."
+        doc """
+        Display/order value.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
-    field start_date type="datetime" {
-        key "qA7M9EjP"
-        doc "Door open time as `YYYY-MM-DD HH:MM:SS` string (parsed via `datetime` codec).  Captured: \"2017-11-01 08:00:00\".  // REVERTED FROM str: TODO marker in the original schema; the string format is identical to GachaMst.start_date so the same codec applies."
-    }
-
-    field end_date type="datetime-unix" {
-        key "SzV0Nps7"
-        doc "Door close time as a Unix timestamp (raw int).  Captured: 4097203199 (2099), 1924991999 (2030), 1669647599 (2022).  Note: this differs from GachaMst.end_date (same wire key SzV0Nps7) which carries a `datetime` string — the format depends on which response struct carries the field."
-    }
-
-    field start_hour type="str" {
-        key "2HY3jpgu"
-        doc "Daily-window start hour.  Captured: \"\" for every current door — no daily-limited doors active."
-    }
-
-    field end_hour type="str" {
-        key "v9TR3cDz"
-        doc "Daily-window end hour.  Captured: \"\"."
-    }
-
-    field need_friends_point type="i32::str" {
+    field friend_points type="u32::str" {
         key "J3stQ7jd"
-        doc "Friend-point cost for one pull.  Captured: \"200\" (Super Honor — the only FP door), \"0\" for everything else."
+        doc "Friend point cost for friend-point summon gates."
     }
 
-    field once_day_flag type="bool::str" {
-        key "4tswNoV9"
-        doc "1 if the door is limited to one pull per day.  Wire format is \"0\"/\"1\" — `bool::str` emits exactly that.  Captured: \"0\" for every current door."
-    }
-
-    field door_img type="str" {
+    field door type="str" {
         key "uKYf13AH"
-        doc "Door-tile sprite filename rendered in the catalog list.  Captured: \"gacha_normal_door.png\", \"gacha_rare_door.png\"."
-    }
-
-    field description type="str" {
-        key "qp37xTDh"
-        doc "Long-form description (separate from detail_msg).  Captured: \"\" for every current door."
+        doc """
+        Summon door/animation image for this gate.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
     field group_id type="i32::str" {
         key "TCnm1F4v"
-        doc "Group id used by the client to associate this door with a pickup banner / featured-unit list.  Captured: \"466\" (Super Honor), \"201\" (Rare), \"1022\" (Legacy), \"1153\" (Brave), \"1490\" (Burst HS), \"1549\" (Light Featured)."
+        doc """
+        Summon group id.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
-    field comment type="str" {
-        key "gVSj32QH"
-        doc "Auxiliary comment line.  Captured: \"\" for every current door."
-    }
-
-    field detail_id type="str" {
-        key "8Z9CYQDq"
-        doc "Optional pointer to a GachaFixInfoResponse entry.  Captured: \"\" for every current door."
-    }
-
-    field content_banner_img type="str" {
-        key "sA9dDAqB"
-        doc "Optional inline promo image filename rendered inside the door detail.  Captured: \"\" for every current door.  Disk has /content/gacha/gacha_banner_<id>.png for doors 1001 and 2000; populating this field would surface those banners on the door tile."
-    }
 }
 
 json ResummonGachaMst {
-    doc "Re-roll session state for doors that support the Resummon flow.  Wrapper key da3qD39b (IDA: ResummonGachaMstResponse, is_mst=true).  Loaded from deploy/system/resummon_gacha_mst.json."
+    doc "TODO"
 
     field replay_id type="i32::str" {
-        doc "Resummon-instance id (uniquely identifies one re-roll session)."
+        doc "TODO"
         key "K38bjq03"
     }
 
     field gacha_id type="i32::str" {
-        doc "Joined back to GachaInfoMst.id."
+        doc "TODO"
         key "7Ffmi96v"
     }
 
     field replay_total type="str" {
-        doc "Free-form description of how many re-rolls are bundled.  Kept as `str` rather than `i32::str` until evidence of numeric-only contents is captured.  // UNVERIFIED:"
+        doc "TODO"
         key "l2eBi10g"
     }
 
     field replay_count type="i32::str" {
-        doc "Number of pulls included in this resummon batch."
+        doc "TODO"
         key "vD19a03b"
     }
 
     field replay_tries type="i32::int" {
-        doc "How many re-roll attempts the user has remaining."
+        doc "TODO"
         key "82k7Ai2u"
     }
 
     field replay_cost type="i32::str" {
-        doc "Currency cost per re-roll (paired with replay_cost_type)."
+        doc "TODO"
         key "j4Dw3bx5"
     }
 
     field replay_cost_type type="i32::str" {
-        doc "Currency selector — encodes whether replay_cost is in gems, friend points, tickets, etc.  Decode via the client's currency-enum table."
+        doc "TODO"
         key "m5hYcd39"
     }
 
     field replay_cost_id type="i32::str" {
-        doc "Item-id reference when replay_cost_type points at a consumable rather than a built-in currency."
+        doc "TODO"
         key "Bz3jEse6"
     }
 }
 
 json SummonTicketV2Mst {
-    doc "Summon-ticket type catalog.  Wrapper key hE1d083b.  Each row defines one ticket type — its id, the gacha door it redeems on, display name, and icon.  Loaded from deploy/system/summon_ticket_v2_mst.json (89 rows).  Joined to SummonTicketV2UserInfo entries (a3d5d12i) by `id`.  // REVERTED FROM swapped labels: the previous schema labelled b0D2iq2d as `image` and b38adb8i as `id`, which was inverted vs the actual data — `b0D2iq2d` carries numeric ticket ids (\"8\" = Brave Summon Ticket) and `b38adb8i` carries icon filenames (\"brave_ticket_event_icon.png\")."
+    doc "TODO"
 
-    field id type="i32::str" {
-        doc "Ticket-type id.  Joins to SummonTicketV2UserInfo.id (also b0D2iq2d).  Captured values: \"8\" (Brave Summon Ticket → door 17160), \"3\" (Anniversary 2017 Ticket → door 14420)."
+    field image type="i32::str" {
+        doc "TODO"
         key "b0D2iq2d"
         optional #true
     }
 
-    field target_gacha type="str" {
-        doc "Door id this ticket can be redeemed against (joins to GachaInfoMst.id).  Kept as `str` because some rows leave it empty for universal tickets — switching to i32::str would need omit-when-empty support.  Captured: \"17160\" (Brave Summon), \"14420\" (Anniversary 2017), \"\" (universal: ticket id 0 / id 2)."
+    field target_gacha type="str" { // should be i32::str with omit=empty
+        doc "TODO"
         key "7Ffmi96v"
         optional #true
     }
 
     field name type="str" {
-        doc "Display name of the ticket.  Captured: \"Brave Summon Ticket\", \"Anniversary 2017 Ticket\", \"Spring Ticket 2017\"."
+        doc "TODO"
         key "s35idar9"
         optional #true
     }
 
-    field image type="str" {
-        doc "Icon image filename, served from /content/.  Captured: \"brave_ticket_event_icon.png\", \"spring_ticket_thum.png\", \"anniversary_ticket_thum.png\"."
+    field id type="str" {
+        doc "TODO"
         key "b38adb8i"
         optional #true
     }
 
     field required_tickets type="i32::str" {
-        doc "How many of this ticket type are needed for one pull.  Captured: ORIGINAL deploy/system/summon_ticket_v2_mst.json had this absent on all 89 rows — possibly the BF default is 1 when omitted.  Manually patched onto the Brave Summon Ticket row (b0D2iq2d=8, target_gacha=17160) as \"1\" to test the hypothesis that the gacha screen's 'use ticket' button visibility gates on this field being explicitly set > 0.  See handbook §7.11.5."
+        doc "TODO"
         key "JRqU2bS6"
         optional #true
     }

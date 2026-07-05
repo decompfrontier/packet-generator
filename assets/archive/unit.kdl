@@ -42,6 +42,11 @@ json UnitRecord {
         doc "Human-readable unit name."
     }
 
+    field rarity type="u32::int" {
+        key "rarity"
+        doc "Unit star rarity."
+    }
+
     field element type="u32::int" {
         key "element"
         doc "Element id from UnitMST element."
@@ -102,12 +107,13 @@ json UnitRecord {
         doc "Cursor display position."
     }
 
-    field stats type="[UnitRecordStats]::size(2)" {
+    field stats type="[UnitRecordStats]" {
         key "stats"
         doc """
-        Fixed stat blocks for the currently supported unit type.
+        Stat blocks for this unit.
         Index 0 is the base stat block from MST.
-        Index 1 is the final stat block for a fully leveled unit with lord type.
+        Index 1, when present, is the final stat block for a fully leveled unit
+        with lord type.
         """
     }
 }
