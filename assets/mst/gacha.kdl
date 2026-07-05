@@ -377,34 +377,34 @@ json ResummonGachaMst {
 }
 
 json SummonTicketV2Mst {
-    doc "TODO"
+    doc "Summon-ticket type catalog.  Wrapper key hE1d083b.  Each row defines one ticket type â€” its id, the gacha door it redeems on, display name, and icon.  Loaded from deploy/system/summon_ticket_v2_mst.json (89 rows).  Joined to SummonTicketV2UserInfo entries (a3d5d12i) by `id`.  // REVERTED FROM swapped labels: the previous schema labelled b0D2iq2d as `image` and b38adb8i as `id`, which was inverted vs the actual data â€” `b0D2iq2d` carries numeric ticket ids (\"8\" = Brave Summon Ticket) and `b38adb8i` carries icon filenames (\"brave_ticket_event_icon.png\")."
 
-    field image type="i32::str" {
-        doc "TODO"
+    field id type="i32::str" {
+        doc "Ticket-type id.  Joins to SummonTicketV2UserInfo.id (also b0D2iq2d).  Captured values: \"8\" (Brave Summon Ticket â†’ door 17160), \"3\" (Anniversary 2017 Ticket â†’ door 14420)."
         key "b0D2iq2d"
         optional #true
     }
 
-    field target_gacha type="str" { // should be i32::str with omit=empty
-        doc "TODO"
+    field target_gacha type="str" {
+        doc "Door id this ticket can be redeemed against (joins to GachaInfoMst.id).  Kept as `str` because some rows leave it empty for universal tickets â€” switching to i32::str would need omit-when-empty support.  Captured: \"17160\" (Brave Summon), \"14420\" (Anniversary 2017), \"\" (universal: ticket id 0 / id 2)."
         key "7Ffmi96v"
         optional #true
     }
 
     field name type="str" {
-        doc "TODO"
+        doc "Display name of the ticket.  Captured: \"Brave Summon Ticket\", \"Anniversary 2017 Ticket\", \"Spring Ticket 2017\"."
         key "s35idar9"
         optional #true
     }
 
-    field id type="str" {
-        doc "TODO"
+    field image type="str" {
+        doc "Icon image filename, served from /content/.  Captured: \"brave_ticket_event_icon.png\", \"spring_ticket_thum.png\", \"anniversary_ticket_thum.png\"."
         key "b38adb8i"
         optional #true
     }
 
     field required_tickets type="i32::str" {
-        doc "TODO"
+        doc "How many of this ticket type are needed for one pull.  Captured: ORIGINAL deploy/system/summon_ticket_v2_mst.json had this absent on all 89 rows â€” possibly the BF default is 1 when omitted.  Manually patched onto the Brave Summon Ticket row (b0D2iq2d=8, target_gacha=17160) as \"1\" to test the hypothesis that the gacha screen's 'use ticket' button visibility gates on this field being explicitly set > 0.  See handbook Â§7.11.5."
         key "JRqU2bS6"
         optional #true
     }
