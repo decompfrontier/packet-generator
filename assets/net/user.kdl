@@ -959,20 +959,60 @@ json UserUnitDictionary {
 }
 
 json UserFavorite {
-	doc "TODO"
-	
-	field mock type="str" {
-		key "INVALID"
-		doc "TODO"
+	doc "Favorited/locked unit entry in UserInfo (list key 3kcmQy7B).  Same wire triple as UnitFavoriteEntry — the UnitFavorite handler persists user_units.favorite_flg and UserInfo reports the locked set back here so locks survive a reload."
+
+	field user_unit_id type="i32::str" {
+		key "edy7fq3L"
+		doc "Locked unit's user_units.user_unit_id.  Quoted decimal integer on the wire."
+	}
+
+	field favorite type="i32::str" {
+		key "5JbjC3Pp"
+		doc "Favorite/lock flag, always \"1\" for reported entries (unfavorited units are simply absent)."
+	}
+
+	field unit_img_type type="i32::str" {
+		key "2pAyFjmZ"
+		doc "Cosmetic unit-image frame id (mirrors UnitFavoriteEntry.unit_img_type; server sends 0)."
 	}
 }
 
 json UserClearMissionInfo {
-	doc "TODO"
-	
-	field mock type="str" {
-		key "INVALID"
-		doc "TODO"
+	doc "Per-mission clear-history record (UserInfo list key UT1SVg59).  All 7 fields decoded via the UT1SVg59 readParam audit (handbook §8.27, tools/ida/audits/UT1SVg59_audit.txt).  THE progression driver: the client evaluates feature unlocks against this list — F_FUNCTION_RELEASE_MST rows condition type 2 = 'mission <param> cleared' (functions 8-19), and hardcoded early-feature gates (town etc.) key off the same set.  Backed by user_campaign_missions rows with state=2."
+
+	field user_id type="str" {
+		key "h7eY3sAK"
+		doc "Owning user id (setUserID — the one typed setter in readparam_analysis)."
+	}
+
+	field mission_id type="i32::str" {
+		key "j28VNcUW"
+		doc "Cleared mission's F_MISSION_MST id."
+	}
+
+	field clear_date type="str" {
+		key "JATWnN57"
+		doc "setClearDate — last-clear datetime string, formatted \"YYYY-MM-DD hh:mm:ss\" from user_campaign_missions.last_cleared_at.  // UNVERIFIED: exact client-expected format; std::string setter per audit."
+	}
+
+	field clear_cnt type="i32::str" {
+		key "HIQoGb10"
+		doc "setClearCnt — lifetime clear count for this mission."
+	}
+
+	field most_time type="i32::str" {
+		key "Wi4EFe6f"
+		doc "setMostTime — fastest clear (seconds).  Not tracked yet; sent as 0."
+	}
+
+	field get_bc type="i32::str" {
+		key "RWX38boG"
+		doc "setGetBc — lifetime battle crystals from this mission.  Not tracked yet; sent as 0."
+	}
+
+	field get_hc type="i32::str" {
+		key "bGx5ku0F"
+		doc "setGetHc — lifetime heart crystals from this mission.  Not tracked yet; sent as 0."
 	}
 }
 json UserWarehouseInfo {
@@ -1117,11 +1157,11 @@ json UserSummonerArmsInfo {
 }
 
 json UserItemDictionaryInfo {
-	doc "TODO"
-	
-	field mock type="str" {
-		key "INVALID"
-		doc "TODO"
+	doc "One discovered item species for the item encyclopedia.  Response key bd5Rj6pN (UserItemDinctionaryInfoResponse [sic] in response_mappings.json); the client's readParam reads a single param kixHbe54 per node.  Mirrors UserUnitDictionary but for items."
+
+	field item_id type="u32::str" {
+		key "kixHbe54"
+		doc "Item master id the player has seen/owned (joins to ItemMst.id)."
 	}
 }
 

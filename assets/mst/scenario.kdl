@@ -1,0 +1,80 @@
+// F_SCENARIO_MST + F_SCENARIO_CATEGORY_MST — the cutscene catalog.
+//
+// SERVER-SIDE REFERENCE ONLY: neither table has a *MstResponse class in
+// response_mappings.json, so the server never serves them as GME payloads —
+// the client receives them through the CDN .dat pipeline (version_info) and
+// evaluates cutscene triggers locally.  These schemas exist to give the wire
+// hashes names (handbook §2.4) and to document the cutscene data model behind
+// the user_scenarios viewed-state feature (net/scenario.kdl, Scenario.cpp).
+//
+// Field semantics decoded 2026-07-17 from the decoded MST data itself
+// (2-mst-decoded, 1348 + 119 rows — English rows make the columns
+// self-describing).
+
+json ScenarioMst {
+    doc "F_SCENARIO_MST row — one cutscene.  1348 rows.  The id is what UserScenarioInfo (sBbp47fi) reports as viewed; the script file is the mapN-*.txt the land/dungeon entry plays (§6.9's 'cutscene gate' files)."
+
+    field id type="u32::str" {
+        key "mC1JcVM9"
+        doc "Scenario id (10001..830126402).  Same key travels in user viewed-state packets (UserScenarioInfoResponse param) and the RaidUpScenarioInfo report."
+    }
+
+    field title type="str" {
+        key "ctAd91iQ"
+        doc "Cutscene title shown in the Memoirs gallery.  Captured: \"Start of the Journey\" (10001)."
+    }
+
+    field category_id type="u32::str" {
+        key "VgU78CYj"
+        doc "Joins to ScenarioCategoryMst.id (e.g. 10100 = Mistral)."
+    }
+
+    field description type="str" {
+        key "qp37xTDh"
+        doc "Gallery flavor text."
+    }
+
+    field script_file type="str" {
+        key "tw0vkye4"
+        doc "Cutscene script filename the client loads: \"map1-dungeon1.txt\", \"map1-ending.txt\", \"grand_03_06.txt\", event scripts like \"Spring2021_Boss_B.txt\"."
+    }
+
+    field bgm type="str" {
+        key "A3TSv2fn"
+        doc "Optional BGM override (\"bf050_raid02_fld.mp3\"); empty for 1189 of 1348 rows (script default used)."
+    }
+
+    field disp_order type="i32::str" {
+        key "XuJL4pc5"
+        doc "Display order within the category."
+    }
+}
+
+json ScenarioCategoryMst {
+    doc "F_SCENARIO_CATEGORY_MST row — the Memoirs gallery tree (119 rows).  Top-level books (10000 \"Memoirs of Grand Gaia\") contain per-land chapters (10100 Mistral, 10101 Cordelica, ...) via parent_id."
+
+    field id type="u32::str" {
+        key "VgU78CYj"
+        doc "Category id.  Same key ScenarioMst rows use to reference their category."
+    }
+
+    field name type="str" {
+        key "XLSB42ED"
+        doc "Category name (\"Mistral\", \"Memoirs of Grand Gaia\")."
+    }
+
+    field parent_id type="u32::str" {
+        key "29timHEg"
+        doc "Parent category id; 0 for top-level books."
+    }
+
+    field description type="str" {
+        key "qp37xTDh"
+        doc "Gallery flavor text."
+    }
+
+    field disp_order type="i32::str" {
+        key "XuJL4pc5"
+        doc "Display order within the parent."
+    }
+}

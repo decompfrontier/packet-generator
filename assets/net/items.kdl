@@ -1,8 +1,81 @@
-json ItemFavorite {
-    doc "TODO"
+// Item action packets: favorite/lock, sell, sphere equip.
+// Sources: bfdata/createbody/Item{Favorite,Sell,SphereEqp}Request.txt (request
+// shapes), response_mappings.json ItemFavoriteResponse (VSRPkdId params
+// n6E8iMf3 + 5JbjC3Pp), and the legacy fork's Item*RequestHandler classes
+// (GroupIds/AES keys, captured wire notes).
+//
+// All numeric fields ride the JsonNode::addParam(int) overload, which
+// STRINGIFIES every value (handbook §3.1 quoted-int trap) — hence *::str types.
 
-    field mock type="str" {
-        key "INVALID"
-        doc "TODO"
+json ItemFavorite {
+    doc "One favorited warehouse stack.  Shared by the ItemFavorite request/response (root key VSRPkdId) and UserInfoResp.itemFavorite — the client's readParam for VSRPkdId reads both params per node (response_mappings.json ItemFavoriteResponse)."
+
+    field instance_id type="u32::str" {
+        key "n6E8iMf3"
+        doc "user_items.instance_id of the favorited stack (UserWarehouseInfo.instance_id)."
+    }
+
+    field favorite type="i32::str" {
+        key "5JbjC3Pp"
+        doc "Favorite/lock flag.  The request only ever carries entries with 1 — the client sends the COMPLETE current favorite set each call (ItemFavoriteRequest::createBody skips getFavoFlg()!=1 rows), so absent instance ids mean unfavorited."
+    }
+}
+
+json ItemFavoriteReq {
+    doc "Favorite/lock update.  Wire: {\"VSRPkdId\":[{\"n6E8iMf3\":\"5\",\"5JbjC3Pp\":\"1\"},...]}.  The list is the full favorite set; the server clears favorite_flg for the user and re-sets it for the listed instance ids."
+
+    field entries type="[ItemFavorite]" {
+        key "VSRPkdId"
+        doc "Complete favorite set (only flag=1 entries are sent)."
+    }
+}
+
+json ItemFavoriteResp {
+    doc "Echo of the favorite set, same shape as the request group.  The legacy fork's ItemFavoriteResponse serialised an array of {n6E8iMf3} under VSRPkdId; the client readParam also accepts 5JbjC3Pp per node."
+
+    field entries type="[ItemFavorite]" {
+        key "VSRPkdId"
+        doc "Favorited stacks after the update."
+    }
+}
+
+json ItemSellEntry {
+    doc "One stack being sold."
+
+    field instance_id type="u32::str" {
+        key "n6E8iMf3"
+        doc "user_items.instance_id of the stack (UserWarehouseInfo.instance_id)."
+    }
+
+    field item_num type="u32::str" {
+        key "wgV86x1q"
+        doc "Quantity to sell from this stack."
+    }
+}
+
+json ItemSellReq {
+    doc "Sell warehouse items for zel.  Wire: {\"M73i1c5U\":[{\"n6E8iMf3\":\"5\",\"wgV86x1q\":\"3\"},...]}.  Zel credit per unit = ItemMst.sell_price.  Legacy fork acked with an empty body and the client applies the zel/count changes locally, so no Resp struct exists."
+
+    field entries type="[ItemSellEntry]" {
+        key "M73i1c5U"
+        doc "Stacks to sell."
+    }
+}
+
+json ItemSphereEqpNode {
+    doc "Single node of the sphere-equip group."
+
+    field packed type="str" {
+        key "a2utCvs8"
+        doc "Packed per-unit equip ops, comma-separated segments of wh1:wh2:user_unit_id:item_id1:item_id2.  wh1/wh2 are warehouse instance ids (informational); item_id1/2 are ItemMst ids for sphere slots 1/2, 0 = clear slot.  Captured (legacy handler comment): \"wx1ZLFj9\":[{\"a2utCvs8\":\"wh1:wh2:userUnitId:itemId1:itemId2[,...]\"}]."
+    }
+}
+
+json ItemSphereEqpReq {
+    doc "Equip/unequip spheres on units.  Wire root key wx1ZLFj9 (ItemSphereEqpRequest::createBody).  Server updates user_units.eqip_item_id[2] + eqip_item_frame_id[2] (frame = ItemMst.sphere_type) and adjusts user_items counts.  Response is an empty ack (legacy-verified)."
+
+    field nodes type="[ItemSphereEqpNode]" {
+        key "wx1ZLFj9"
+        doc "Equip operations (the client batches changed units into one node's packed string)."
     }
 }

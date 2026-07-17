@@ -1,145 +1,149 @@
 // F_ITEM_MST — the master item catalog (potions, materials, spheres, etc).
 // Wrapper key 2C7LDzYk; 1668 rows in deploy/system/item_mst.json.
-// Types are data-driven (scanned across all rows: numeric-looking columns are
-// i32::str, free-text columns str).  Semantic labels marked // UNVERIFIED:
-// still need an ItemMstResponse readParam audit — the class has no entry in
-// readparam_analysis.json, so field meanings below are inferred from the data
-// distribution and BF conventions, not from setter names.
+//
+// Semantic labels CONFIRMED 2026-07-17 against the legacy fork's decoded copy
+// at BF-WorkingDir/server/deploy/system/F_ITEM_MST_Ver1027.json, which carries
+// FRIENDLY key names (itemId, itemSphereType, sellPrice, ...) in the same
+// column order.  Five hash anchors the legacy file also kept as hashes
+// (LH7JB1xI, EIN6D3xJ, S4ezp6uK, jkldTrhL, rNmJkH6K) align positionally, and a
+// full row-by-row value cross-check of 17 field pairs over all 1668 rows found
+// ZERO mismatches — the mapping below is data-verified, not guessed.
+// Fields still labelled unk_* are ones the legacy fork ALSO couldn't name.
 json ItemMst {
-    doc "F_ITEM_MST row.  Wrapper key 2C7LDzYk.  Loaded into ServerCache for server-side item lookup (drop validation, sphere stats); not blanket-forwarded to the client (the client bundles item art/text)."
+    doc "F_ITEM_MST row.  Wrapper key 2C7LDzYk.  Loaded into ServerCache for server-side item lookup (drop validation, sphere frame ids, sell prices); not blanket-forwarded to the client (the client bundles item art/text)."
 
     field id type="i32::str" {
         key "kixHbe54"
-        doc "Item master id.  1668 distinct values; joins to user_items.item_id, UserWarehouseInfo.item_id, UserEquipItemInfo.item_id.  Captured: \"10000\" (Green Grass material)."
+        doc "itemId — item master id.  1668 distinct values; joins to user_items.item_id, UserWarehouseInfo.item_id, UserEquipItemInfo.item_id.  Captured: \"10000\" (Green Grass material)."
     }
 
     field name type="str" {
         key "c7Z6xDB2"
-        doc "Display name.  Captured: JP text e.g. \"緑壮草\"."
+        doc "itemName — display name.  Mix of JP text (e.g. \"回復薬\") and MST_* placeholder tokens the client resolves from bundled localisation."
     }
 
-    field name_kana type="str" {
+    field short_name type="str" {
         key "kP3zJ9Ra"
-        doc "Name reading / sort key.  Usually equals name."
+        doc "itemShortName per legacy MST.  Usually equals name.  (Was mislabelled name_kana.)"
     }
 
     field item_type type="i32::str" {
         key "h0K7wjeH"
-        doc "Item category enum (6 distinct values).  // UNVERIFIED: likely material / consumable / sphere / etc."
+        doc "itemType — item category enum, decoded from the data distribution: 1 = battle consumable / sellable (potions 20000-20002, cures, junk Trash/Garbage rows; 103 rows, max_stack 99) · 2 = crafting material (herbs etc.; 470 rows, max_stack 999) · 3 = sphere (equipment; MST_SPHERES_* rows, ids 30000+; 1021 rows, max_stack 1) · 4 = evolution item (MST_EVOITEM_* rows, ids 110000+; 33 rows) · 5 = exp/booster token (Experience Token, 経験の水; 8 rows) · 6 = sphere, crafted multi-effect tier (ids 230xxx with @-tiered passive_skill_info; 33 rows; // UNVERIFIED: exact 3-vs-6 client distinction).  UserInfo's mission item bar (equip_info) filters on item_type == 1."
     }
 
-    field rarity type="i32::str" {
+    field unk_LH7JB1xI type="i32::str" {
         key "LH7JB1xI"
-        doc "Rarity tier (4 distinct values: 0-3).  // UNVERIFIED:"
+        doc "// UNVERIFIED: 4 distinct values 0-3.  The legacy fork also kept this as a raw hash (ITEM_LH7JB1xI).  Previously mislabelled rarity — the real rarity is 7ofj5xa1."
     }
 
     field thumbnail type="str" {
         key "Mt3Y0bo5"
-        doc "Icon filename served from /content/.  Captured: \"item_thum_102.png\"."
+        doc "itemThumbnail — icon filename served from /content/.  Captured: \"item_thum_102.png\"."
     }
 
-    field unk_92udyUrJ type="i32::str" {
+    field sphere_type type="i32::str" {
         key "92udyUrJ"
-        doc "// UNVERIFIED: small enum, 15 distinct values."
+        doc "itemSphereType — sphere category / frame id, 0-14.  Non-zero ONLY for item_type 3/6 (spheres).  This is the value the ItemSphereEqp handler writes into user_units.eqip_item_frame_id[2] when a sphere is equipped (legacy MstConfig::GetItemSphereType did the same)."
     }
 
-    field unk_97yTNbfr type="i32::str" {
+    field difficulty_level type="i32::str" {
         key "97yTNbfr"
-        doc "// UNVERIFIED: small enum, 12 distinct values."
+        doc "difficultyLevel per legacy MST.  12 distinct values."
     }
 
-    field unk_7ofj5xa1 type="i32::str" {
+    field rarity type="i32::str" {
         key "7ofj5xa1"
-        doc "// UNVERIFIED: small enum, 8 distinct values."
+        doc "rarity — 8 distinct values (1-8 tiers).  Confirmed by legacy friendly key; the old rarity guess on LH7JB1xI was wrong."
     }
 
-    field price type="i32::str" {
+    field visual_id type="i32::str" {
         key "XuJL4pc5"
-        doc "Sell/exchange value (1426 distinct values).  // UNVERIFIED: likely zel sell price."
+        doc "visualId — per-item art/visual id (1426 distinct values).  // REVERTED FROM price: legacy friendly key names this visualId; the sell price is eKtE6k0n.  NOTE: same wire key doubles as UserEquipItemInfo.disp_order in the net schema — different context, different meaning."
     }
 
     field unk_EIN6D3xJ type="i32::str" {
         key "EIN6D3xJ"
-        doc "// UNVERIFIED: 9 distinct values."
+        doc "// UNVERIFIED: 9 distinct values.  Legacy fork also kept this as a raw hash (ITEM_EIN6D3xJ)."
     }
 
-    field unk_eKtE6k0n type="i32::str" {
+    field sell_price type="i32::str" {
         key "eKtE6k0n"
-        doc "// UNVERIFIED: 53 distinct values."
+        doc "sellPrice — zel credited per unit when sold via ItemSell (53 distinct price tiers)."
     }
 
-    field unk_y4jAZ9nI type="i32::str" {
+    field sell_caution type="i32::str" {
         key "y4jAZ9nI"
-        doc "// UNVERIFIED: boolean-ish (2 distinct)."
+        doc "sellCaution — boolean; client shows an extra confirmation before selling when set."
     }
 
-    field unk_0UwMg18F type="i32::str" {
+    field battle_effect_group_id type="i32::str" {
         key "0UwMg18F"
-        doc "// UNVERIFIED: 26 distinct values; shares wire key with several MST cost fields."
+        doc "battleEffectGroupId — VFX group played on use in battle (26 distinct values).  Shares wire key with several MST cost fields in other tables."
     }
 
-    field unk_moWQ30GH type="i32::str" {
+    field target_type type="i32::str" {
         key "moWQ30GH"
-        doc "// UNVERIFIED: 4 distinct values."
+        doc "targetType per legacy MST (4 distinct values)."
     }
 
-    field unk_6E2fGPWT type="i32::str" {
+    field target_area type="i32::str" {
         key "6E2fGPWT"
-        doc "// UNVERIFIED: 3 distinct values."
+        doc "itemTargetArea per legacy MST (3 distinct values) — single ally / all allies / etc."
     }
 
-    field recipe type="str" {
+    field skill_type type="str" {
         key "hjAy9St3"
-        doc "Synthesis recipe / material list.  `@`-delimited pairs, kept as str.  Captured: \"34@1\".  // UNVERIFIED: exact encoding (likely materialId@count)."
+        doc "skillTypeId per legacy MST.  `@`-delimited on multi-tier items.  Captured: \"2\" (potion), \"1\" (sphere), \"1@17\" (crafted sphere).  // REVERTED FROM recipe: legacy friendly key names this skillTypeId.  // UNVERIFIED: exact encoding of the @ tiers."
     }
 
-    field effect_params type="str" {
+    field passive_skill_info type="str" {
         key "2Smu5Mtq"
-        doc "Effect parameters as a comma list (empty for inert items like materials).  For spheres these are stat boosts; for potions the heal amount — item 20000 (回復薬 potion) has \"100,120,0,0\".  Kept as str because the array codec drops trailing/empty slots.  // UNVERIFIED: slot order and per-type meaning."
+        doc "passiveSkillInfo — effect parameters as a comma list (empty for inert items like materials).  For spheres these are the stat boosts; for potions the heal amount — item 20000 (回復薬) has \"100,120,0,0\".  Crafted spheres (item_type 6) join multiple effect tiers with `@`: \"0,0,25,0,25@5,10,25\".  Kept as str because the array codec drops trailing/empty slots.  // UNVERIFIED: slot order per skill_type."
     }
 
     field max_stack type="i32::str" {
         key "m9gd5h1u"
-        doc "Max quantity held (3 distinct: 1 / 99 / 999)."
+        doc "itemMaxStack — max quantity held (3 distinct: 1 / 99 / 999).  Spheres and evo items cap at 1 per stack row."
     }
 
-    field unk_t1i2vIbT type="i32::str" {
+    field max_equipped type="i32::str" {
         key "t1i2vIbT"
-        doc "// UNVERIFIED: 12 distinct values (0-99)."
+        doc "itemMaxEquipped per legacy MST — 12 distinct values (0-99).  Likely the cap on simultaneously equipped/carried copies."
     }
 
     field unk_S4ezp6uK type="i32::str" {
         key "S4ezp6uK"
-        doc "// UNVERIFIED: boolean-ish (2 distinct)."
+        doc "// UNVERIFIED: boolean-ish (2 distinct).  Legacy fork kept this as UNIT_ITEM_S4ezp6uK."
     }
 
     field description type="str" {
         key "qp37xTDh"
-        doc "Short flavor description (JP text)."
+        doc "description — short flavor text (JP)."
     }
 
-    field description_long type="str" {
+    field extra_description type="str" {
         key "ZC0msu2L"
-        doc "Long flavor description (JP text); empty on a few rows."
+        doc "extraDescription — long flavor text (JP); empty on a few rows.  (Was description_long.)"
     }
 
-    field unk_ZKQ1X69a type="i32::str" {
+    field is_raid type="i32::str" {
         key "ZKQ1X69a"
-        doc "// UNVERIFIED: boolean-ish (2 distinct)."
+        doc "itemIsRaid — boolean; marks raid-subsystem items."
     }
 
-    field unk_PEhNd0B4 type="i32::str" {
+    field raid_usage_type type="i32::str" {
         key "PEhNd0B4"
-        doc "// UNVERIFIED: 4 distinct values."
+        doc "itemRaidUsageType per legacy MST (4 distinct values)."
     }
 
     field unk_jkldTrhL type="i32::str" {
         key "jkldTrhL"
-        doc "// UNVERIFIED: boolean-ish (2 distinct).  Shares wire key with the FriendGet mode flag in a different context."
+        doc "// UNVERIFIED: boolean-ish (2 distinct).  Legacy fork's guess: sarcBoosterItem?.  Shares wire key with the FriendGet mode flag in a different context."
     }
 
     field unk_rNmJkH6K type="i32::str" {
         key "rNmJkH6K"
-        doc "// UNVERIFIED: constant 0 across all rows."
+        doc "// UNVERIFIED: constant 0 across all rows.  Legacy fork also kept the raw hash (ITEM_rNmJkH6K)."
     }
 }
