@@ -63,6 +63,84 @@ json InitializeReq {
      }
 }
 
+json CampaignBattleEndReq {
+    doc "CampaignBattleEnd (pTNB6yw3) request: identifies the user and, when the client sends it, the cleared mission id."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field missionId type=str {
+        key "j28VNcUW"
+        doc "Cleared campaign mission id, when present at the top level."
+    }
+}
+
+json CampaignBattleStartReq {
+    doc "CampaignBattleStart (h1RjcD3S) request."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field missionId type=str {
+        key "j28VNcUW"
+        doc "Campaign mission id (reused across Campaign requests)."
+    }
+}
+
+json CampaignReceiptReq {
+    doc "CampaignReceipt (5Imq3wC0) request."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field missionId type=str {
+        key "j28VNcUW"
+        doc "Campaign mission id."
+    }
+}
+
+json CampaignDeckGetReq {
+    doc "CampaignDeckGet (C3a0VnQK) request — identifies the user."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
+json CampaignEndReq {
+    doc "CampaignEnd (jF9Kkro4) request — identifies the user."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
+json CampaignMissionGetReq {
+    doc "CampaignMissionGet (RSm6p2d4) request — identifies the user."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
+json CampaignStartReq {
+    doc "CampaignStart (6Y0gaPQN) request — identifies the user."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
 
 // @json
 json InitializeResp {
