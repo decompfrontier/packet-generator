@@ -941,11 +941,26 @@ json UnitEvoReq {
 }
 
 json UnitEvoResp {
-    doc "Empty response stub.  Real fields will land when the handler is implemented against actual DB + MST data, keyed off the readparam for response_class=UnitOpeEvoResponse (response_key=I82p0wCL, params include pn16CNah/edy7fq3L/t9FEW2KC/u1ECvfg8/dV3qji4I â€” see response_mappings.json)."
+    doc "UnitEvo response (response_class=UnitOpeEvoResponse).  Carries the evolution result (I82p0wCL), an incremental unit-cache update (qC2tJs4E), the updated team info (fEi17cnx), and the reinforce/stat animation payload (xZH6EIQ7)."
 
-    field placeholder type="str" {
-        key "_unused"
-        doc "Schema placeholder; never populated by the current stub"
+    field evo_result type="[EvoResultEntry]" {
+        key "I82p0wCL"
+        doc "Which MST id the base evolved into (and the evolved unit's DB id)."
+    }
+
+    field unit_update type="[UserUnitInfo]" {
+        key "qC2tJs4E"
+        doc "Incremental unit-cache update for the evolved unit."
+    }
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated team info (zel) after the evolution."
+    }
+
+    field reinforce type="[UnitReinforceEntry]" {
+        key "xZH6EIQ7"
+        doc "Reinforcement/level-up animation + stat payload."
     }
 }
 
@@ -968,6 +983,25 @@ json UnitMixReq {
     }
 }
 
+json UnitMixResp {
+    doc "UnitMix (Power Fusion) response.  Carries the reinforce/stat animation payload (xZH6EIQ7), an incremental unit-cache update for the fused base unit (qC2tJs4E), and the updated team info (fEi17cnx)."
+
+    field reinforce type="[UnitReinforceEntry]" {
+        key "xZH6EIQ7"
+        doc "Reinforcement/level-up animation + stat payload."
+    }
+
+    field unit_update type="[UserUnitInfo]" {
+        key "qC2tJs4E"
+        doc "Incremental unit-cache update for the fused base unit."
+    }
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated team info (zel) after the fusion."
+    }
+}
+
 json UnitSellReq {
     doc "Sell one or more user_units for zel.  Wire root keys: login IKqx1Cn9, units Km35HAXv."
 
@@ -979,6 +1013,15 @@ json UnitSellReq {
     field units type="[UnitSellEntry]" {
         key "Km35HAXv"
         doc "Units to sell."
+    }
+}
+
+json UnitSellResp {
+    doc "UnitSell response.  Only the updated team info (fEi17cnx) is needed — the client applies the unit removal from its own state."
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated team info (zel) after the sell."
     }
 }
 
