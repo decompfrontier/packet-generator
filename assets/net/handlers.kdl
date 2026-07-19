@@ -891,6 +891,11 @@ json BadgeInfoResp {
 json UnitFavoriteReq {
     doc "Toggle the favorite/lock flag on one or more user_units.  Example captured wire body: {\"3kcmQy7B\":[{\"edy7fq3L\":\"12345\",\"5JbjC3Pp\":\"1\",\"2pAyFjmZ\":\"0\"}]}"
 
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
     field entries type="[UnitFavoriteEntry]" {
         key "3kcmQy7B"
         doc "List of entries the client is updating in this call"
@@ -907,11 +912,31 @@ json UnitFavoriteResp {
 }
 
 json UnitEvoReq {
-    doc "Evolve a base unit by consuming evo materials.  Body field layout still pending â€” should be replaced once `extract_createbody(\"UnitEvoRequest\")` output is incorporated.  The old hand-written handler did not parse the body in detail; it returned a stubbed response."
+    doc "Evolve a base unit by consuming evo materials.  Wire root keys (UnitEvoRequest::createBody): login IKqx1Cn9, base unit(s) Km35HAXv, evolution target I82p0wCL, zel cost mCE3rUu5, element/material units 8Z2NQrx1."
 
-    field placeholder type="str" {
-        key "_unused"
-        doc "Schema placeholder.  Real keys will be added when createBody is extracted from the IDA dump."
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field units type="[UnitEvoUnitEntry]" {
+        key "Km35HAXv"
+        doc "Base unit(s) being evolved (role \"1\" = base)."
+    }
+
+    field target type="[UnitEvoTargetEntry]" {
+        key "I82p0wCL"
+        doc "Evolution target — the unit_mst id the base evolves into."
+    }
+
+    field zel_cost_list type="[UnitEvoZelEntry]" {
+        key "mCE3rUu5"
+        doc "Zel cost line items for the evolution."
+    }
+
+    field elem_units type="[UnitEvoElemEntry]" {
+        key "8Z2NQrx1"
+        doc "Evolution material (element) units consumed."
     }
 }
 
@@ -921,6 +946,39 @@ json UnitEvoResp {
     field placeholder type="str" {
         key "_unused"
         doc "Schema placeholder; never populated by the current stub"
+    }
+}
+
+json UnitMixReq {
+    doc "Fuse (mix) material units into a base unit for XP.  Wire root keys: login IKqx1Cn9, units Km35HAXv (role \"1\" = base receiving XP, \"2\" = material consumed), zel cost mCE3rUu5."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field units type="[UnitMixUnitEntry]" {
+        key "Km35HAXv"
+        doc "Base + material units (role \"1\" = base, \"2\" = material)."
+    }
+
+    field zel_cost_list type="[UnitMixZelEntry]" {
+        key "mCE3rUu5"
+        doc "Zel cost line items for the fusion."
+    }
+}
+
+json UnitSellReq {
+    doc "Sell one or more user_units for zel.  Wire root keys: login IKqx1Cn9, units Km35HAXv."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field units type="[UnitSellEntry]" {
+        key "Km35HAXv"
+        doc "Units to sell."
     }
 }
 

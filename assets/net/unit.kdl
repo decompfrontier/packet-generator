@@ -22,3 +22,88 @@ json UnitFavoriteEntry {
         doc "Cosmetic unit-image frame id; echoed back unchanged by the server.  Quoted decimal integer on the wire."
     }
 }
+
+// ---------------------------------------------------------------------------
+// Unit operation request entries (UnitMix / UnitEvo / UnitSell).
+// These were previously hand-written glz structs inside the handler .cpp
+// files; hoisted here so the handlers consume generated types (matches the
+// UnitFavoriteEntry pattern above).
+// ---------------------------------------------------------------------------
+
+json UnitMixUnitEntry {
+    doc "One unit in a UnitMix (fusion) request: the base unit receiving XP or a material consumed for it.  Wire: {\"edy7fq3L\":\"<user_unit_id>\",\"mnZ5K4Ii\":\"<role>\"}."
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "user_units instance id.  Quoted decimal integer on the wire."
+    }
+
+    field role type="str" {
+        key "mnZ5K4Ii"
+        doc "\"1\" = base unit receiving XP, \"2\" = material unit consumed."
+    }
+}
+
+json UnitMixZelEntry {
+    doc "One zel cost line item for a UnitMix (fusion) operation."
+
+    field cost type="i32::str" {
+        key "Rs7bCE3t"
+        doc "Zel cost for this line.  Quoted decimal integer on the wire."
+    }
+}
+
+json UnitEvoUnitEntry {
+    doc "The base unit being evolved in a UnitEvo request (role \"1\" = base)."
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "user_units instance id of the base unit.  Quoted decimal integer on the wire."
+    }
+
+    field role type="str" {
+        key "mnZ5K4Ii"
+        doc "Unit role; \"1\" = base unit being evolved."
+    }
+}
+
+json UnitEvoTargetEntry {
+    doc "The evolution target: the unit_mst id the base evolves into."
+
+    field target_mst_id type="i32::str" {
+        key "pn16CNah"
+        doc "unit_mst id of the evolved form.  Quoted decimal integer on the wire."
+    }
+}
+
+json UnitEvoZelEntry {
+    doc "One zel cost line item for a UnitEvo (evolution) operation."
+
+    field cost type="i32::str" {
+        key "Rs7bCE3t"
+        doc "Zel cost for this line.  Quoted decimal integer on the wire."
+    }
+}
+
+json UnitEvoElemEntry {
+    doc "One evolution material (element) unit consumed by a UnitEvo request.  Note the user_unit_id here rides key inU8Q4gL, not edy7fq3L."
+
+    field user_unit_id type="i32::str" {
+        key "inU8Q4gL"
+        doc "user_units instance id of a consumed evo material.  Quoted decimal integer on the wire."
+    }
+
+    field role type="str" {
+        key "mnZ5K4Ii"
+        doc "Material role marker."
+    }
+}
+
+json UnitSellEntry {
+    doc "One user_unit being sold for zel in a UnitSell request."
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "user_units instance id to sell.  Quoted decimal integer on the wire."
+    }
+}
