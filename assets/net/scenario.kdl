@@ -1,0 +1,71 @@
+// Scenario (cutscene) progress packets.
+//
+// The cutscene data itself is client-bundled: F_SCENARIO_MST (1348 rows —
+// scenario id mC1JcVM9, title, category VgU78CYj, script file tw0vkye4
+// e.g. "map1-dungeon1.txt", BGM A3TSv2fn) and F_SCENARIO_CATEGORY_MST (the
+// Memoirs replay-gallery tree) reach the client via the CDN .dat pipeline, so
+// the server never serves them as GME payloads — no *MstResponse classes
+// exist for either.  What the server DOES own is the per-user viewed state,
+// exchanged through these packets:
+//
+//   - GetScenarioPlayingInfo (VRfsv4e3 / Bh4WqR01): bare request (identity
+//     tags only, GetScenarioPlayingInfoRequest::createBody adds no body);
+//     the response carries the viewed-scenario list under sBbp47fi so the
+//     client can skip already-seen cutscenes across reinstalls/boots.
+//   - RaidUpScenarioInfo (R38qvphm / 72EyFbW8): reports a scenario id when
+//     one is viewed ("Up" = update; despite the Raid prefix this is the
+//     generic scenario reporter — createBody adds group 1ry6BKoe with
+//     N4XVE1uA only when the stored string is non-empty).
+//
+// The same N4XVE1uA key also rides LoginInfoReq (scenario_info) as a
+// progress marker; captured "" so far on this account.
+
+json UserScenarioInfo {
+    doc "One viewed cutscene.  Response key sBbp47fi (UserScenarioInfoResponse, response_mappings.json); the client readParam reads a single param per node."
+
+    field scenario_id type="u32::str" {
+        key "mC1JcVM9"
+        doc "F_SCENARIO_MST scenario id (observed range 10001..830126402).  Same key the MST uses for its id column."
+    }
+}
+
+json GetScenarioPlayingInfoReq {
+    doc "Request for GetScenarioPlayingInfo.  Bare request — GetScenarioPlayingInfoRequest::createBody adds no body beyond the standard login-info identity tag, so this carries loginInfo only."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
+json GetScenarioPlayingInfoResp {
+    doc "Response to GetScenarioPlayingInfo: the user's complete viewed-scenario set, from the user_scenarios table.  The legacy fork returned {} here — which is why cutscenes replayed on every boot."
+
+    field scenarios type="[UserScenarioInfo]" {
+        key "sBbp47fi"
+        doc "Viewed scenario ids."
+    }
+}
+
+json RaidUpScenarioInfoNode {
+    doc "Single node of the scenario-update group."
+
+    field scenario_info type="str" {
+        key "N4XVE1uA"
+        doc "Scenario progress payload.  // UNVERIFIED: expected to be the bare scenario id as a quoted string (the MST id key mC1JcVM9's value); the handler logs the raw value so the first live report confirms the format."
+    }
+}
+
+json RaidUpScenarioInfoReq {
+    doc "Scenario-update report.  Wire: {\"1ry6BKoe\":[{\"N4XVE1uA\":\"<scenario>\"}]} (RaidUpScenarioInfoRequest::createBody).  Server stores the id into user_scenarios; response is an empty ack (legacy-verified)."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field nodes type="[RaidUpScenarioInfoNode]" {
+        key "1ry6BKoe"
+        doc "Reported scenario entries."
+    }
+}

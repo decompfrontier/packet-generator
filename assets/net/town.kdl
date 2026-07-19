@@ -1,0 +1,92 @@
+// Town action handlers
+
+// ---------------------------------------------------------------------------
+// TownUpdate  (id: CuQ5oB8U)
+// Fires on in-town navigation / interaction (NOT on town entry).
+// Request shape is not yet fully reversed; stub {} response keeps session alive.
+// ---------------------------------------------------------------------------
+
+json TownUpdateReq {
+    doc "In-town navigation / interaction event.  Exact request fields not yet reversed."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Standard user-info tag present on nearly every request."
+    }
+}
+
+json TownUpdateResp {
+    doc "Empty response — stub sufficient to keep session alive."
+}
+
+// ---------------------------------------------------------------------------
+// TownFacilityUpdate  (id: 8v43tz7g)
+// Fires when the player confirms a batch of facility/location upgrades.
+// The client sends the COMPLETE desired new state (not a delta); the server
+// overwrites whatever the client says and deducts karma.
+// ---------------------------------------------------------------------------
+
+json TownKarmaPayment {
+    doc "Single-element array wrapper that carries the total karma cost for a TownFacilityUpdate batch."
+
+    field karma type="i64::str" {
+        key "HTVh8a65"
+        doc "Total karma cost for the entire upgrade batch."
+    }
+}
+
+json TownFacilityUpdateEntry {
+    doc "One facility entry inside a TownFacilityUpdate request.  Mirrors UserTownFacilityInfo but omits user_id and per-facility karma (those are server-authoritative or unused in the request)."
+
+    field facility_id type="i32::str" {
+        key "y9ET7Aub"
+        doc "MST facility id."
+    }
+
+    field lv type="i32::str" {
+        key "D9wXQI2V"
+        doc "Desired new level for this facility."
+    }
+}
+
+json TownLocationUpdateEntry {
+    doc "One location entry inside a TownFacilityUpdate request."
+
+    field location_id type="i32::str" {
+        key "un80kW9Y"
+        doc "MST location id."
+    }
+
+    field lv type="i32::str" {
+        key "D9wXQI2V"
+        doc "Desired new level for this location."
+    }
+}
+
+json TownFacilityUpdateReq {
+    doc "Complete desired state sent by the client when confirming facility/location upgrades.  Server persists all entries and deducts karma."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Standard user-info tag."
+    }
+
+    field karmaPayment type="[TownKarmaPayment]::size(1)" {
+        key "EuY6L7AX"
+        doc "Total karma cost for the batch."
+    }
+
+    field facilities type="[TownFacilityUpdateEntry]" {
+        key "YRgx49WG"
+        doc "Full facility list with desired levels."
+    }
+
+    field locations type="[TownLocationUpdateEntry]" {
+        key "yj46Q2xw"
+        doc "Full location list with desired levels."
+    }
+}
+
+json TownFacilityUpdateResp {
+    doc "Empty response — client already updated its UI state optimistically."
+}

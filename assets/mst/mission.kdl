@@ -1,0 +1,196 @@
+// F_MISSION_MST_1 and F_MISSION_MST_2 — main campaign/dungeon mission table.
+// MST_1 covers IDs 0-~1200 (story chapters 1-end-game).
+// MST_2 covers IDs 1005000+ (Uncharted Frontier / late end-game content).
+// Merged into deploy/system/mission_mst.json for server use.
+
+json MissionMst {
+    hash "oXeC1Ak9"
+    doc "F_MISSION_MST — mission master data (parts 1 & 2).  Hash sourced from IDA `response_mappings.json` (response_class=MissionMstResponse, response_key=oXeC1Ak9, is_mst=true).  UNVERIFIED: no decoded `deploy/system/mission_mst.json` available on this branch to cross-check the top-level key against — confirm once the .dat file is decoded via `scripts/mstdec.py`.  Previous KDL used hash `2I9V0o6J` which IDA labels as `CampaignMissionInfoResponse` (a network response, is_mst=false) — wrong category entirely."
+
+    field id type="i32::str" {
+        key "j28VNcUW"
+        doc "Mission ID (primary key; sequential integers starting from 1)"
+    }
+
+    field name_key type=str {
+        key "0iAIR2LP"
+        doc "Localisation key for mission name (e.g. MST_DUNGEONS_MISSION_1_NAME)"
+    }
+
+    field land_id type="i32::str" {
+        key "9C64Qwe0"
+        doc "Land/continent ID this mission belongs to"
+    }
+
+    field area_id type="i32::str" {
+        key "VjCY7rX4"
+        doc "Area/region ID within the land"
+    }
+
+    field dungeon_id type="i32::str" {
+        key "MHx05sXt"
+        doc "Dungeon/node ID within the area"
+    }
+
+    field disp_order type="i32::str" {
+        key "XuJL4pc5"
+        doc "Display sort order within the dungeon"
+    }
+
+    field chapter type="i32::str" {
+        key "24biyLHp"
+        doc "Story chapter number"
+    }
+
+    field stamina_cost type="i32::str" {
+        key "69vnphig"
+        doc "Energy/stamina cost to enter this mission"
+    }
+
+    field unknown_A8DEK5ob type="i32::str" {
+        key "A8DEK5ob"
+        doc "Unknown integer field — always 0 in MST_1"
+    }
+
+    field exp_rate type=str {
+        key "2hcq47Cg"
+        doc "EXP multiplier rate (float string, e.g. '1.0')"
+    }
+
+    field exp type="i32::str" {
+        key "d96tuT2E"
+        doc "Base EXP reward for clearing"
+    }
+
+    field zel_rate type=str {
+        key "trA1wi9x"
+        doc "Zel multiplier rate (float string)"
+    }
+
+    field zel type="i32::str" {
+        key "Rs7bCE3t"
+        doc "Base zel reward for clearing"
+    }
+
+    field karma_rate type=str {
+        key "2s8NnYav"
+        doc "Karma multiplier rate (float string)"
+    }
+
+    field karma type="i32::str" {
+        key "HTVh8a65"
+        doc "Base karma reward for clearing"
+    }
+
+    field unknown_PKa13dH7 type=str {
+        key "PKa13dH7"
+        doc "Unknown float-string field"
+    }
+
+    field unknown_EI6HtL9A type=str {
+        key "EI6HtL9A"
+        doc "Unknown float-string field"
+    }
+
+    field unknown_32SaXjQx type=str {
+        key "32SaXjQx"
+        doc "Unknown float-string field"
+    }
+
+    field unknown_SiYs27Cj type=str {
+        key "SiYs27Cj"
+        doc "Unknown string field — usually empty"
+    }
+
+    field unknown_S2ChOKo6 type=str {
+        key "S2ChOKo6"
+        doc "Unknown string field — usually empty"
+    }
+
+    field unknown_wHN6nfh9 type=str {
+        key "wHN6nfh9"
+        doc "Unknown nullable string — observed format: '0,0,0:0,0:0'.  Marked optional because mission row 0 (the sentinel) carries `null` here and Glaze rejects null→std::string."
+        optional #true
+    }
+
+    field unknown_jeR2rN3V type="i32::str" {
+        key "jeR2rN3V"
+        doc "Unknown integer — always 0"
+    }
+
+    field unknown_Ke14gCAc type="i32::str" {
+        key "Ke14gCAc"
+        doc "Unknown integer — always 0"
+    }
+
+    field unknown_st0Ep96q type="i32::str" {
+        key "st0Ep96q"
+        doc "Unknown integer — always 0"
+    }
+
+    field battle_group_ids type=str {
+        key "8f4NYKxb"
+        doc "Battle group reference string — colon-separated pairs of order:groupId (e.g. '3:10100,1:10101,0:10102'); null for mission 0.  Marked optional so the loader doesn't reject the sentinel row."
+        optional #true
+    }
+
+    field unknown_HSRhkf70 type=str {
+        key "HSRhkf70"
+        doc "Unknown — wire format is HETEROGENEOUS across the 3433-row dataset: 3396 rows hold a single integer (\"0\", \"1\", \"10067\"), 36 rows hold a comma-separated pair (\"666,20067\", \"2100001,2100002\", \"10080,10165\"), 1 row is empty (\"\").  Earlier port typed this as `i32::str` based on the prior 'final-dungeon flag' guess in the doc — the comma-pair rows fail Glaze's single-int parse (`expected_quote` at the comma).  // REVERTED FROM i32::str: comma-pair values invalidate the narrower type.  // CAPTURED FROM: deploy/system/mission_mst.json.  // UNVERIFIED: semantic — possibly 'related mission id pair' or 'flag id pair', but no handler currently reads this field so the right narrowing is unclear."
+    }
+
+    field unknown_np4K1xtq type=str {
+        key "np4K1xtq"
+        doc "Unknown string — usually empty"
+    }
+
+    field unknown_sYsa10a3 type=str {
+        key "sYsa10a3"
+        doc "Unknown string — usually empty"
+    }
+
+    field unknown_N4XVE1uA type=str {
+        key "N4XVE1uA"
+        doc "Unknown nullable string — observed: '0,0'.  Null on mission row 0."
+        optional #true
+    }
+
+    field unknown_L8iA9M6c type=str {
+        key "L8iA9M6c"
+        doc "Unknown nullable string.  Null on mission row 0."
+        optional #true
+    }
+
+    field bgm_map type=str {
+        key "3sRN9BPS"
+        doc "Map/field BGM asset name (e.g. 'bf010_map_grass.mp3'); null for mission 0."
+        optional #true
+    }
+
+    field bgm_battle type=str {
+        key "nDf28LtU"
+        doc "Battle BGM asset name (e.g. 'bf006_btl_boss.mp3'); null for mission 0."
+        optional #true
+    }
+
+    field unknown_HeA4I2dN type="i32::str" {
+        key "HeA4I2dN"
+        doc "Unknown integer — always 1"
+    }
+
+    field npc_encounter_id type=str {
+        key "1e6jxQzf"
+        doc "NPC encounter reference — wire format is HETEROGENEOUS: most rows hold a single int as quoted string (3364/3433: \"0\" = no NPC, \"<id>\" otherwise), but 69 rows hold a colon/comma/at-sign-separated list (\"300010:0,300011:1,...\", \"30020:0,,,,,@1\", \"1:0,2:1,2:1,2:1,310200:1,@1\").  The list encoding is order:state pairs with `@N` suffixes — likely a multi-NPC encounter sequence.  // REVERTED FROM i32::str: list-shaped rows fail single-int parse (`expected_quote` at the colon/comma).  // CAPTURED FROM: deploy/system/mission_mst.json rows 934/943/1054.  // UNVERIFIED: precise encoding semantics — references F_MISSION_NPC_UNIT_MST."
+    }
+
+    field unknown_PYgkvcsy type=str {
+        key "PYgkvcsy"
+        doc "Unknown nullable string — usually empty.  Null on mission row 0."
+        optional #true
+    }
+
+    field description type=str {
+        key "qp37xTDh"
+        doc "Localisation key for mission description"
+    }
+}

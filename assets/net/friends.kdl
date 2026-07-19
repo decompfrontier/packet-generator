@@ -1,4 +1,13 @@
 
+json FriendGetReq {
+    doc "Request for FriendGet (friend-list / friend-slot fetch).  The client sends only the standard login-info identity tag; the server derives everything from the resolved user, so this carries loginInfo only."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
 json FriendPointInfo {
     doc "TODO"
 
@@ -10,5 +19,284 @@ json FriendPointInfo {
     field unk2 type="str" {
         key "KgbM81wd"
         doc "TODO"
+    }
+}
+
+// FriendInfo (response_class=FriendInfoResponse, response_key=tojMy68W,
+// readParam at 0x13D93C0).  Per the IDA audit
+// (tools/ida/audits/tojMy68W_audit.txt) this populates the FriendInfoList
+// singleton — the same singleton the squad-selection screen reads from
+// when rendering the reinforce friend picker.
+//
+// 50 fields total.  Field set decoded from:
+//   1. bfdata/responses/Friend/FriendInfoResponse.hpp (typed setter names)
+//   2. readParam dispatch at 0x13D93C0 (confirms strcmp-keyed setters)
+//   3. GuildRaidFriendSelectRequest::createBody at 0x1C5B388 (confirms
+//      wire-side field order via JsonNode::addParam calls)
+//
+// Several keys overload between contexts: in UserUnitInfo (qC2tJs4E)
+// Ge8Yo32T is equipitem_id and 2Fh3J7ng is unrelated; in
+// ReinforcementInfo (xZH6EIQ7) Ge8Yo32T is MissionID; in FriendInfo
+// (this) Ge8Yo32T is EquipItemID and 2Fh3J7ng is TeamLv.  Same wire key,
+// different semantic — depends on which response class deserialises it.
+//
+// iNy0ZU5M is uint32_t (element ID as int) here, NOT a string like in
+// UserUnitInfo — FriendInfo's typed setter takes int.
+json FriendInfo {
+    doc "Friend-list entry — 50-field payload under response_key tojMy68W. Populates the FriendInfoList singleton the squad-select reinforce picker reads from."
+
+    field user_id type=str {
+        key "h7eY3sAK"
+        doc "setUserID.  Friend's user_id.  No '0' early-return like xZH6EIQ7's setUserID — empty / 0 user_ids still process."
+    }
+
+    field handle_name type=str {
+        key "B5JQyV8j"
+        doc "setHandleName.  Friend's display name."
+    }
+
+    field team_lv type="i32::str" {
+        key "2Fh3J7ng"
+        doc "setTeamLv.  Friend's account level."
+    }
+
+    field friend_type type="i32::str" {
+        key "96Nxs2WQ"
+        doc "setFriendType.  Friend relation type. // UNVERIFIED enum; likely 0=stranger, 1=friend, 2=guild-only, etc."
+    }
+
+    field last_login_date type="i32::str" {
+        key "0CAQ6wUe"
+        doc "setLastLoginDate.  Unix timestamp of friend's last login."
+    }
+
+    field unit_id type="i32::str" {
+        key "pn16CNah"
+        doc "Friend's leader unit MST id.  vtable+152 setter (unnamed in pseudocode but matches UserUnitInfo.unit_id meaning)."
+    }
+
+    field unit_lv type="i32::str" {
+        key "4A6LzBxr"
+        doc "Friend leader unit's level.  vtable+184 setter; same key in ReinforcementInfo where it was also unit/target level."
+    }
+
+    field base_hp type="i32::str" {
+        key "e7DK0FQT"
+        doc "Base HP.  vtable+280 setter."
+    }
+
+    field base_atk type="i32::str" {
+        key "67CApcti"
+        doc "Base ATK.  vtable+296."
+    }
+
+    field base_def type="i32::str" {
+        key "q08xLEsy"
+        doc "Base DEF.  vtable+312."
+    }
+
+    field base_heal type="i32::str" {
+        key "PWXu25cg"
+        doc "Base REC.  vtable+328."
+    }
+
+    field add_hp type="i32::str" {
+        key "cuIWp89g"
+        doc "IMP add_hp.  vtable+344."
+    }
+
+    field ext_hp type="i32::str" {
+        key "TokWs1B3"
+        doc "ext_hp.  vtable+360."
+    }
+
+    field add_atk type="i32::str" {
+        key "RT4CtH5d"
+        doc "IMP add_atk.  vtable+376."
+    }
+
+    field ext_atk type="i32::str" {
+        key "t4m1RH6Y"
+        doc "ext_atk.  vtable+392."
+    }
+
+    field add_def type="i32::str" {
+        key "GcMD0hy6"
+        doc "IMP add_def.  vtable+408."
+    }
+
+    field ext_def type="i32::str" {
+        key "e6mY8Z0k"
+        doc "ext_def.  vtable+424."
+    }
+
+    field add_heal type="i32::str" {
+        key "C1HZr3pb"
+        doc "IMP add_heal.  vtable+440."
+    }
+
+    field ext_heal type="i32::str" {
+        key "X6jf8DUw"
+        doc "ext_heal.  vtable+456."
+    }
+
+    field today_yale type="i32::str" {
+        key "a1Jp3TVb"
+        doc "setTodayYale.  Daily friend-point yield this friend has produced today. // UNVERIFIED."
+    }
+
+    field want_gift type=str {
+        key "s2WnRw9N"
+        doc "setWantGift.  Free-form gift-request string set by the friend."
+    }
+
+    field favorite type="i32::str" {
+        key "5JbjC3Pp"
+        doc "setFavorite.  1=marked-favorite, 0=normal.  Same key as UnitFavoriteRequest.favorite_flg in a different context."
+    }
+
+    field equipitem_id type=str {
+        key "Ge8Yo32T"
+        doc "Friend leader unit's sphere/equipment slot 1.  vtable+488 setter (string).  Overloaded key: in ReinforcementInfo this is MissionID; in UserUnitInfo it's also equipitem_id."
+    }
+
+    field equipitem_id2 type=str {
+        key "mZA7fH2v"
+        doc "Friend leader unit's equipment slot 2.  vtable+512 (string)."
+    }
+
+    field friend_id type=str {
+        key "98WfKiyA"
+        doc "setFriendID.  In-game friend ID string the player shares to add this friend."
+    }
+
+    field friend_message type=str {
+        key "bM7RLu5K"
+        doc "setFriendMessage.  Profile / status message the friend has set."
+    }
+
+    field friend_message_change_time type="i32::str" {
+        key "8DtoZdXE"
+        doc "setFriendMessageChangeTime.  Unix timestamp of when the friend last changed their message."
+    }
+
+    field arena_rank_id type=str {
+        key "JmFn3g9t"
+        doc "setArenaRankID.  Their current arena rank tier."
+    }
+
+    field ranking_point type="i32::str" {
+        key "U4pMNjy0"
+        doc "setRankingPoint.  Arena ranking points."
+    }
+
+    field unit_type_id type="i32::str" {
+        key "nBTx56W9"
+        doc "Friend leader unit's type (1-6 Lord/Anima/etc)."
+    }
+
+    field skill_id type=str {
+        key "nj9Lw7mV"
+        doc "Friend leader unit's BB skill id (string)."
+    }
+
+    field skill_lv type="i32::str" {
+        key "3NbeC8AB"
+        doc "Friend leader unit's BB skill level."
+    }
+
+    field extra_skill_id type=str {
+        key "iEFZ6H19"
+        doc "Friend leader unit's SBB / extra skill id (string)."
+    }
+
+    field extra_skill_lv type="i32::str" {
+        key "RQ5GnFE2"
+        doc "Extra skill level."
+    }
+
+    field req_time type=str {
+        key "3InKeya4"
+        doc "setReqTime.  Timestamp the friend request was sent (string)."
+    }
+
+    field elapsed_agree_time type="i32::str" {
+        key "paND1zM8"
+        doc "setElapsedAgreeTime.  Seconds since friend agreement was made."
+    }
+
+    field unk_7x3pPB2C type="i32::str" {
+        key "7x3pPB2C"
+        doc "// UNVERIFIED — no exported setter name."
+    }
+
+    field unk_Sv80kL5r type="i32::str" {
+        key "Sv80kL5r"
+        doc "// UNVERIFIED — no exported setter name."
+    }
+
+    field extra_passive_skill_id type=str {
+        key "cP83zNsv"
+        doc "Extra passive skill id (string).  Same key as UserUnitInfo.extra_passive_skill_id."
+    }
+
+    field extra_passive_skill_id2 type=str {
+        key "LjY4DfRg"
+        doc "Extra passive skill id 2."
+    }
+
+    field unit_img_type type="i32::str" {
+        key "2pAyFjmZ"
+        doc "setUnitImgType.  Image variant id for the friend leader's unit art."
+    }
+
+    field deck_no type="i32::str" {
+        key "zsiAn9P1"
+        doc "setDeckNo.  Which of the friend's saved decks this snapshot is from."
+    }
+
+    field priority type="i32::str" {
+        key "yu18xScw"
+        doc "setPriority.  Display-order priority on the friend list (favorites first)."
+    }
+
+    field unk_jkldTrhL type="i32::str" {
+        key "jkldTrhL"
+        doc "// UNVERIFIED — same key appears as constant 0 in many MissionEnd request / UserTeamInfo / ReinforcementInfo positions."
+    }
+
+    field sex type="i32::str" {
+        key "9i2xhMaJ"
+        doc "Friend leader unit's gender id (matches UnitMst.sex)."
+    }
+
+    field element type="i32::str" {
+        key "iNy0ZU5M"
+        doc "Friend leader unit's element ID (int).  IMPORTANT: this is i32 in FriendInfo, NOT a string like in UserUnitInfo — the typed setter takes uint32_t."
+    }
+
+    field unk_btZizNep type=str {
+        key "btZizNep"
+        doc "// UNVERIFIED — string-typed in bfdata typed handler."
+    }
+
+    field unk_RVVgyuor type=str {
+        key "RVVgyuor"
+        doc "// UNVERIFIED — string-typed in bfdata typed handler."
+    }
+
+    field unk_U8FCB2Wj type="i32::str" {
+        key "U8FCB2Wj"
+        doc "// UNVERIFIED — int-typed in bfdata typed handler."
+    }
+
+    field unk_NqVAPbLC type="i32::str" {
+        key "NqVAPbLC"
+        doc "// UNVERIFIED — int-typed in bfdata typed handler."
+    }
+
+    field guild_id type="i32::str" {
+        key "mgNdrCEe"
+        doc "setGuildID.  ID of the friend's guild (0 if none)."
     }
 }

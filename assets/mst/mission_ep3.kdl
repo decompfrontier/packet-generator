@@ -1,0 +1,19 @@
+// F_MISSION_EP3_MST — Episode 3 (Summoner's Road / late-game) mission
+// supplemental data.  Each entry augments a mission entry in F_MISSION_MST
+// with Episode 3-specific EXP and ARM_EXP_RATE parameters.
+// Mission IDs follow the pattern 20100, 20101, 20102, 20200, …
+
+json MissionEp3Mst {
+    hash "vE0Qdg33"
+    doc "F_MISSION_EP3_MST — Episode 3 mission supplemental parameters.  Hash sourced from IDA `response_mappings.json` (response_class=MissionEp3MstResponse, response_key=vE0Qdg33, is_mst=true).  UNVERIFIED: no decoded `deploy/system/mission_ep3.json` available on this branch to cross-check.  Previous KDL used hash `2I9V0o6J` — that was a DUPLICATE of mission.kdl's wrong hash; the same hash cannot map to two different MST tables."
+
+    field id type="i32::str" {
+        key "j28VNcUW"
+        doc "Mission ID — matches a corresponding entry in F_MISSION_MST (20100+)"
+    }
+
+    field ep3_params type=str {
+        key "4wij8ArG"
+        doc "Episode 3 parameter string — comma-separated KEY:VALUE pairs (e.g. 'EXP:130,ARM_EXP_RATE:5')"
+    }
+}

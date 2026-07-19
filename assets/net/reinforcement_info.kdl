@@ -1,4 +1,369 @@
-// @keyjson(key_group = "xZH6EIQ7", array=ArrayStep.Array)
-json ReinformenetInfo {
-    doc TODO
+// ReinforcementInfo (response_class=ReinforcementInfoResponse, response_key=xZH6EIQ7,
+// func_addr 0x13eb29c).  Drives the "borrow a friend's unit" reinforce slot shown
+// during MissionStart / CampaignBattleStart squad selection.
+//
+// 47 fields per response_mappings.json; readparam_analysis.json only types
+// HandleName (B5JQyV8j) and MissionID (Ge8Yo32T) — the other 45 are reachable
+// via the hand-coded getValue() path (handbook section 3.2), so member_name is
+// the only signal in the typed dump.  Many keys overlap with UserUnitInfo
+// (stat/skill fields) — see user.kdl for canonical meaning.
+json ReinforcementInfo {
+    doc "Reinforce-friend unit info — 47-field payload under response_key xZH6EIQ7."
+
+    field user_id type=str {
+        key "h7eY3sAK"
+        doc "Friend's user_id.  First param in response_mappings.json's params list."
+    }
+
+    field handle_name type=str {
+        key "B5JQyV8j"
+        doc "setHandleName.  Friend's display name shown on the reinforce slot card."
+    }
+
+    field team_lv type="i32::str" {
+        key "2Fh3J7ng"
+        doc "setTeamLv (per IDA audit tools/ida/audits/xZH6EIQ7_audit.txt). Friend's account level."
+    }
+
+    field target_lv type="i32::str" {
+        key "4A6LzBxr"
+        doc "Friend's unit level (vtable+184 setter — unnamed in pseudocode but matches UnitMix's MixReinforceEntry.target_lv at the same key)."
+    }
+
+    field friend_type type="i32::str" {
+        key "q9Arz8Jv"
+        doc "setFriendType (per IDA audit). Relation type — // UNVERIFIED enum, likely 0=stranger/1=friend/2=guild-member-only/etc."
+    }
+
+    field last_login_date type="i32::str" {
+        key "0CAQ6wUe"
+        doc "setLastLoginDate (per IDA audit). Unix timestamp of friend's last login."
+    }
+
+    field unit_id type="i32::str" {
+        key "pn16CNah"
+        doc "Friend's unit MST id.  Same key as UserUnitInfo.unit_id."
+    }
+
+    field base_hp type="i32::str" {
+        key "e7DK0FQT"
+        doc "Base HP — same as UserUnitInfo.base_hp."
+    }
+
+    field base_atk type="i32::str" {
+        key "67CApcti"
+        doc "Base ATK."
+    }
+
+    field base_def type="i32::str" {
+        key "q08xLEsy"
+        doc "Base DEF."
+    }
+
+    field base_heal type="i32::str" {
+        key "PWXu25cg"
+        doc "Base REC."
+    }
+
+    field add_hp type="i32::str" {
+        key "cuIWp89g"
+        doc "IMP add_hp."
+    }
+
+    field ext_hp type="i32::str" {
+        key "TokWs1B3"
+        doc "ext_hp."
+    }
+
+    field add_atk type="i32::str" {
+        key "RT4CtH5d"
+        doc "IMP add_atk."
+    }
+
+    field ext_atk type="i32::str" {
+        key "t4m1RH6Y"
+        doc "ext_atk."
+    }
+
+    field add_def type="i32::str" {
+        key "GcMD0hy6"
+        doc "IMP add_def."
+    }
+
+    field ext_def type="i32::str" {
+        key "e6mY8Z0k"
+        doc "ext_def."
+    }
+
+    field add_heal type="i32::str" {
+        key "C1HZr3pb"
+        doc "IMP add_heal."
+    }
+
+    field ext_heal type="i32::str" {
+        key "X6jf8DUw"
+        doc "ext_heal."
+    }
+
+    field friend_point type="i32::str" {
+        key "J3stQ7jd"
+        doc "Friend-point cost to borrow this reinforce.  Same key as MissionStartInfo.friend_point."
+    }
+
+    field normal_friend_point type="i32::str" {
+        key "w28VsQ7h"
+        doc "setNormalFriendPoint (per IDA audit). Friend-point cost for the normal (non-reinforce) borrow operation."
+    }
+
+    field skill_id type="i32::str" {
+        key "nj9Lw7mV"
+        doc "BB (Brave Burst) skill id."
+    }
+
+    field skill_lv type="i32::str" {
+        key "3NbeC8AB"
+        doc "BB skill level."
+    }
+
+    field unit_type_id type="i32::str" {
+        key "nBTx56W9"
+        doc "Unit type id (1-6: Lord/Anima/Breaker/Guardian/Oracle/Rex)."
+    }
+
+    field extra_skill_id type="i32::str" {
+        key "iEFZ6H19"
+        doc "SBB (Super Brave Burst) / extra skill id."
+    }
+
+    field extra_skill_lv type="i32::str" {
+        key "RQ5GnFE2"
+        doc "Extra skill level."
+    }
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "Friend's user_unit DB row id."
+    }
+
+    field mission_id type=str {
+        key "Ge8Yo32T"
+        doc "setMissionID.  The mission this reinforce was offered for.  Overloaded key: in UserUnitInfo this is equipitem_id; in ReinforcementInfo the typed setter name is MissionID."
+    }
+
+    field equipitem_id2 type="i32::str" {
+        key "mZA7fH2v"
+        doc "Sphere slot 2 (matches UserUnitInfo.equipitem_id2)."
+    }
+
+    field unk_bM7RLu5K type=str {
+        key "bM7RLu5K"
+        doc "// UNVERIFIED — getValue() path.  Also appears in UserTeamInfo as a placeholder string."
+    }
+
+    field unk_JmFn3g9t type="i32::str" {
+        key "JmFn3g9t"
+        doc "// UNVERIFIED — getValue() path.  Also appears in UserTeamInfo."
+    }
+
+    field unk_98WfKiyA type="i32::str" {
+        key "98WfKiyA"
+        doc "// UNVERIFIED — getValue() path."
+    }
+
+    field extra_passive_skill_id type="i32::str" {
+        key "cP83zNsv"
+        doc "Extra passive skill id (matches UserUnitInfo.extra_passive_skill_id)."
+    }
+
+    field extra_passive_skill_id2 type="i32::str" {
+        key "LjY4DfRg"
+        doc "Extra passive skill id 2."
+    }
+
+    field unit_img_type type="i32::str" {
+        key "2pAyFjmZ"
+        doc "Unit image variant (matches UserUnitInfo.unit_img_type)."
+    }
+
+    field fe_skill_info type=str {
+        key "Fnxab5CN"
+        doc "FE (frontier element) skill info string."
+    }
+
+    field unk_zsiAn9P1 type="i32::str" {
+        key "zsiAn9P1"
+        doc "// UNVERIFIED — getValue() path."
+    }
+
+    field unk_yu18xScw type="i32::str" {
+        key "yu18xScw"
+        doc "// UNVERIFIED — getValue() path."
+    }
+
+    field unk_jkldTrhL type="i32::str" {
+        key "jkldTrhL"
+        doc "// UNVERIFIED — getValue() path.  Same key appears as a constant 0 in MissionEnd request and UserTeamInfo."
+    }
+
+    field sex type="i32::str" {
+        key "9i2xhMaJ"
+        doc "Gender id (matches UnitMst.sex)."
+    }
+
+    field element type=str {
+        key "iNy0ZU5M"
+        doc "Element string (fire/water/earth/thunder/light/dark).  Matches UserUnitInfo.element."
+    }
+
+    field unk_btZizNep type="i32::str" {
+        key "btZizNep"
+        doc "// UNVERIFIED — getValue() path."
+    }
+
+    field unk_RVVgyuor type="i32::str" {
+        key "RVVgyuor"
+        doc "// UNVERIFIED — getValue() path."
+    }
+
+    field unk_U8FCB2Wj type="i32::str" {
+        key "U8FCB2Wj"
+        doc "// UNVERIFIED — getValue() path."
+    }
+
+    field unk_NqVAPbLC type="i32::str" {
+        key "NqVAPbLC"
+        doc "// UNVERIFIED — getValue() path."
+    }
+
+    field unk_mgNdrCEe type="i32::str" {
+        key "mgNdrCEe"
+        doc "// UNVERIFIED — getValue() path."
+    }
+
+    field unk_sD73jd20 type="i32::str" {
+        key "sD73jd20"
+        doc "// UNVERIFIED — getValue() path."
+    }
+
+    field omni_level type="i32::str" {
+        key "49sa3sld"
+        doc "Omni evolution level (matches UserUnitInfo.omni_level)."
+    }
+}
+
+
+// FixedReinforcementInfo (response_class=FixedReinforcementInfoResponse,
+// response_key=T_FIXED_REINFORCEMENT, func_addr 0xee13fc).  Server-supplied
+// reinforce unit for missions that fix the reinforce (tutorial / specific
+// campaign missions / event-locked battles) rather than letting the player
+// pick a friend.  21 fields per response_mappings.json, all overlapping with
+// ReinforcementInfo.  Per readparam_analysis only HandleName and MissionID
+// have typed setters; the rest go through the getValue() path.
+json FixedReinforcementInfo {
+    doc "Server-fixed reinforce unit info under response_key T_FIXED_REINFORCEMENT."
+
+    field handle_name type=str {
+        key "B5JQyV8j"
+        doc "Display name for the fixed reinforce (typically NPC-style, e.g. \"Vargas\")."
+    }
+
+    field target_lv type="i32::str" {
+        key "4A6LzBxr"
+        doc "Fixed reinforce unit level."
+    }
+
+    field unit_id type="i32::str" {
+        key "pn16CNah"
+        doc "Fixed reinforce unit MST id."
+    }
+
+    field base_hp type="i32::str" {
+        key "e7DK0FQT"
+        doc "Base HP."
+    }
+
+    field base_atk type="i32::str" {
+        key "67CApcti"
+        doc "Base ATK."
+    }
+
+    field base_def type="i32::str" {
+        key "q08xLEsy"
+        doc "Base DEF."
+    }
+
+    field base_heal type="i32::str" {
+        key "PWXu25cg"
+        doc "Base REC."
+    }
+
+    field add_hp type="i32::str" {
+        key "cuIWp89g"
+        doc "IMP add_hp."
+    }
+
+    field ext_hp type="i32::str" {
+        key "TokWs1B3"
+        doc "ext_hp."
+    }
+
+    field add_atk type="i32::str" {
+        key "RT4CtH5d"
+        doc "IMP add_atk."
+    }
+
+    field ext_atk type="i32::str" {
+        key "t4m1RH6Y"
+        doc "ext_atk."
+    }
+
+    field add_def type="i32::str" {
+        key "GcMD0hy6"
+        doc "IMP add_def."
+    }
+
+    field ext_def type="i32::str" {
+        key "e6mY8Z0k"
+        doc "ext_def."
+    }
+
+    field add_heal type="i32::str" {
+        key "C1HZr3pb"
+        doc "IMP add_heal."
+    }
+
+    field skill_id type="i32::str" {
+        key "nj9Lw7mV"
+        doc "BB skill id."
+    }
+
+    field skill_lv type="i32::str" {
+        key "3NbeC8AB"
+        doc "BB skill level."
+    }
+
+    field unit_type_id type="i32::str" {
+        key "nBTx56W9"
+        doc "Unit type id."
+    }
+
+    field extra_skill_id type="i32::str" {
+        key "iEFZ6H19"
+        doc "Extra skill id."
+    }
+
+    field extra_skill_lv type="i32::str" {
+        key "RQ5GnFE2"
+        doc "Extra skill level."
+    }
+
+    field reinforce_mission_id type=str {
+        key "Ge8Yo32T"
+        doc "setMissionID.  Mission this fixed reinforce belongs to (typed setter)."
+    }
+
+    field mission_id type=str {
+        key "j28VNcUW"
+        doc "Mission id (carried in addition to Ge8Yo32T in this response per response_mappings.params)."
+    }
 }

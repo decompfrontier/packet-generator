@@ -1,0 +1,109 @@
+// F_SKILL_MST (files 1-9) — Brave Burst / skill definitions.
+// Covers all player BB skills, enemy auto-attack skills, SBB, UBB, and
+// leader/extra skill effect entries.  Split across 9 files in the client
+// bundle; merged into deploy/system/skill.json for server use.
+
+json SkillMst {
+    hash "8aiBoHg5"
+    doc "F_SKILL_MST — skill master data (all 9 parts).  UNVERIFIED HASH: IDA `response_mappings.json` does have an entry for response_key `8aiBoHg5` but the response_class is `UnitSkillMstResponse` (the per-unit skill assignment table), not a standalone `SkillMstResponse`.  There is no `SkillMstResponse` class in `response_mappings.json` at all — F_SKILL_MST data may be transported under a different key entirely, or it may be the unit-skill key reused.  No decoded `deploy/system/skill.json` exists on this branch to confirm.  Field definitions below are inferred from typical BF skill-table schemas — replace once mstdec.py output is available."
+
+    field id type="i32::str" {
+        key "nj9Lw7mV"
+        doc "Skill ID (primary key)"
+    }
+
+    field skill_name type=str {
+        key "0nxpBDz2"
+        doc "Localisation key for the skill name (e.g. MST_SKILLS_1000_NAME)"
+    }
+
+    field skill_type type="i32::str" {
+        key "h6UL9A1B"
+        doc "Skill type category (1=attack, 2=heal, 3=buff, …)"
+    }
+
+    field skill_rank type="i32::str" {
+        key "AR7y0sY4"
+        doc "Skill rank / tier (1=BB, 2=SBB, 3=UBB, …)"
+    }
+
+    field process_id type=str {
+        key "hjAy9St3"
+        doc "Effect process ID — colon-separated effect chain string"
+    }
+
+    field target_type type=str {
+        key "moWQ30GH"
+        doc "Target type (1=single enemy, 2=all enemies, …)"
+    }
+
+    field target_area type=str {
+        key "IZt73kLG"
+        doc "Target area selector"
+    }
+
+    field move_flag type="i32::str" {
+        key "I7cmtqW8"
+        doc "Unit movement flag during skill use"
+    }
+
+    field atk_move_flag type="i32::str" {
+        key "K2i8emcH"
+        doc "Attack-animation movement flag"
+    }
+
+    field disp_frame type=str {
+        key "diGe6u21"
+        doc "Display/animation frame range (start:end)"
+    }
+
+    field effect_frame type=str {
+        key "eyUo6a8c"
+        doc "Effect animation frame data (colon-separated tuples)"
+    }
+
+    field start_frame type=str {
+        key "qYCx73y2"
+        doc "Skill start frame offset"
+    }
+
+    field damage_frame type=str {
+        key "6Aou5M9r"
+        doc "Damage-hit frame data (frame:count:type:…)"
+    }
+
+    field drop_check_cnt type="i32::str" {
+        key "n9h7p02P"
+        doc "BC drop-check count per attack hit (affects BC generation during skill use)"
+    }
+
+    field wait type="i32::str" {
+        key "9pXSKmn1"
+        doc "Post-skill wait frames before turn resumes"
+    }
+
+    field element type="i32::str" {
+        key "iNy0ZU5M"
+        doc "Elemental attribute override (0=none, 1-6=Fire/Water/Earth/Thunder/Light/Dark)"
+    }
+
+    field description type=str {
+        key "qp37xTDh"
+        doc "Localisation key for the skill description"
+    }
+
+    field unknown_ToZj4zyn type=str {
+        key "ToZj4zyn"
+        doc "Unknown — always '0' in observed data"
+    }
+
+    field unknown_57BsydKH type=str {
+        key "57BsydKH"
+        doc "Unknown — always '0' in observed data"
+    }
+
+    field unknown_R8uaKdbf type=str {
+        key "R8uaKdbf"
+        doc "Unknown — observed values: ',,' or 'id,id,id'"
+    }
+}

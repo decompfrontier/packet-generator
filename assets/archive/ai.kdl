@@ -1,0 +1,142 @@
+json SelfCondition {
+    doc """
+    Condition term checked against the acting monster or action row.
+
+    The server encodes these as the right-hand side of the client's AI
+    condition string, padded with non:0 entries as needed.
+    """
+
+    field type type=str {
+        key "type"
+        doc "Client self condition term, such as skill, hp_pr_under, or party_members."
+    }
+
+    field parameter type="u32::int" {
+        key "parameter"
+        doc "Parameter for this self condition term."
+    }
+}
+
+json PartyCondition {
+    doc """
+    Party-scoped condition term checked before an AI action can run.
+
+    The server encodes these as the left-hand side of the client's AI
+    condition string, padded with 0:non:non:non entries as needed.
+    """
+
+    field target_id type="u32::int" {
+        key "target_id"
+        doc "Client party-condition target id."
+    }
+
+    field target_parameter type=str {
+        key "target_parameter"
+        doc "Client party-condition target parameter, usually non."
+    }
+
+    field type type=str {
+        key "type"
+        doc "Client party-scoped condition term."
+    }
+
+    field parameters type=str {
+        key "parameters"
+        doc "Parameters for this party-scoped condition term."
+    }
+}
+
+json Action {
+    doc """
+    Command executed when an AI action is selected.
+
+    The server encodes this into the client's action string. For now we keep
+    the trailing action arguments explicit but unnamed because their exact
+    meaning is still unknown.
+    """
+
+    field type type=str {
+        key "type"
+        doc "Action type, such as attack, guard, wait, turn_end, or skill."
+    }
+
+    field flag_changes type="[i32::int]" {
+        key "flag_changes"
+        doc "AI flag change pairs encoded after the action type."
+    }
+
+    field unknown_bool type=bool {
+        key "unknown_bool"
+        doc "First trailing action argument."
+    }
+
+    field unknown_int_1 type="i32::int" {
+        key "unknown_int_1"
+        doc "Second trailing action argument."
+    }
+
+    field unknown_int_2 type="i32::int" {
+        key "unknown_int_2"
+        doc "Third trailing action argument."
+    }
+}
+
+json AiAction {
+    doc "One ordered action row belonging to an AI record."
+
+    field priority type="u32::int" {
+        key "priority"
+        doc "Priority/index of this action within the AI record."
+    }
+
+    field percent type="f32::int" {
+        key "percent"
+        doc "Chance percent for this action after its conditions pass."
+    }
+
+    field act_target type="u32::int" {
+        key "act_target"
+        doc "Target pool before applying search_term."
+    }
+
+    field search_term type=str {
+        key "search_term"
+        doc "Client search term, such as random, hp_min, or hp_max."
+    }
+
+    field self_conditions type="[SelfCondition]" {
+        key "self_conditions"
+        doc "Conditions about the acting monster or action row."
+    }
+
+    field party_conditions type="[PartyCondition]" {
+        key "party_conditions"
+        doc "Conditions about a party-side target or group."
+    }
+
+    field action type=Action {
+        key "action"
+        doc "Command to execute when this action is selected."
+    }
+}
+
+json AiRecord {
+    doc """
+    Server-owned curated AI archive data.
+    """
+
+    field id type="u32::int" {
+        key "id"
+        doc "AI archive id referenced by mission monsters."
+    }
+
+    field name type=str {
+        key "name"
+        doc "Human-readable AI name."
+    }
+
+    field actions type="[AiAction]" {
+        key "actions"
+        doc "Ordered action rows for this AI."
+    }
+}

@@ -1,0 +1,246 @@
+// GME unit-related SHARED types (reusable across multiple handlers).
+//
+// Request/response wrappers live in handlers.kdl per the project convention —
+// unit.kdl only carries struct types that more than one handler references
+// (e.g. UnitFavoriteEntry is used by both UnitFavoriteReq and UnitFavoriteResp).
+
+json UnitFavoriteEntry {
+    doc "Single user_unit favorite/lock entry — used by both UnitFavoriteReq (under `3kcmQy7B`) and UnitFavoriteResp (under `3kcmQy7B`).  Example wire JSON captured from a live UnitFavorite request: {\"edy7fq3L\":\"12345\",\"5JbjC3Pp\":\"1\",\"2pAyFjmZ\":\"0\"}"
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "Target user_unit instance id (matches user_units.id).  Quoted decimal integer on the wire."
+    }
+
+    field favorite type="i32::str" {
+        key "5JbjC3Pp"
+        doc "Boolean-as-quoted-integer flag: \"1\" = favorited (locked from sell/fusion), \"0\" = unlocked.  Semantically a boolean, but neither `bool::int` (would emit unquoted `1`/`0`) nor `bool::str` (would emit `\"true\"`/`\"false\"`) matches the actual wire format the client/server exchange — the value travels as a quoted decimal integer string.  Verified against UnitFavoriteResponse readparam (response_mappings.json: response_class=UnitFavoriteResponse, params include `5JbjC3Pp`)."
+    }
+
+    field unit_img_type type="i32::str" {
+        key "2pAyFjmZ"
+        doc "Cosmetic unit-image frame id; echoed back unchanged by the server.  Quoted decimal integer on the wire."
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Unit operation request entries (UnitMix / UnitEvo / UnitSell).
+// These were previously hand-written glz structs inside the handler .cpp
+// files; hoisted here so the handlers consume generated types (matches the
+// UnitFavoriteEntry pattern above).
+// ---------------------------------------------------------------------------
+
+json UnitMixUnitEntry {
+    doc "One unit in a UnitMix (fusion) request: the base unit receiving XP or a material consumed for it.  Wire: {\"edy7fq3L\":\"<user_unit_id>\",\"mnZ5K4Ii\":\"<role>\"}."
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "user_units instance id.  Quoted decimal integer on the wire."
+    }
+
+    field role type="str" {
+        key "mnZ5K4Ii"
+        doc "\"1\" = base unit receiving XP, \"2\" = material unit consumed."
+    }
+}
+
+json UnitMixZelEntry {
+    doc "One zel cost line item for a UnitMix (fusion) operation."
+
+    field cost type="i32::str" {
+        key "Rs7bCE3t"
+        doc "Zel cost for this line.  Quoted decimal integer on the wire."
+    }
+}
+
+json UnitEvoUnitEntry {
+    doc "The base unit being evolved in a UnitEvo request (role \"1\" = base)."
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "user_units instance id of the base unit.  Quoted decimal integer on the wire."
+    }
+
+    field role type="str" {
+        key "mnZ5K4Ii"
+        doc "Unit role; \"1\" = base unit being evolved."
+    }
+}
+
+json UnitEvoTargetEntry {
+    doc "The evolution target: the unit_mst id the base evolves into."
+
+    field target_mst_id type="i32::str" {
+        key "pn16CNah"
+        doc "unit_mst id of the evolved form.  Quoted decimal integer on the wire."
+    }
+}
+
+json UnitEvoZelEntry {
+    doc "One zel cost line item for a UnitEvo (evolution) operation."
+
+    field cost type="i32::str" {
+        key "Rs7bCE3t"
+        doc "Zel cost for this line.  Quoted decimal integer on the wire."
+    }
+}
+
+json UnitEvoElemEntry {
+    doc "One evolution material (element) unit consumed by a UnitEvo request.  Note the user_unit_id here rides key inU8Q4gL, not edy7fq3L."
+
+    field user_unit_id type="i32::str" {
+        key "inU8Q4gL"
+        doc "user_units instance id of a consumed evo material.  Quoted decimal integer on the wire."
+    }
+
+    field role type="str" {
+        key "mnZ5K4Ii"
+        doc "Material role marker."
+    }
+}
+
+json UnitSellEntry {
+    doc "One user_unit being sold for zel in a UnitSell request."
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "user_units instance id to sell.  Quoted decimal integer on the wire."
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Unit operation response entries (UnitMix / UnitEvo).
+// ---------------------------------------------------------------------------
+
+json UnitReinforceEntry {
+    doc "Reinforcement/level-up animation + stat payload under response key xZH6EIQ7.  Shared by UnitMix and UnitEvo — the client's animation and stat-display code expects this same shape after either operation (the two handlers previously carried byte-identical MixReinforceEntry/EvoReinforceEntry structs)."
+
+    field handle_name type="str" {
+        key "B5JQyV8j"
+        doc "Display handle/name of the reinforced unit."
+    }
+
+    field target_lv type="i32::str" {
+        key "4A6LzBxr"
+        doc "Level the unit reached after the operation.  Quoted decimal integer on the wire."
+    }
+
+    field unit_mst_id type="str" {
+        key "pn16CNah"
+        doc "Plain MST id of the reinforced unit (no _100 suffix)."
+    }
+
+    field base_hp type="i32::str" {
+        key "e7DK0FQT"
+        doc "Base HP.  Quoted decimal integer on the wire."
+    }
+
+    field base_atk type="i32::str" {
+        key "67CApcti"
+        doc "Base ATK.  Quoted decimal integer on the wire."
+    }
+
+    field base_def type="i32::str" {
+        key "q08xLEsy"
+        doc "Base DEF.  Quoted decimal integer on the wire."
+    }
+
+    field base_heal type="i32::str" {
+        key "PWXu25cg"
+        doc "Base REC/heal.  Quoted decimal integer on the wire."
+    }
+
+    field add_hp type="i32::str" {
+        key "cuIWp89g"
+        doc "Added HP (from fusion/evo).  Quoted decimal integer on the wire."
+    }
+
+    field add_atk type="i32::str" {
+        key "RT4CtH5d"
+        doc "Added ATK.  Quoted decimal integer on the wire."
+    }
+
+    field add_def type="i32::str" {
+        key "GcMD0hy6"
+        doc "Added DEF.  Quoted decimal integer on the wire."
+    }
+
+    field add_heal type="i32::str" {
+        key "C1HZr3pb"
+        doc "Added REC/heal.  Quoted decimal integer on the wire."
+    }
+
+    field ext_hp type="i32::str" {
+        key "TokWs1B3"
+        doc "Extra/imp HP.  Quoted decimal integer on the wire."
+    }
+
+    field ext_atk type="i32::str" {
+        key "t4m1RH6Y"
+        doc "Extra/imp ATK.  Quoted decimal integer on the wire."
+    }
+
+    field ext_def type="i32::str" {
+        key "e6mY8Z0k"
+        doc "Extra/imp DEF.  Quoted decimal integer on the wire."
+    }
+
+    field skill_id type="str" {
+        key "nj9Lw7mV"
+        doc "Brave-burst / skill id."
+    }
+
+    field skill_lv type="i32::str" {
+        key "3NbeC8AB"
+        doc "Skill level.  Quoted decimal integer on the wire."
+    }
+
+    field extra_skill_id type="str" {
+        key "iEFZ6H19"
+        doc "Extra-skill (SBB/UBB) id."
+    }
+
+    field extra_skill_lv type="i32::str" {
+        key "RQ5GnFE2"
+        doc "Extra-skill level.  Quoted decimal integer on the wire."
+    }
+
+    field unit_type_id type="i32::str" {
+        key "nBTx56W9"
+        doc "Unit type/element id.  Quoted decimal integer on the wire."
+    }
+
+    field mission_id type="str" {
+        key "Ge8Yo32T"
+        doc "Mission id context echoed back by the client animation."
+    }
+}
+
+json EvoResultEntry {
+    doc "UnitEvo result payload under response key I82p0wCL — tells the client which MST id the base evolved into."
+
+    field evolved_unit_id type="i32::str" {
+        key "pn16CNah"
+        doc "Target MST id the unit evolved into.  Quoted decimal integer on the wire."
+    }
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "DB instance id of the evolved unit.  Quoted decimal integer on the wire."
+    }
+
+    field orig_mst_id type="i32::str" {
+        key "t9FEW2KC"
+        doc "Original (\"before\") MST id, used by the evo animation.  Quoted decimal integer on the wire."
+    }
+
+    field unk_u1 type="i32::str" {
+        key "u1ECvfg8"
+        doc "Unknown; send 0.  Quoted decimal integer on the wire."
+    }
+
+    field unk_dv3 type="i32::str" {
+        key "dV3qji4I"
+        doc "Unknown; send 0.  Quoted decimal integer on the wire."
+    }
+}

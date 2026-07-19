@@ -5,6 +5,7 @@ import "../mst/town.kdl"
 import "../mst/dungeon_key.kdl"
 import "../mst/arena.kdl"
 import "../mst/gacha.kdl"
+import "../mst/item.kdl"
 import "../mst/define.kdl"
 import "../mst/npc.kdl"
 import "../mst/slots.kdl"
@@ -24,6 +25,8 @@ import "../mst/event.kdl"
 import "../mst/sound.kdl"
 import "../mst/first_desc.kdl"
 import "../mst/frontier_hunter.kdl"
+import "../mst/mission.kdl"
+import "../mst/scenario.kdl"
 import "../net/signal_key.kdl"
 import "../net/challenge_arena.kdl"
 import "../net/guild.kdl"
@@ -31,13 +34,20 @@ import "../net/daily_login.kdl"
 import "../net/summoner_journal.kdl"
 import "../net/user.kdl"
 import "../net/items.kdl"
+import "../net/scenario.kdl"
+import "../net/unit.kdl"
 import "../net/permit_place.kdl"
+import "../net/reinforcement_info.kdl"
 import "../net/mission.kdl"
+import "../net/gacha.kdl"
 import "../net/raid.kdl"
 import "../net/npc.kdl"
 import "../net/friends.kdl"
 import "../net/event.kdl"
 import "../net/featuring_gate.kdl"
+import "../net/town.kdl"
+import "../net/tutorial.kdl"
+import "../net/badge_info.kdl"
 
 json InitializeReq {
     doc "Initialization command"
@@ -51,6 +61,287 @@ json InitializeReq {
         key "KeC10fuL"
         doc "MST that should be sent"
      }
+}
+
+json CampaignBattleEndReq {
+    doc "CampaignBattleEnd (pTNB6yw3) request: identifies the user and, when the client sends it, the cleared mission id."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field missionId type=str {
+        key "j28VNcUW"
+        doc "Cleared campaign mission id, when present at the top level."
+    }
+}
+
+json CampaignBattleStartReq {
+    doc "CampaignBattleStart (h1RjcD3S) request."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field missionId type=str {
+        key "j28VNcUW"
+        doc "Campaign mission id (reused across Campaign requests)."
+    }
+}
+
+json CampaignReceiptReq {
+    doc "CampaignReceipt (5Imq3wC0) request."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field missionId type=str {
+        key "j28VNcUW"
+        doc "Campaign mission id."
+    }
+}
+
+json CampaignDeckGetReq {
+    doc "CampaignDeckGet (C3a0VnQK) request — identifies the user."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
+json CampaignEndReq {
+    doc "CampaignEnd (jF9Kkro4) request — identifies the user."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
+json CampaignMissionGetReq {
+    doc "CampaignMissionGet (RSm6p2d4) request — identifies the user."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
+json CampaignStartReq {
+    doc "CampaignStart (6Y0gaPQN) request — identifies the user."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Campaign response structs (previously hand-written glz::meta in the handlers).
+// ---------------------------------------------------------------------------
+
+json CampaignMissionEntry {
+    doc "One campaign mission's progress/state under response key 2I9V0o6J (CampaignMissionInfoResponse).  Shared by CampaignMissionGet and CampaignStart."
+
+    field mission_id type="str" {
+        key "j28VNcUW"
+        doc "Mission id (numeric string == mission_mst.id)."
+    }
+
+    field attain_percent type="i32::str" {
+        key "HUo4T7i8"
+        doc "Best clear percentage.  Quoted decimal integer on the wire."
+    }
+
+    field mission_on_flg type="str" {
+        key "JcKMjH64"
+        doc "Whether the mission is selectable (\"1\") or locked (\"0\")."
+    }
+
+    field state type="i32::str" {
+        key "j0Uszek2"
+        doc "Mission state (>=1 = unlocked/cleared).  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignMissionGetResp {
+    doc "CampaignMissionGet (RSm6p2d4) response — the per-mission progress list."
+
+    field missions type="[CampaignMissionEntry]" {
+        key "2I9V0o6J"
+        doc "Mission progress/state entries."
+    }
+}
+
+json CampaignDeckMember {
+    doc "One campaign party-deck member under response key w5vHLT0q (CampaignMissionPartyDeckInfoResponse)."
+
+    field deck_num type="i32::str" {
+        key "zsiAn9P1"
+        doc "Deck slot number.  Quoted decimal integer on the wire."
+    }
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "user_units instance id of this member.  Quoted decimal integer on the wire."
+    }
+
+    field member_type type="i32::str" {
+        key "gr48vsdJ"
+        doc "Member role/type.  Quoted decimal integer on the wire."
+    }
+
+    field disporder type="i32::str" {
+        key "XuJL4pc5"
+        doc "Display order within the deck.  Quoted decimal integer on the wire."
+    }
+
+    field now_hp type="i32::str" {
+        key "a3qJ6QhX"
+        doc "Current HP (0 — the client fills from its unit cache).  Quoted decimal integer on the wire."
+    }
+
+    field max_hp type="i32::str" {
+        key "3WMz78t6"
+        doc "Max HP (0 — client-filled).  Quoted decimal integer on the wire."
+    }
+
+    field bb_gauge type="i32::str" {
+        key "gU2xtQ0V"
+        doc "Brave-burst gauge (0 — client-filled).  Quoted decimal integer on the wire."
+    }
+
+    field sb_gauge type="i32::str" {
+        key "nIGZ1X9C"
+        doc "Super-burst gauge (0 — client-filled).  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignDeckGetResp {
+    doc "CampaignDeckGet (C3a0VnQK) response — the campaign party-deck composition."
+
+    field members type="[CampaignDeckMember]" {
+        key "w5vHLT0q"
+        doc "Campaign deck members."
+    }
+}
+
+json CampaignStartDeckEntry {
+    doc "One party-deck summary for the CampaignStart mission-select screen (response key hT95cq8K)."
+
+    field deck_num type="i32::str" {
+        key "zsiAn9P1"
+        doc "Deck slot number.  Quoted decimal integer on the wire."
+    }
+
+    field guest_id type="str" {
+        key "7zyHb5h9"
+        doc "Guest/friend id for this deck slot (empty when none)."
+    }
+
+    field member_type type="i32::str" {
+        key "gr48vsdJ"
+        doc "Member role/type.  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignStartMissionDeckEntry {
+    doc "One mission-deck slot for the CampaignStart deck-selector panel (response key Yusr3Zg5)."
+
+    field deck_num type="i32::str" {
+        key "zsiAn9P1"
+        doc "Deck slot number.  Quoted decimal integer on the wire."
+    }
+
+    field now_point_num type="i32::str" {
+        key "7w0inC1R"
+        doc "Current point count for this deck slot.  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignStartEventInfo {
+    doc "CampaignStart event-flag object (response key RseDpY04 — a single object, not an array)."
+
+    field reserve_party_disp_flg type="i32::str" {
+        key "W1EkCyc3"
+        doc "Whether the reserve-party UI is shown.  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignEmptyEntry {
+    doc "Placeholder element type for the always-empty CampaignStart response arrays (eqp_items NjZ6ds1S, rsv_items 5EByfWJ4, reward_bonus p04iC2wr).  The vectors are never populated, so this field is never emitted."
+
+    field unused type="i32::str" {
+        key "_"
+        doc "Never emitted — the array is always empty in the current phase."
+    }
+}
+
+json CampaignStartResp {
+    doc "CampaignStart (6Y0gaPQN) response — mission catalog, party decks, item slots, mission decks, and event flags for the mission-select screen."
+
+    field missions type="[CampaignMissionEntry]" {
+        key "2I9V0o6J"
+        doc "Mission state list."
+    }
+
+    field party_decks type="[CampaignStartDeckEntry]" {
+        key "hT95cq8K"
+        doc "Party decks for the select screen."
+    }
+
+    field eqp_items type="[CampaignEmptyEntry]" {
+        key "NjZ6ds1S"
+        doc "Equipped items (empty in the current phase)."
+    }
+
+    field rsv_items type="[CampaignEmptyEntry]" {
+        key "5EByfWJ4"
+        doc "Reserve items (empty in the current phase)."
+    }
+
+    field mission_decks type="[CampaignStartMissionDeckEntry]" {
+        key "Yusr3Zg5"
+        doc "Mission-deck slots."
+    }
+
+    field event_info type="CampaignStartEventInfo" {
+        key "RseDpY04"
+        doc "Single-object event flags."
+    }
+
+    field reward_bonus type="[CampaignEmptyEntry]" {
+        key "p04iC2wr"
+        doc "Reward bonus info (empty in the current phase)."
+    }
+}
+
+json CampaignReceiptPayload {
+    doc "Receipt stub payload under 4MCxgS5p — a single object {\"pCIRMw04\":\"\"}."
+
+    field marker type="str" {
+        key "pCIRMw04"
+        doc "Receipt marker; empty-string stub (the client applies the reward from its own state)."
+    }
+}
+
+json CampaignReceiptResp {
+    doc "Shared response for CampaignBattleEnd (jF9Kkro4-suite) and CampaignReceipt (5Imq3wC0): refreshed HUD team info (fEi17cnx) plus the receipt stub (4MCxgS5p).  Replaces the previous hand-assembled JSON string merge in both handlers."
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Refreshed HUD team info (zel/karma/exp)."
+    }
+
+    field receipt type="CampaignReceiptPayload" {
+        key "4MCxgS5p"
+        doc "Receipt stub."
+    }
 }
 
 
@@ -340,6 +631,186 @@ json UserInfoReq {
     }
 }
 
+json GachaListReq {
+    doc "Requests the summon/gacha list shown by the summon screen."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json GachaActionReq {
+    doc "Requests a summon pull from the currently selected summon gate."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field gachaActionInfo type="[GachaActionInfo]::size(1)" {
+        key "1IR86sAv"
+        doc "Selected gate and summon-count information."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json GachaActionResp {
+    doc "Response payload sent after resolving a summon pull."
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key echoed back to the client."
+    }
+
+    field ope_user_unit type="[OpeUserUnitInfo]" {
+        key "Km35HAXv"
+        doc """
+        Summoned unit ids and animation metadata.
+
+        The client accepts multiple rows here for multi-summon result data.
+        However, only the last row controls which unit gets the gate-opening
+        animation.
+        """
+    }
+
+    field unit_info type="[UserUnitInfo]" {
+        key "qC2tJs4E"
+        doc """
+        Newly summoned owned-unit rows appended to the client unit list.
+        """
+    }
+
+    field unit_dictionary type="[UserUnitDictionary]" {
+        key "GV81ctzR"
+        doc "Unit dictionary rows for units returned by this summon."
+    }
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated user team state after spending summon currency."
+    }
+}
+
+json CreateUserReq {
+    doc "Creates the game user after the tutorial name/starter prompt."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information containing user, Gumi Live, device, and handle fields."
+    }
+
+    field selectedElement type="[TutorialSelectedElement]::size(1)" {
+        key "9u45RGcV"
+        doc "Starter element selected by the player."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json TutorialUpdateReq {
+    doc "Persists the current tutorial chapter posted by TutorialUpdateRequest."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information containing the current tutorial chapter id."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json TutorialSkipResp {
+    doc "Simple acknowledgement after the player skips the tutorial."
+
+    field tutorialSkipInfo type="TutorialSkipInfo" {
+        key "2bD8ak3D"
+        doc "Tutorial skip response object parsed by the client."
+    }
+}
+
+json DeckEditReq {
+    doc "Persists the active party deck selected by DeckEditRequest."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field partyDeckInfo type="[UserPartyDeckInfo]" {
+        key "dX7S2Lc1"
+        doc "Party deck rows sent by the client."
+    }
+
+    field teamInfo type="[DeckEditTeamInfo]::size(1)" {
+        key "Ti62XfZK"
+        doc "Team information containing the active deck number."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
+json MissionStartReq {
+    doc "Request payload for starting a mission."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login information identifying the current user."
+    }
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key request block."
+    }
+
+    field start_info type="[MissionStartInfo]::size(1)" {
+        key "9Q1Lq5FS"
+        doc "Mission-start info posted by the client."
+    }
+
+    field mstRequests type="[MstUrlList]" {
+        key "KeC10fuL"
+        doc "MST versions requested by the client."
+    }
+}
+
 json UserInfoResp {
     doc "TODO"
 
@@ -552,10 +1023,6 @@ json UserInfoResp {
         key "Bm1WNDQ0"
         doc "TODO"
     }
-    field gachaInfo type="[GachaInfoMst]" {
-        key "1IR86sAv"
-        doc "TODO"
-    }
     field videoAdInfo type="[VideoAdInfo]" {
         key "j129kD6r"
         doc "TODO"
@@ -574,21 +1041,35 @@ json UserInfoResp {
     }
 }
 
-json ReinforcementInfo {
-    doc "TODO"
-
-    field mock type="str" {
-        doc "TODO"
-        key "INVALID"
-    }
-}
+// ReinforcementInfo is defined in net/reinforcement_info.kdl (xZH6EIQ7 â€” 47
+// fields; the local stub here was kept-as-placeholder until the schema was
+// decoded).
+//
+// FriendGetResp emits BOTH wire keys:
+//   - xZH6EIQ7 (ReinforcementInfoResponse) â€” populates ReinforcementInfoList,
+//     which a captured production response (server/deploy/log_res/2o4axPIC_*.json)
+//     confirms is the canonical key the BF server returns here even when empty
+//   - tojMy68W (FriendInfoResponse) â€” populates FriendInfoList; per the IDA
+//     dispatch table this is the "friend list" singleton used by other UIs
+//     (general friend roster, friend detail screen).  Cheap to populate both
+//     since we have the same source data.
+//
+// The Reinforcement picker UI almost certainly reads from one of these two
+// singletons; sending both removes the ambiguity until we identify which.
+// FriendInfo schema is in net/friends.kdl, ReinforcementInfo in
+// net/reinforcement_info.kdl.
 
 json FriendGetResp {
-    doc "TODO"
+    doc "FriendGet (2o4axPIC) response â€” the friend list that populates the Reinforcement / squad-select picker.  Emits both xZH6EIQ7 (ReinforcementInfoList) and tojMy68W (FriendInfoList) with the same source data."
 
-    field info type="[ReinforcementInfo]" {
+    field reinforce_info type="[ReinforcementInfo]" {
         key "xZH6EIQ7"
-        doc "TODO"
+        doc "Friend list entries under the reinforce/helper picker key â€” matches the captured prod response shape."
+    }
+
+    field friend_info type="[FriendInfo]" {
+        key "tojMy68W"
+        doc "Same entries under the friend-info-list key â€” populates FriendInfoList for any UI that reads from there."
     }
 }
 
@@ -609,3 +1090,257 @@ json BadgeInfoResp {
         doc "TODO"
     }
 }
+
+json UnitFavoriteReq {
+    doc "Toggle the favorite/lock flag on one or more user_units.  Example captured wire body: {\"3kcmQy7B\":[{\"edy7fq3L\":\"12345\",\"5JbjC3Pp\":\"1\",\"2pAyFjmZ\":\"0\"}]}"
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field entries type="[UnitFavoriteEntry]" {
+        key "3kcmQy7B"
+        doc "List of entries the client is updating in this call"
+    }
+}
+
+json UnitFavoriteResp {
+    doc "Echoed favorite-flag entry.  The IDA-extracted UnitFavoriteResponse::SerializeFields (in exported_handlers/response/UnitFavoriteResponse.hpp) emits a single object value rather than an array under key 3kcmQy7B, so the wire shape is {\"3kcmQy7B\":{\"edy7fq3L\":\"...\",\"5JbjC3Pp\":\"...\",\"2pAyFjmZ\":\"...\"}}"
+
+    field entry type="UnitFavoriteEntry" {
+        key "3kcmQy7B"
+        doc "Echo of the first request entry"
+    }
+}
+
+json UnitEvoReq {
+    doc "Evolve a base unit by consuming evo materials.  Wire root keys (UnitEvoRequest::createBody): login IKqx1Cn9, base unit(s) Km35HAXv, evolution target I82p0wCL, zel cost mCE3rUu5, element/material units 8Z2NQrx1."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field units type="[UnitEvoUnitEntry]" {
+        key "Km35HAXv"
+        doc "Base unit(s) being evolved (role \"1\" = base)."
+    }
+
+    field target type="[UnitEvoTargetEntry]" {
+        key "I82p0wCL"
+        doc "Evolution target — the unit_mst id the base evolves into."
+    }
+
+    field zel_cost_list type="[UnitEvoZelEntry]" {
+        key "mCE3rUu5"
+        doc "Zel cost line items for the evolution."
+    }
+
+    field elem_units type="[UnitEvoElemEntry]" {
+        key "8Z2NQrx1"
+        doc "Evolution material (element) units consumed."
+    }
+}
+
+json UnitEvoResp {
+    doc "UnitEvo response (response_class=UnitOpeEvoResponse).  Carries the evolution result (I82p0wCL), an incremental unit-cache update (qC2tJs4E), the updated team info (fEi17cnx), and the reinforce/stat animation payload (xZH6EIQ7)."
+
+    field evo_result type="[EvoResultEntry]" {
+        key "I82p0wCL"
+        doc "Which MST id the base evolved into (and the evolved unit's DB id)."
+    }
+
+    field unit_update type="[UserUnitInfo]" {
+        key "qC2tJs4E"
+        doc "Incremental unit-cache update for the evolved unit."
+    }
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated team info (zel) after the evolution."
+    }
+
+    field reinforce type="[UnitReinforceEntry]" {
+        key "xZH6EIQ7"
+        doc "Reinforcement/level-up animation + stat payload."
+    }
+}
+
+json UnitMixReq {
+    doc "Fuse (mix) material units into a base unit for XP.  Wire root keys: login IKqx1Cn9, units Km35HAXv (role \"1\" = base receiving XP, \"2\" = material consumed), zel cost mCE3rUu5."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field units type="[UnitMixUnitEntry]" {
+        key "Km35HAXv"
+        doc "Base + material units (role \"1\" = base, \"2\" = material)."
+    }
+
+    field zel_cost_list type="[UnitMixZelEntry]" {
+        key "mCE3rUu5"
+        doc "Zel cost line items for the fusion."
+    }
+}
+
+json UnitMixResp {
+    doc "UnitMix (Power Fusion) response.  Carries the reinforce/stat animation payload (xZH6EIQ7), an incremental unit-cache update for the fused base unit (qC2tJs4E), and the updated team info (fEi17cnx)."
+
+    field reinforce type="[UnitReinforceEntry]" {
+        key "xZH6EIQ7"
+        doc "Reinforcement/level-up animation + stat payload."
+    }
+
+    field unit_update type="[UserUnitInfo]" {
+        key "qC2tJs4E"
+        doc "Incremental unit-cache update for the fused base unit."
+    }
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated team info (zel) after the fusion."
+    }
+}
+
+json UnitSellReq {
+    doc "Sell one or more user_units for zel.  Wire root keys: login IKqx1Cn9, units Km35HAXv."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
+    field units type="[UnitSellEntry]" {
+        key "Km35HAXv"
+        doc "Units to sell."
+    }
+}
+
+json UnitSellResp {
+    doc "UnitSell response.  Only the updated team info (fEi17cnx) is needed — the client applies the unit removal from its own state."
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated team info (zel) after the sell."
+    }
+}
+
+json GachaListResp {
+    doc "Gacha list data returned when opening the summon screen."
+
+    field signalKey type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key response block."
+    }
+
+    field gachaInfo type="[GachaInfoMst]" {
+        key "1IR86sAv"
+        doc "Current gacha info rows."
+    }
+
+    field gachaCategories type="[GachaCategory]" {
+        key "IBs49NiH"
+        doc "Current summon screen category rows."
+    }
+}
+
+json MissionStartResp {
+    doc "Response payload for starting a mission."
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key response included in captured mission-start payloads."
+    }
+
+    field battle_groups type="[BattleGroupMst]" {
+        key "pj41dy9g"
+        doc "Battle group rows for each stage."
+    }
+
+    field battle_monster_groups type="[BattleMonsterGroupMst]" {
+        key "75t0sx9z"
+        doc "Monster placement rows for each battle group."
+    }
+
+    field monsters type="[MonsterMst]" {
+        key "U0v5IeJo"
+        doc "Mission-local monster MST rows."
+    }
+
+    field ais type="[AIMst]" {
+        key "89ausgc4"
+        doc "Mission-local AI rows."
+    }
+
+    field mission_num type="[MissionNumInfo]::size(1)" {
+        key "Kz7qfSs5"
+        doc "Mission serial state required by MissionStartScene."
+    }
+
+    field start_info type="[MissionStartInfo]::size(1)" {
+        key "9Q1Lq5FS"
+        doc "Mission-start info consumed by the battle scene."
+    }
+}
+
+json MissionEndReq {
+    doc "Request payload sent after a mission battle ends."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login/user identity included with mission-end requests."
+    }
+
+    field signal_key type="[SignalKey]::size(1)" {
+        key "6FrKacq7"
+        doc "Signal key sent by the client."
+    }
+
+    field mission_num type="[MissionNumInfo]::size(1)" {
+        key "Kz7qfSs5"
+        doc "Mission serial state being completed."
+    }
+
+    field battle_result type="[MissionBattleResultInfo]::size(1)" {
+        key "rXvA1E5y"
+        doc "Client-reported mission reward/result values."
+    }
+
+    field party_deck_info type="[UserPartyDeckInfo]" {
+        key "0xgIw1Ns"
+        doc "Party deck state after the mission."
+    }
+}
+
+json MissionEndResp {
+    doc "Response payload sent after a mission battle ends."
+
+    field loginInfo type="[LoginInfoResp]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Updated login/tutorial state after mission end."
+    }
+
+    field reward_info type="[MissionRewardInfo]::size(1)" {
+        key "F5Vs19mb"
+        doc "Mission reward values consumed by the result scenes."
+    }
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Updated user team state after applying mission rewards."
+    }
+
+    field unit_info type="[UserUnitInfo]" {
+        key "qC2tJs4E"
+        doc "Newly awarded units from this mission."
+    }
+
+    field unit_dictionary type="[UserUnitDictionary]" {
+        key "GV81ctzR"
+        doc "Unit dictionary rows for units awarded by this mission."
+    }
+}
+

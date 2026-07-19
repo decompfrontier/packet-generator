@@ -1,12 +1,12 @@
 json GachaEffectMst {
     doc "TODO"
 
-    field id type="i32::str" {
+    field id type="u32::str" {
         key "u0vkt9yH"
-        doc "TODO"
+        doc "Unique gacha effect id."
     }
 
-    field gatcha_id type="i32::str" {
+    field gacha_id type="i32::str" {
         key "7Ffmi96v"
         doc "TODO"
     }
@@ -16,14 +16,14 @@ json GachaEffectMst {
         doc "TODO"
     }
 
-    field rare type="i32::str" {
+    field rarity type="u32::str" {
         key "7ofj5xa1"
-        doc "TODO"
+        doc "Unit rarity bucket for this gacha effect."
     }
 
-    field rate type="f32::str" {
+    field weight type="u32::str" {
         key "ug9xV4Fz"
-        doc "TODO"
+        doc "Selection weight for this gacha effect."
     }
 
     field effect_before type="str" {
@@ -44,72 +44,105 @@ json GachaEffectMst {
 }
 
 json GachaCategory {
-    doc "TODO"
+    doc """
+    Banner/category rows for the summon top screen.
+    A category is the visible banner entry the player taps on. The client uses
+    gacha_id_list to decide which summon gates are available behind that
+    banner. One category can point at one gate or multiple gates.
+    """
 
-    field id type="i32::int" {
+    field id type="i32::str" {
         key "vx9uyQVQ"
-        doc "TODO"
+        doc "Category id. Encoded as a string in the live data."
     }
 
     field img type="str" {
         key "In7lGGLn"
-        doc "TODO"
+        doc "Banner image shown on the summon top/list screen."
     }
 
     field disp_order type="i32::int" {
         key "2r4EoNt4"
-        doc "TODO"
+        doc "Display order of this banner category."
     }
 
-    field gatcha_id_list type="str" {
+    field gacha_id_list type="str" {
         key "3rCmq58M"
-        doc "TODO"
+        doc """
+        Comma-separated summon gate ids opened by this banner.
+        Example: "11960" shows one summon gate; "2000,2010,2020" creates one
+        banner that can page through multiple summon gates.
+        """
     }
 
     field start_date type="datetime-unix" {
         key "qA7M9EjP"
-        doc "TODO"
+        doc """
+        Category start time.
+        The client actually checks this field (now needs to be > this),
+        so we default to 0.
+        """
     }
 
     field end_date type="datetime-unix" {
         key "SzV0Nps7"
-        doc "TODO"
+        doc """
+        Category end time.
+        The client actually checks this field (now needs to be < this)
+        and truncates it to signed 32-bit, so the safest maximum would
+        be 2147483647 (which in unix time is around 2038).
+
+        This also means that in roughly ~12 years, we would need to worry
+        about manipulating the client's own clock so that it doesn't trip
+        over itself truncating to an int32. 
+        """
     }
 }
 
 json GachaMst {
-    doc "TODO"
+    doc """
+    Core summon gate MST rows from deploy/system/gacha.json.
+    These rows define the actual summon gates by id: type, order, cost,
+    open/close dates, images, and text. GachaCategory points at these ids to
+    decide which gates a visible banner opens.
+    """
 
     field id type="i32::str" {
         key "7Ffmi96v"
-        doc "TODO"
+        doc "Summon gate id. This is the id referenced by gacha_id_list."
     }
 
     field name type="str" {
         key "4N27mkt1"
-        doc "TODO"
+        doc "Display/internal name for the summon gate."
     }
 
     field type type="i32::str" {
         key "S1oz60Hc"
-        doc "TODO"
+        doc """
+        Summon gate type.
+        """
     }
 
     // TODO: an enum?
     field priority type="i32::str" {
         key "yu18xScw"
-        doc "TODO"
+        doc "Gate ordering/priority used by the summon UI."
     }
 
     field start_date type="datetime" {
         key "qA7M9EjP"
-        doc "TODO"
+        doc """
+        Gate start time. Probably not used.
+        """
     }
 
     // (2017-10-24 08:00:00)
     field end_date type="datetime" {
         key "SzV0Nps7"
-        doc "TODO"
+        doc """
+        Gate end time. Probably not used.
+        """
     }
 
     // (2017-10-24 08:00:00)
@@ -123,14 +156,14 @@ json GachaMst {
         doc "TODO"
     }
 
-    field need_friend_point type="i32::str" {
+    field need_friend_point type="u32::str" {
         key "J3stQ7jd"
-        doc "TODO"
+        doc "Friend point cost for friend-point summon gates."
     }
 
-    field need_gems type="i32::str" {
+    field need_gems type="u32::str" {
         key "03UGMHxF"
-        doc "TODO"
+        doc "Gem cost shown/used for gem summon gates."
     }
 
     field once_day_flag type="bool::str" {
@@ -140,27 +173,27 @@ json GachaMst {
 
     field bg_img type="str" {
         key "1Dg0vUX3"
-        doc "TODO"
+        doc "Summon gate detail/background image."
     }
 
     field btn_img type="str" {
         key "W9ABuJj2"
-        doc "TODO"
+        doc "Summon button image for this gate."
     }
 
     field door_img type="str" {
         key "uKYf13AH"
-        doc "TODO"
+        doc "Summon door/animation image for this gate."
     }
 
     field caption_msg type="str" {
         key "3sdHQb69"
-        doc "TODO"
+        doc "Long formatted gate caption/body text."
     }
 
     field detail_msg type="str" {
         key "W2c9g0Je"
-        doc "TODO"
+        doc "Formatted short/detail message shown by the summon gate UI."
     }
 
     field comment_msg type="str" {
@@ -168,7 +201,7 @@ json GachaMst {
         doc "TODO"
     }
 
-    field gatcha_group_id type="i32::str" {
+    field gacha_group_id type="i32::str" {
         key "TCnm1F4v"
         doc "TODO"
     }
@@ -178,7 +211,7 @@ json GachaMst {
         doc "TODO"
     }
 
-    field gatcha_detail_id type="str" {
+    field gacha_detail_id type="str" {
         key "8Z9CYQDq"
         doc "TODO"
         optional #true
@@ -195,176 +228,108 @@ json GachaMst {
 
 
 json GachaInfoMst {
-    doc "TODO"
+    doc """
+    The client relies on this to see which summon gates are actually available.
+    The summon list request sends this alongside category data. It overlaps with
+    GachaMst, and some fields must be consistent with its counterpart in GachaMst.
+    """
 
     field id type="i32::str" {
         key "7Ffmi96v"
-        doc "TODO"
+        doc """
+        Summon gate id.
+        Must match GachaMst.id and appear in GachaCategory.gacha_id_list.
+        Friend-point summon gates that need the summon-list count badge must
+        use id 1000, because the client hard-codes that id for the Honor
+        summon count path.
+        """
     }
 
-    field unk type="str" {
-        key "s35idar9"
-        doc "TODO"
-        // NOTE: not used in last version
-    }
-
-    field unk2 type="str" {
-        key "2T4c7YRb"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk3 type="str" {
-        key "c7U6RwNH"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk4 type="str" {
-        key "Ss7Pdc2w"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk5 type="i32::int" {
-        key "Qm5oN7XM"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk6 type="i32::int" {
-        key "d04gRmkE"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk7 type="str" {
-        key "S6bqJqpA"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk8 type="str" {
-        key "a329kbl8"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field unk9 type="i32::int" {
-        key "324b023k"
-        doc "TODO"
-        // NOTE: not in last game version
-    }
-
-    field campaign_info type="str" {
-        key "8HM3v3gg"
-        doc "TODO"
-    }
-
-    field brave_coin type="i32::str" {
+    field gems type="u32::str" {
         key "03UGMHxF"
-        doc "TODO"
+        doc """
+        Displayed summon cost.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
-    field button_img type="str" {
+    field button type="str" {
         key "W9ABuJj2"
-        doc "TODO"
+        doc """
+        Summon button image.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
-    field background_img type="str" {
+    field background type="str" {
         key "1Dg0vUX3"
-        doc "TODO"
+        doc """
+        Summon gate detail/background image.
+        Can differ from GachaMst.bg_img.
+        """
     }
 
     field caption_msg type="str" {
         key "3sdHQb69"
-        doc "TODO"
+        doc """
+        Long formatted gate caption/body text.
+        Can differ from GachaMst.caption_msg.
+        """
     }
 
     field detail_msg type="str" {
         key "W2c9g0Je"
-        doc "TODO"
-    }
-
-    field resummon_gacha_flag type="bool::int" {
-        key "a632bkyQ"
-        doc "TODO"
+        doc """
+        Formatted short/detail message for this summon gate.
+        Can differ from GachaMst.detail_msg.
+        """
     }
 
     field name type="str" {
         key "4N27mkt1"
-        doc "TODO"
+        doc """
+        Display/internal name for this summon gate info row.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
     field type type="i32::str" {
         key "S1oz60Hc"
-        doc "TODO"
+        doc """
+        Summon gate type.
+        Must match GachaMst.type.
+        """
     }
 
     field priority type="i32::str" {
         key "yu18xScw"
-        doc "TODO"
+        doc """
+        Display/order value.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
-    field start_date type="str" { // TODO(arves): Fix type...
-        key "qA7M9EjP"
-        doc "TODO"
-    }
-
-    field end_date type="datetime-unix" {
-        key "SzV0Nps7"
-        doc "TODO"
-    }
-
-    field start_hour type="str" { // TODO(arves): Fix type...
-        key "2HY3jpgu"
-        doc "TODO"
-    }
-
-    field end_hour type="str" {
-        key "v9TR3cDz"
-        doc "TODO"
-    }
-
-    field need_friends_point type="i32::str" {
+    field friend_points type="u32::str" {
         key "J3stQ7jd"
-        doc "TODO"
+        doc "Friend point cost for friend-point summon gates."
     }
 
-    field once_day_flag type="bool::str" {
-        key "4tswNoV9"
-        doc "TODO"
-    }
-
-    field door_img type="str" {
+    field door type="str" {
         key "uKYf13AH"
-        doc "TODO"
-    }
-
-    field description type="str" {
-        key "qp37xTDh"
-        doc "TODO"
+        doc """
+        Summon door/animation image for this gate.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
     field group_id type="i32::str" {
         key "TCnm1F4v"
-        doc "TODO"
+        doc """
+        Summon group id.
+        TODO: verify if this needs to match its counterpart in GachaMst.
+        """
     }
 
-    field comment type="str" {
-        key "gVSj32QH"
-        doc "TODO"
-    }
-
-    field detail_id type="str" {
-        key "8Z9CYQDq"
-        doc "TODO"
-    }
-
-    field content_banner_img type="str" {
-        key "sA9dDAqB"
-        doc "TODO"
-    }
 }
 
 json ResummonGachaMst {
@@ -412,34 +377,34 @@ json ResummonGachaMst {
 }
 
 json SummonTicketV2Mst {
-    doc "TODO"
+    doc "Summon-ticket type catalog.  Wrapper key hE1d083b.  Each row defines one ticket type â€” its id, the gacha door it redeems on, display name, and icon.  Loaded from deploy/system/summon_ticket_v2_mst.json (89 rows).  Joined to SummonTicketV2UserInfo entries (a3d5d12i) by `id`.  // REVERTED FROM swapped labels: the previous schema labelled b0D2iq2d as `image` and b38adb8i as `id`, which was inverted vs the actual data â€” `b0D2iq2d` carries numeric ticket ids (\"8\" = Brave Summon Ticket) and `b38adb8i` carries icon filenames (\"brave_ticket_event_icon.png\")."
 
-    field image type="i32::str" {
-        doc "TODO"
+    field id type="i32::str" {
+        doc "Ticket-type id.  Joins to SummonTicketV2UserInfo.id (also b0D2iq2d).  Captured values: \"8\" (Brave Summon Ticket â†’ door 17160), \"3\" (Anniversary 2017 Ticket â†’ door 14420)."
         key "b0D2iq2d"
         optional #true
     }
 
-    field target_gacha type="str" { // should be i32::str with omit=empty
-        doc "TODO"
+    field target_gacha type="str" {
+        doc "Door id this ticket can be redeemed against (joins to GachaInfoMst.id).  Kept as `str` because some rows leave it empty for universal tickets â€” switching to i32::str would need omit-when-empty support.  Captured: \"17160\" (Brave Summon), \"14420\" (Anniversary 2017), \"\" (universal: ticket id 0 / id 2)."
         key "7Ffmi96v"
         optional #true
     }
 
     field name type="str" {
-        doc "TODO"
+        doc "Display name of the ticket.  Captured: \"Brave Summon Ticket\", \"Anniversary 2017 Ticket\", \"Spring Ticket 2017\"."
         key "s35idar9"
         optional #true
     }
 
-    field id type="str" {
-        doc "TODO"
+    field image type="str" {
+        doc "Icon image filename, served from /content/.  Captured: \"brave_ticket_event_icon.png\", \"spring_ticket_thum.png\", \"anniversary_ticket_thum.png\"."
         key "b38adb8i"
         optional #true
     }
 
     field required_tickets type="i32::str" {
-        doc "TODO"
+        doc "How many of this ticket type are needed for one pull.  Captured: ORIGINAL deploy/system/summon_ticket_v2_mst.json had this absent on all 89 rows â€” possibly the BF default is 1 when omitted.  Manually patched onto the Brave Summon Ticket row (b0D2iq2d=8, target_gacha=17160) as \"1\" to test the hypothesis that the gacha screen's 'use ticket' button visibility gates on this field being explicitly set > 0.  See handbook Â§7.11.5."
         key "JRqU2bS6"
         optional #true
     }
