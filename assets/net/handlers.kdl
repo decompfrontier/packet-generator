@@ -141,6 +141,209 @@ json CampaignStartReq {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Campaign response structs (previously hand-written glz::meta in the handlers).
+// ---------------------------------------------------------------------------
+
+json CampaignMissionEntry {
+    doc "One campaign mission's progress/state under response key 2I9V0o6J (CampaignMissionInfoResponse).  Shared by CampaignMissionGet and CampaignStart."
+
+    field mission_id type="str" {
+        key "j28VNcUW"
+        doc "Mission id (numeric string == mission_mst.id)."
+    }
+
+    field attain_percent type="i32::str" {
+        key "HUo4T7i8"
+        doc "Best clear percentage.  Quoted decimal integer on the wire."
+    }
+
+    field mission_on_flg type="str" {
+        key "JcKMjH64"
+        doc "Whether the mission is selectable (\"1\") or locked (\"0\")."
+    }
+
+    field state type="i32::str" {
+        key "j0Uszek2"
+        doc "Mission state (>=1 = unlocked/cleared).  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignMissionGetResp {
+    doc "CampaignMissionGet (RSm6p2d4) response — the per-mission progress list."
+
+    field missions type="[CampaignMissionEntry]" {
+        key "2I9V0o6J"
+        doc "Mission progress/state entries."
+    }
+}
+
+json CampaignDeckMember {
+    doc "One campaign party-deck member under response key w5vHLT0q (CampaignMissionPartyDeckInfoResponse)."
+
+    field deck_num type="i32::str" {
+        key "zsiAn9P1"
+        doc "Deck slot number.  Quoted decimal integer on the wire."
+    }
+
+    field user_unit_id type="i32::str" {
+        key "edy7fq3L"
+        doc "user_units instance id of this member.  Quoted decimal integer on the wire."
+    }
+
+    field member_type type="i32::str" {
+        key "gr48vsdJ"
+        doc "Member role/type.  Quoted decimal integer on the wire."
+    }
+
+    field disporder type="i32::str" {
+        key "XuJL4pc5"
+        doc "Display order within the deck.  Quoted decimal integer on the wire."
+    }
+
+    field now_hp type="i32::str" {
+        key "a3qJ6QhX"
+        doc "Current HP (0 — the client fills from its unit cache).  Quoted decimal integer on the wire."
+    }
+
+    field max_hp type="i32::str" {
+        key "3WMz78t6"
+        doc "Max HP (0 — client-filled).  Quoted decimal integer on the wire."
+    }
+
+    field bb_gauge type="i32::str" {
+        key "gU2xtQ0V"
+        doc "Brave-burst gauge (0 — client-filled).  Quoted decimal integer on the wire."
+    }
+
+    field sb_gauge type="i32::str" {
+        key "nIGZ1X9C"
+        doc "Super-burst gauge (0 — client-filled).  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignDeckGetResp {
+    doc "CampaignDeckGet (C3a0VnQK) response — the campaign party-deck composition."
+
+    field members type="[CampaignDeckMember]" {
+        key "w5vHLT0q"
+        doc "Campaign deck members."
+    }
+}
+
+json CampaignStartDeckEntry {
+    doc "One party-deck summary for the CampaignStart mission-select screen (response key hT95cq8K)."
+
+    field deck_num type="i32::str" {
+        key "zsiAn9P1"
+        doc "Deck slot number.  Quoted decimal integer on the wire."
+    }
+
+    field guest_id type="str" {
+        key "7zyHb5h9"
+        doc "Guest/friend id for this deck slot (empty when none)."
+    }
+
+    field member_type type="i32::str" {
+        key "gr48vsdJ"
+        doc "Member role/type.  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignStartMissionDeckEntry {
+    doc "One mission-deck slot for the CampaignStart deck-selector panel (response key Yusr3Zg5)."
+
+    field deck_num type="i32::str" {
+        key "zsiAn9P1"
+        doc "Deck slot number.  Quoted decimal integer on the wire."
+    }
+
+    field now_point_num type="i32::str" {
+        key "7w0inC1R"
+        doc "Current point count for this deck slot.  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignStartEventInfo {
+    doc "CampaignStart event-flag object (response key RseDpY04 — a single object, not an array)."
+
+    field reserve_party_disp_flg type="i32::str" {
+        key "W1EkCyc3"
+        doc "Whether the reserve-party UI is shown.  Quoted decimal integer on the wire."
+    }
+}
+
+json CampaignEmptyEntry {
+    doc "Placeholder element type for the always-empty CampaignStart response arrays (eqp_items NjZ6ds1S, rsv_items 5EByfWJ4, reward_bonus p04iC2wr).  The vectors are never populated, so this field is never emitted."
+
+    field unused type="i32::str" {
+        key "_"
+        doc "Never emitted — the array is always empty in the current phase."
+    }
+}
+
+json CampaignStartResp {
+    doc "CampaignStart (6Y0gaPQN) response — mission catalog, party decks, item slots, mission decks, and event flags for the mission-select screen."
+
+    field missions type="[CampaignMissionEntry]" {
+        key "2I9V0o6J"
+        doc "Mission state list."
+    }
+
+    field party_decks type="[CampaignStartDeckEntry]" {
+        key "hT95cq8K"
+        doc "Party decks for the select screen."
+    }
+
+    field eqp_items type="[CampaignEmptyEntry]" {
+        key "NjZ6ds1S"
+        doc "Equipped items (empty in the current phase)."
+    }
+
+    field rsv_items type="[CampaignEmptyEntry]" {
+        key "5EByfWJ4"
+        doc "Reserve items (empty in the current phase)."
+    }
+
+    field mission_decks type="[CampaignStartMissionDeckEntry]" {
+        key "Yusr3Zg5"
+        doc "Mission-deck slots."
+    }
+
+    field event_info type="CampaignStartEventInfo" {
+        key "RseDpY04"
+        doc "Single-object event flags."
+    }
+
+    field reward_bonus type="[CampaignEmptyEntry]" {
+        key "p04iC2wr"
+        doc "Reward bonus info (empty in the current phase)."
+    }
+}
+
+json CampaignReceiptPayload {
+    doc "Receipt stub payload under 4MCxgS5p — a single object {\"pCIRMw04\":\"\"}."
+
+    field marker type="str" {
+        key "pCIRMw04"
+        doc "Receipt marker; empty-string stub (the client applies the reward from its own state)."
+    }
+}
+
+json CampaignReceiptResp {
+    doc "Shared response for CampaignBattleEnd (jF9Kkro4-suite) and CampaignReceipt (5Imq3wC0): refreshed HUD team info (fEi17cnx) plus the receipt stub (4MCxgS5p).  Replaces the previous hand-assembled JSON string merge in both handlers."
+
+    field team_info type="[UserTeamInfo]::size(1)" {
+        key "fEi17cnx"
+        doc "Refreshed HUD team info (zel/karma/exp)."
+    }
+
+    field receipt type="CampaignReceiptPayload" {
+        key "4MCxgS5p"
+        doc "Receipt stub."
+    }
+}
+
 
 // @json
 json InitializeResp {
