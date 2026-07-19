@@ -24,6 +24,11 @@ json ItemFavorite {
 json ItemFavoriteReq {
     doc "Favorite/lock update.  Wire: {\"VSRPkdId\":[{\"n6E8iMf3\":\"5\",\"5JbjC3Pp\":\"1\"},...]}.  The list is the full favorite set; the server clears favorite_flg for the user and re-sets it for the listed instance ids."
 
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
     field entries type="[ItemFavorite]" {
         key "VSRPkdId"
         doc "Complete favorite set (only flag=1 entries are sent)."
@@ -56,6 +61,11 @@ json ItemSellEntry {
 json ItemSellReq {
     doc "Sell warehouse items for zel.  Wire: {\"M73i1c5U\":[{\"n6E8iMf3\":\"5\",\"wgV86x1q\":\"3\"},...]}.  Zel credit per unit = ItemMst.sell_price.  Legacy fork acked with an empty body and the client applies the zel/count changes locally, so no Resp struct exists."
 
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+
     field entries type="[ItemSellEntry]" {
         key "M73i1c5U"
         doc "Stacks to sell."
@@ -73,6 +83,11 @@ json ItemSphereEqpNode {
 
 json ItemSphereEqpReq {
     doc "Equip/unequip spheres on units.  Wire root key wx1ZLFj9 (ItemSphereEqpRequest::createBody).  Server updates user_units.eqip_item_id[2] + eqip_item_frame_id[2] (frame = ItemMst.sphere_type) and adjusts user_items counts.  Response is an empty ack (legacy-verified)."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
 
     field nodes type="[ItemSphereEqpNode]" {
         key "wx1ZLFj9"
