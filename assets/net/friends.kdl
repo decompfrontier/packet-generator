@@ -1,4 +1,13 @@
 
+json FriendGetReq {
+    doc "Request for FriendGet (friend-list / friend-slot fetch).  The client sends only the standard login-info identity tag; the server derives everything from the resolved user, so this carries loginInfo only."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
 json FriendPointInfo {
     doc "TODO"
 

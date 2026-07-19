@@ -29,6 +29,15 @@ json UserScenarioInfo {
     }
 }
 
+json GetScenarioPlayingInfoReq {
+    doc "Request for GetScenarioPlayingInfo.  Bare request — GetScenarioPlayingInfoRequest::createBody adds no body beyond the standard login-info identity tag, so this carries loginInfo only."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
+}
+
 json GetScenarioPlayingInfoResp {
     doc "Response to GetScenarioPlayingInfo: the user's complete viewed-scenario set, from the user_scenarios table.  The legacy fork returned {} here — which is why cutscenes replayed on every boot."
 
@@ -49,6 +58,11 @@ json RaidUpScenarioInfoNode {
 
 json RaidUpScenarioInfoReq {
     doc "Scenario-update report.  Wire: {\"1ry6BKoe\":[{\"N4XVE1uA\":\"<scenario>\"}]} (RaidUpScenarioInfoRequest::createBody).  Server stores the id into user_scenarios; response is an empty ack (legacy-verified)."
+
+    field loginInfo type="[LoginInfoReq]::size(1)" {
+        key "IKqx1Cn9"
+        doc "Login info identifying the current user."
+    }
 
     field nodes type="[RaidUpScenarioInfoNode]" {
         key "1ry6BKoe"
